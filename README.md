@@ -8,7 +8,8 @@ A clean, single-page [Next.js](https://nextjs.org) (App Router, TypeScript, Tail
 - **Tailwind CSS v4** with class-based dark mode (`@custom-variant`)
 - **Persistent theme toggle** (localStorage + system preference, no FOUC)
 - **Single source of truth** for content in `lib/data.ts`
-- Fully static, SEO-friendly metadata and Open Graph tags
+- Fully static, SEO-friendly metadata, Open Graph tags, generated `sitemap.xml` and `robots.txt`
+- Custom 404 page and client-side error boundary
 - Accessible, responsive layout with smooth-scroll navigation
 
 ## Getting Started
@@ -35,7 +36,7 @@ Sections are individual components under [`components/`](components) and are com
 ### Common changes
 
 - **Avatar/photo**: replace the placeholder in [`components/about.tsx`](components/about.tsx) with a `next/image` component.
-- **Metadata / SEO**: edit the exported `metadata` in [`app/layout.tsx`](app/layout.tsx).
+- **Metadata / SEO**: edit the exported `metadata` in [`app/layout.tsx`](app/layout.tsx), and set `siteUrl` in `lib/data.ts` (used by `app/sitemap.ts` and `app/robots.ts`).
 - **Dark mode**: initial theme is applied via the inline script in `app/layout.tsx`; the toggle lives in `components/theme-toggle.tsx`.
 
 ## Scripts
