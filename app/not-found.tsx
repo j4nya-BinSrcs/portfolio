@@ -1,24 +1,24 @@
 import Link from "next/link";
+import { CornerDownLeft } from "lucide-react";
 import { profile } from "@/lib/data";
 
 export default function NotFound() {
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-4xl flex-col items-start justify-center px-6">
-      <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-        404
-      </p>
-      <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+    <div className="mx-auto flex min-h-dvh max-w-[1600px] flex-col items-start justify-center px-8">
+      <p className="font-mono text-xs tracking-widest text-mute">404</p>
+      <h1 className="mt-4 text-4xl font-bold tracking-tight text-tx sm:text-5xl">
         Page not found
       </h1>
-      <p className="mt-4 max-w-xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-300">
+      <p className="mt-4 max-w-xl text-lg leading-relaxed text-soft">
         The page you&apos;re looking for doesn&apos;t exist or has moved. Let&apos;s get
         you back on track.
       </p>
       <Link
         href="/"
-        className="mt-8 inline-flex h-11 items-center justify-center rounded-full bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-90"
+        className="mt-8 inline-flex items-center gap-2 rounded-lg bg-accent-soft px-5 py-3 text-sm font-semibold text-tx transition-all hover:-translate-y-0.5 hover:brightness-110"
       >
-        Back to {profile.name}&apos;s site
+        <CornerDownLeft className="h-4 w-4" aria-hidden="true" />
+        Back to {profile.name}&apos;s workspace
       </Link>
     </div>
   );
