@@ -5,6 +5,7 @@ export const profile = {
   bio: "Full-stack software engineer with a passion for clean code, modern tooling, and products that scale. I care deeply about performance, accessibility, and developer experience.",
   location: "San Francisco, CA",
   email: "hello@example.com",
+  siteUrl: "https://yourdomain.com",
   socials: [
     { label: "GitHub", href: "https://github.com/yourusername" },
     { label: "LinkedIn", href: "https://linkedin.com/in/yourusername" },
