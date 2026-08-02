@@ -47,6 +47,7 @@ export default function BackgroundGrid() {
     const pointer = { x: -9999, y: -9999, active: false };
     let raf = 0;
     let cols = 0;
+    let firstFrameDrawn = false;
 
     function buildGrid() {
       cols = Math.ceil(width / SPACING) + 1;
@@ -77,7 +78,8 @@ export default function BackgroundGrid() {
 
     function draw(now: number) {
       let moved = false;
-
+      const forceFirstFrame = points.length > 0 && !firstFrameDrawn;
+      if (forceFirstFrame) firstFrameDrawn = true;
       for (const p of points) {
         const dx = p.bx - pointer.x;
         const dy = p.by - pointer.y;
@@ -99,7 +101,7 @@ export default function BackgroundGrid() {
         if (Math.abs(p.vx) > 0.02 || Math.abs(p.vy) > 0.02) moved = true;
       }
 
-      if (moved || pointer.active) {
+      if (moved || pointer.active || forceFirstFrame) {
         ctx.clearRect(0, 0, width, height);
 
         ctx.lineWidth = 1;
