@@ -18,7 +18,7 @@ function ExperienceItem({
   const reduce = useReducedMotion();
 
   return (
-    <li className="relative">
+    <div className="relative">
       <div
         className={`rounded-xl border p-5 transition-colors ${
           open
@@ -72,7 +72,7 @@ function ExperienceItem({
           )}
         </AnimatePresence>
       </div>
-    </li>
+    </div>
   );
 }
 

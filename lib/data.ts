@@ -16,9 +16,9 @@ export const profile = {
   resumeUrl: "/resume.pdf",
   available: true,
   socials: [
+    { label: "X", href: "https://x.com/jordanreyes" },
     { label: "GitHub", href: "https://github.com/jordanreyes" },
     { label: "LinkedIn", href: "https://linkedin.com/in/jordanreyes" },
-    { label: "X", href: "https://x.com/jordanreyes" },
   ],
 } as const;
 

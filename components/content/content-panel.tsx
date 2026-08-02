@@ -27,7 +27,7 @@ export default function ContentPanel() {
   const Panel = panels[active] ?? AboutPanel;
 
   return (
-    <div className="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-line bg-panel/60 shadow-[0_1px_0_0_rgba(246,242,232,0.03)_inset,0_24px_60px_-40px_rgba(0,0,0,0.9)] lg:h-[calc(100dvh-8rem)]">
+    <div className="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-line bg-panel/60 shadow-[0_1px_0_0_rgba(246,242,232,0.03)_inset,0_24px_60px_-40px_rgba(0,0,0,0.9)] lg:h-full">
       <header className="flex items-center gap-3 border-b border-line px-6 py-3.5">
         <span className="flex gap-1.5" aria-hidden="true">
           <span className="h-2.5 w-2.5 rounded-full bg-bg-elevated ring-1 ring-line" />

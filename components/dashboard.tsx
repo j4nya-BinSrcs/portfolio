@@ -16,35 +16,52 @@ export default function Dashboard() {
 
   return (
     <SectionProvider>
-      <div className="flex min-h-dvh flex-col">
-        <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-5 py-8 sm:px-8 lg:px-12 lg:py-12">
+      <div className="flex min-h-dvh flex-col bg-bg lg:h-dvh lg:overflow-hidden">
+        <div className="mx-auto flex w-full flex-1 flex-col px-4 py-5 sm:px-8 lg:w-[min(72vw,1440px)] lg:py-6">
           <motion.div
             variants={reduce ? undefined : revealContainer}
             initial={reduce ? false : "hidden"}
             animate="show"
-            className="grid flex-1 grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-[minmax(280px,320px)_minmax(170px,190px)_minmax(0,1fr)]"
+            className="grid w-full flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,300px)_minmax(0,190px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)_auto_auto_auto] lg:[grid-template-areas:'hero_nav_content'_'info_info_content'_'avail_avail_content'_'social_social_content']"
           >
-            <motion.aside
+            <motion.div
               variants={reduce ? undefined : revealItem}
-              className="order-2 flex flex-col gap-5 md:col-span-1 lg:order-1 lg:col-span-1 lg:col-start-1"
+              className="lg:[grid-area:hero]"
             >
               <HeroCard />
-              <InfoCard />
-              <SocialRow />
-              <AvailabilityEmailRow />
-            </motion.aside>
-
-            <motion.nav
-              variants={reduce ? undefined : revealItem}
-              aria-label="Primary"
-              className="order-1 md:col-span-2 lg:order-2 lg:col-span-1 lg:col-start-2"
-            >
-              <NavRail />
-            </motion.nav>
+            </motion.div>
 
             <motion.div
               variants={reduce ? undefined : revealItem}
-              className="order-3 md:col-span-1 lg:order-3 lg:col-span-1 lg:col-start-3"
+              className="lg:[grid-area:nav]"
+            >
+              <NavRail />
+            </motion.div>
+
+            <motion.div
+              variants={reduce ? undefined : revealItem}
+              className="lg:[grid-area:info]"
+            >
+              <InfoCard />
+            </motion.div>
+
+            <motion.div
+              variants={reduce ? undefined : revealItem}
+              className="lg:[grid-area:avail]"
+            >
+              <AvailabilityEmailRow />
+            </motion.div>
+
+            <motion.div
+              variants={reduce ? undefined : revealItem}
+              className="lg:[grid-area:social]"
+            >
+              <SocialRow />
+            </motion.div>
+
+            <motion.div
+              variants={reduce ? undefined : revealItem}
+              className="lg:[grid-area:content]"
             >
               <ContentPanel />
             </motion.div>

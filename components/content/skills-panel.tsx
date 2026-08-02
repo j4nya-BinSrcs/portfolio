@@ -1,29 +1,5 @@
-"use client";
-
-import { motion } from "framer-motion";
-import { useReducedMotion } from "framer-motion";
 import { skills } from "@/lib/data";
-import { EASE } from "@/lib/motion";
-
-function SkillBar({ name, level }: { name: string; level: number }) {
-  const reduce = useReducedMotion();
-  return (
-    <li>
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-medium text-soft">{name}</span>
-        <span className="font-mono text-xs text-mute">{level}</span>
-      </div>
-      <div className="mt-1.5 h-[3px] overflow-hidden rounded-full bg-bg-elevated">
-        <motion.div
-          className="h-full rounded-full bg-accent/70"
-          initial={reduce ? false : { width: 0 }}
-          animate={{ width: `${level}%` }}
-          transition={{ duration: 0.7, ease: EASE, delay: 0.15 }}
-        />
-      </div>
-    </li>
-  );
-}
+import TechLogo from "./tech-logo";
 
 export default function SkillsPanel() {
   return (
@@ -36,9 +12,12 @@ export default function SkillsPanel() {
           <h3 className="text-xs font-semibold uppercase tracking-wider text-mute">
             {group.category}
           </h3>
-          <ul className="mt-4 space-y-3">
+          <ul className="mt-4 grid gap-x-4 gap-y-3 sm:grid-cols-2">
             {group.items.map((item) => (
-              <SkillBar key={item.name} {...item} />
+              <li key={item.name} className="flex items-center gap-2.5">
+                <TechLogo name={item.name} />
+                <span className="truncate text-sm text-soft">{item.name}</span>
+              </li>
             ))}
           </ul>
         </div>
