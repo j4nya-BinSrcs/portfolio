@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CornerDownLeft } from "lucide-react";
-import { profile } from "@/lib/data";
+import { siteConfig } from "@/lib/site.config";
 
 export default function NotFound() {
   return (
@@ -18,7 +18,7 @@ export default function NotFound() {
         className="mt-8 inline-flex items-center gap-2 rounded-lg bg-accent-soft px-5 py-3 text-sm font-semibold text-tx transition-all hover:-translate-y-0.5 hover:brightness-110"
       >
         <CornerDownLeft className="h-4 w-4" aria-hidden="true" />
-        Back to {profile.name}&apos;s workspace
+        Back to {siteConfig.name}&apos;s workspace
       </Link>
     </div>
   );

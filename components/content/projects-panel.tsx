@@ -1,5 +1,5 @@
 import { ArrowUpRight, Code2, ExternalLink } from "lucide-react";
-import { projects } from "@/lib/data";
+import { siteConfig } from "@/lib/site.config";
 
 function ProjectThumb({ title }: { title: string }) {
   return (
@@ -26,7 +26,7 @@ function ProjectThumb({ title }: { title: string }) {
 export default function ProjectsPanel() {
   return (
     <div className="grid gap-5 md:grid-cols-2">
-      {projects.map((project) => (
+      {siteConfig.projects.map((project) => (
         <article
           key={project.title}
           className="group relative flex flex-col rounded-xl border border-line bg-panel/70 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-[0_16px_40px_-24px_rgba(0,0,0,0.9)]"

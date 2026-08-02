@@ -30,17 +30,20 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Customizing
 
-All content lives in [`lib/data.ts`](lib/data.ts): `profile`, `skills`, `projects`, `experience`, and `education`.
+**All static content lives in a single config file: [`lib/site.config.ts`](lib/site.config.ts).**
 
-Sections are declared in [`lib/sections.tsx`](lib/sections.tsx) and rendered by the corresponding panel under [`components/content/`](components/content). The `left/` column (hero, info, socials, availability/email) is in [`components/left/`](components/left).
+Edit `siteConfig` there to change names, role, tagline, bio paragraphs, location, timezone, languages, email, social links, navigation labels, skills, projects, experience, education, contact form labels, footer text, and SEO keywords. `lib/sections.tsx` derives the nav structure and icons from this config.
 
 ### Common changes
 
-- **Your identity** — edit `profile` in `lib/data.ts` (name, role, tagline, email, socials).
-- **Active sections** — add/remove entries in `lib/sections.tsx` and add a matching panel component + key in `components/content/content-panel.tsx`.
+- **Your identity** — edit `name`, `role`, `tagline`, `location`, `timezone`, `languages`, and `email` in `lib/site.config.ts`.
+- **Links** — update `socials` (order rendered = order listed) and `siteUrl`.
+- **Text content** — all paragraph/panel copy lives in `siteConfig.about`, `contact`, and `footer`.
+- **Active sections** — edit `navigation` in `lib/site.config.ts`; add a matching panel component + key in `components/content/content-panel.tsx`.
+- **Layout** — the bento box size lives in `components/dashboard.tsx` (`lg:h-[65vh] lg:w-[70vw]`).
 - **Palette** — adjust the CSS variables in `app/globals.css` (backgrounds, borders, accent).
 - **Grid behavior** — tune `SPACING`, `RADIUS`, `MAX_DISPLACE`, `SPRING`, and `DAMPING` at the top of `components/background-grid.tsx`.
-- **Resume** — drop a `resume.pdf` in `public/` (the Contact panel links to `profile.resumeUrl`).
+- **Resume** — drop a `resume.pdf` in `public/` (the Contact panel links to `siteConfig.resumeUrl`).
 - **Deep links** — each section has a hash (`#skills`, `#experience`, …); sharing the URL opens that view.
 
 ## Accessibility

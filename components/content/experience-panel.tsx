@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import { experience } from "@/lib/data";
+import { siteConfig } from "@/lib/site.config";
 import { EASE } from "@/lib/motion";
 
 function ExperienceItem({
@@ -13,7 +13,7 @@ function ExperienceItem({
   description,
   highlights,
   defaultOpen,
-}: (typeof experience)[number] & { defaultOpen?: boolean }) {
+}: (typeof siteConfig.experience)[number] & { defaultOpen?: boolean }) {
   const [open, setOpen] = useState(!!defaultOpen);
   const reduce = useReducedMotion();
 
@@ -84,7 +84,7 @@ export default function ExperiencePanel() {
         aria-hidden="true"
       />
       <ol className="space-y-4">
-        {experience.map((job, i) => (
+        {siteConfig.experience.map((job, i) => (
           <li key={`${job.company}-${job.period}`} className="relative pl-10">
             <span
               className="absolute left-[15px] top-7 h-2.5 w-2.5 rounded-full border border-accent/50 bg-bg"

@@ -1,5 +1,5 @@
 import { GraduationCap } from "lucide-react";
-import { education } from "@/lib/data";
+import { siteConfig } from "@/lib/site.config";
 
 export default function EducationPanel() {
   return (
@@ -9,7 +9,7 @@ export default function EducationPanel() {
         aria-hidden="true"
       />
       <ol className="space-y-4">
-        {education.map((entry) => (
+        {siteConfig.education.map((entry) => (
           <li
             key={`${entry.institution}-${entry.period}`}
             className="relative rounded-xl border border-line bg-panel/70 p-5 pl-12 transition-colors hover:border-line-strong"

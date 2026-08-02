@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
-import { profile } from "@/lib/data";
+import { siteConfig } from "@/lib/site.config";
 import BackgroundGrid from "@/components/background-grid";
 import CursorGlow from "@/components/cursor-glow";
 import "./globals.css";
@@ -12,29 +12,22 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: {
-    default: `${profile.name} — ${profile.role}`,
-    template: `%s — ${profile.name}`,
+    default: `${siteConfig.name} — ${siteConfig.role}`,
+    template: `%s — ${siteConfig.name}`,
   },
-  description: profile.tagline,
-  keywords: [
-    "software engineer",
-    "portfolio",
-    "full-stack",
-    "developer",
-    "react",
-    "typescript",
-  ],
-  authors: [{ name: profile.name }],
+  description: siteConfig.tagline,
+  keywords: [...siteConfig.seoKeywords],
+  authors: [{ name: siteConfig.name }],
   openGraph: {
-    title: `${profile.name} — ${profile.role}`,
-    description: profile.tagline,
+    title: `${siteConfig.name} — ${siteConfig.role}`,
+    description: siteConfig.tagline,
     type: "website",
-    url: profile.siteUrl,
+    url: siteConfig.siteUrl,
   },
   twitter: {
     card: "summary",
-    title: `${profile.name} — ${profile.role}`,
-    description: profile.tagline,
+    title: `${siteConfig.name} — ${siteConfig.role}`,
+    description: siteConfig.tagline,
   },
 };
 

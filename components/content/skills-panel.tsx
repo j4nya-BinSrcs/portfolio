@@ -1,10 +1,10 @@
-import { skills } from "@/lib/data";
+import { siteConfig } from "@/lib/site.config";
 import TechLogo from "./tech-logo";
 
 export default function SkillsPanel() {
   return (
     <div className="grid gap-5 sm:grid-cols-2">
-      {skills.map((group) => (
+      {siteConfig.skills.map((group) => (
         <div
           key={group.category}
           className="rounded-xl border border-line bg-panel/70 p-5 transition-colors hover:border-line-strong"

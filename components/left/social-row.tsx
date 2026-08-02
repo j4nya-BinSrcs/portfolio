@@ -1,6 +1,6 @@
-import type { SVGProps } from "react";
+import type { ComponentType, SVGProps } from "react";
 import { motion } from "framer-motion";
-import { profile } from "@/lib/data";
+import { siteConfig } from "@/lib/site.config";
 
 function XLogo(props: SVGProps<SVGSVGElement>) {
   return (
@@ -26,30 +26,33 @@ function LinkedinLogo(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-const socials = [
-  { label: "X", href: profile.socials[0].href, Svg: XLogo },
-  { label: "GitHub", href: profile.socials[1].href, Svg: GithubLogo },
-  { label: "LinkedIn", href: profile.socials[2].href, Svg: LinkedinLogo },
-];
+const logos: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
+  X: XLogo,
+  GitHub: GithubLogo,
+  LinkedIn: LinkedinLogo,
+};
 
 export default function SocialRow() {
   return (
     <div className="flex gap-3">
-      {socials.map(({ label, href, Svg }) => (
-        <motion.a
-          key={label}
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={label}
-          whileHover={{ y: -3, scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          transition={{ type: "spring", stiffness: 400, damping: 22 }}
-          className="flex h-12 w-12 items-center justify-center rounded-xl border border-line bg-panel/80 text-soft transition-colors hover:border-line-strong hover:text-tx"
-        >
-          <Svg className="h-5 w-5" />
-        </motion.a>
-      ))}
+      {siteConfig.socials.map((social) => {
+        const Logo = logos[social.id] ?? logos.GitHub;
+        return (
+          <motion.a
+            key={social.id}
+            href={social.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={social.label}
+            whileHover={{ y: -3, scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-line bg-panel/80 text-soft transition-colors hover:border-line-strong hover:text-tx"
+          >
+            <Logo className="h-5 w-5" />
+          </motion.a>
+        );
+      })}
     </div>
   );
 }

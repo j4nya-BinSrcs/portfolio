@@ -1,56 +1,58 @@
-import { profile } from "@/lib/data";
+import { siteConfig } from "@/lib/site.config";
 
-function Highlight({ text }: { text: string }) {
-  return <span className="font-medium text-accent">{text}</span>;
+function highlight(text: string, keywords: readonly string[]) {
+  if (keywords.length === 0) return text;
+  const pattern = new RegExp(`(${keywords.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi");
+  const parts = text.split(pattern);
+  return parts.map((part, i) =>
+    keywords.some((k) => part.toLowerCase() === k.toLowerCase()) ? (
+      <span key={i} className="font-medium text-accent">
+        {part}
+      </span>
+    ) : (
+      part
+    ),
+  );
 }
 
 export default function AboutPanel() {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <p className="text-[15px] leading-relaxed text-soft">
-          Full-stack engineer focused on{" "}
-          <Highlight text="performance" />, <Highlight text="accessibility" />,
-          and <Highlight text="developer experience" />. I like small systems
-          that compose into large ones, and interfaces that feel engineered
-          rather than decorated.
-        </p>
-        <p className="text-[15px] leading-relaxed text-soft">
-          Currently deep in <Highlight text="real-time collaboration" />,
-          design systems, and the fine art of making latency disappear.
-          Previously shipped products at early-stage startups and large
-          platforms alike.
-        </p>
+        {siteConfig.about.paragraphs.map((paragraph) => (
+          <p
+            key={paragraph.slice(0, 24)}
+            className="text-[15px] leading-relaxed text-soft"
+          >
+            {highlight(paragraph, siteConfig.about.keywords)}
+          </p>
+        ))}
       </div>
 
       <div className="rounded-xl border border-line bg-panel/70 p-5">
         <p className="text-[11px] font-medium uppercase tracking-wider text-mute">
-          Now
+          {siteConfig.about.nowLabel}
         </p>
         <ul className="mt-3 space-y-2 text-sm text-soft">
-          <li className="flex items-baseline gap-2">
-            <span className="text-accent" aria-hidden="true">›</span>
-            Building a multiplayer, edge-first note-taking tool
-          </li>
-          <li className="flex items-baseline gap-2">
-            <span className="text-accent" aria-hidden="true">›</span>
-            Writing about systems and interface craft
-          </li>
-          <li className="flex items-baseline gap-2">
-            <span className="text-accent" aria-hidden="true">›</span>
-            Exploring WebGPU and local-first architecture
-          </li>
+          {siteConfig.about.now.map((item) => (
+            <li key={item} className="flex items-baseline gap-2">
+              <span className="text-accent" aria-hidden="true">
+                ›
+              </span>
+              {item}
+            </li>
+          ))}
         </ul>
       </div>
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-mute">
         <span className="flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden="true" />
-          {profile.location}
+          {siteConfig.location}
         </span>
         <span className="flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden="true" />
-          {profile.timezone}
+          {siteConfig.timezone}
         </span>
       </div>
     </div>

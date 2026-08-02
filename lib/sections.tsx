@@ -7,6 +7,16 @@ import {
   FolderGit2,
   Mail,
 } from "lucide-react";
+import { siteConfig } from "./site.config";
+
+const icons: Record<string, LucideIcon> = {
+  about: User,
+  skills: Wrench,
+  experience: Briefcase,
+  education: GraduationCap,
+  projects: FolderGit2,
+  contact: Mail,
+};
 
 export type SectionId =
   | "about"
@@ -23,17 +33,13 @@ export type SectionConfig = {
   path: string;
 };
 
-export const sections: SectionConfig[] = [
-  { id: "about", label: "About", icon: User, path: "~/about" },
-  { id: "skills", label: "Skills", icon: Wrench, path: "~/skills" },
-  { id: "experience", label: "Experience", icon: Briefcase, path: "~/experience" },
-  { id: "education", label: "Education", icon: GraduationCap, path: "~/education" },
-  { id: "projects", label: "Projects", icon: FolderGit2, path: "~/projects" },
-  { id: "contact", label: "Contact", icon: Mail, path: "~/contact" },
-];
+export const sections: SectionConfig[] = siteConfig.navigation.map((item) => ({
+  id: item.id as SectionId,
+  label: item.label,
+  icon: icons[item.id],
+  path: `~/${item.id}`,
+}));
 
 export function getSection(id: string): SectionConfig {
-  return (
-    sections.find((section) => section.id === id) ?? sections[0]
-  );
+  return sections.find((section) => section.id === id) ?? sections[0];
 }
