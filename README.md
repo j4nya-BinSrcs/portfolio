@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio Boilerplate
+
+A clean, single-page [Next.js](https://nextjs.org) (App Router, TypeScript, Tailwind CSS v4) boilerplate for a software engineer portfolio. It includes a hero, about, skills, projects, experience, and contact section, plus a persistent dark/light theme toggle.
+
+## Features
+
+- **Next.js 16** with App Router, React 19, and TypeScript
+- **Tailwind CSS v4** with class-based dark mode (`@custom-variant`)
+- **Persistent theme toggle** (localStorage + system preference, no FOUC)
+- **Single source of truth** for content in `lib/data.ts`
+- Fully static, SEO-friendly metadata and Open Graph tags
+- Accessible, responsive layout with smooth-scroll navigation
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Customizing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All content lives in [`lib/data.ts`](lib/data.ts):
 
-## Learn More
+- `profile` — name, role, tagline, bio, location, email, and social links
+- `navigation` — header nav links (anchor to section `id`s)
+- `skills` — skill categories and items
+- `projects` — project cards (title, description, stack, link)
+- `experience` — work history timeline (role, company, period, highlights)
 
-To learn more about Next.js, take a look at the following resources:
+Sections are individual components under [`components/`](components) and are composed in [`app/page.tsx`](app/page.tsx).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Common changes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Avatar/photo**: replace the placeholder in [`components/about.tsx`](components/about.tsx) with a `next/image` component.
+- **Metadata / SEO**: edit the exported `metadata` in [`app/layout.tsx`](app/layout.tsx).
+- **Dark mode**: initial theme is applied via the inline script in `app/layout.tsx`; the toggle lives in `components/theme-toggle.tsx`.
+
+## Scripts
+
+```bash
+npm run dev     # start dev server
+npm run build   # production build
+npm run start   # serve production build
+npm run lint    # eslint
+```
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The easiest way is to push to GitHub and import the repo in Vercel, or run:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npx vercel
+```
+
+See the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying) for other providers.
