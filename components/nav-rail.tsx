@@ -1,15 +1,33 @@
 "use client";
 
 import { motion } from "framer-motion";
+import type { KeyboardEvent } from "react";
 import { sections } from "@/lib/sections";
 import { useSection } from "./section-provider";
 
 export default function NavRail() {
   const { active, setActive } = useSection();
 
+  function onKeyDown(e: KeyboardEvent<HTMLElement>) {
+    const currentIndex = sections.findIndex((s) => s.id === active);
+    let next = currentIndex;
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+      next = (currentIndex + 1) % sections.length;
+    } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+      next = (currentIndex - 1 + sections.length) % sections.length;
+    } else {
+      return;
+    }
+    e.preventDefault();
+    setActive(sections[next].id);
+    const el = document.getElementById(`nav-${sections[next].id}`);
+    el?.focus();
+  }
+
   return (
     <nav
       aria-label="Sections"
+      onKeyDown={onKeyDown}
       className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0"
     >
       {sections.map(({ id, label, icon: Icon }) => {
@@ -17,6 +35,7 @@ export default function NavRail() {
         return (
           <button
             key={id}
+            id={`nav-${id}`}
             type="button"
             aria-current={isActive ? "true" : undefined}
             onClick={() => setActive(id)}

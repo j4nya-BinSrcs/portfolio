@@ -1,18 +1,25 @@
-# Portfolio Boilerplate
+# Developer Portfolio — Dashboard Workspace
 
-A clean, single-page [Next.js](https://nextjs.org) (App Router, TypeScript, Tailwind CSS v4) boilerplate for a software engineer portfolio. It includes a hero, about, skills, projects, experience, and contact section, plus a persistent dark/light theme toggle.
+A premium, single-page software engineer portfolio inspired by Bento Grid dashboards and terminal workspaces. Built with Next.js 16 (App Router), TypeScript, Tailwind CSS v4, Framer Motion, and Lucide.
 
-## Features
+![Design: near-black bento grid dashboard with warm-white accent, magnetic grid background, terminal-style content panel]
 
-- **Next.js 16** with App Router, React 19, and TypeScript
-- **Tailwind CSS v4** with class-based dark mode (`@custom-variant`)
-- **Persistent theme toggle** (localStorage + system preference, no FOUC)
-- **Single source of truth** for content in `lib/data.ts`
-- Fully static, SEO-friendly metadata, Open Graph tags, generated `sitemap.xml` and `robots.txt`
-- Custom 404 page and client-side error boundary
-- Accessible, responsive layout with smooth-scroll navigation
+## Design language
 
-## Getting Started
+- **Bento grid dashboard** — identity rail (left), navigation rail (center), dynamic content panel (right)
+- **Warm-white / champagne accent** on a near-black palette; soft gray 1px borders; no gradients, no saturated color
+- **Montserrat** typography (300–700) with generous spacing
+- **Terminal workspace metaphor** — content panel shows a `~/section` path and swaps views in place
+
+## Signature interactions
+
+- **Magnetic grid background** — an HTML canvas grid whose vertices are attracted to the cursor and relax back with spring physics; faint warm nodes pulse at intersections
+- **Cursor glow** — a soft light that trails the pointer with a spring
+- **Workspace switching** — content panels fade + slide + defocus-blur into place (250–350ms)
+- **Staggered entrance** — dashboard fades upward card-by-card on load, under one second
+- **Physical micro-interactions** — nav pill slides between tabs, social buttons lift, project cards raise with zooming thumbnails
+
+## Getting started
 
 ```bash
 npm install
@@ -23,21 +30,24 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Customizing
 
-All content lives in [`lib/data.ts`](lib/data.ts):
+All content lives in [`lib/data.ts`](lib/data.ts): `profile`, `skills`, `projects`, `experience`, and `education`.
 
-- `profile` — name, role, tagline, bio, location, email, and social links
-- `navigation` — header nav links (anchor to section `id`s)
-- `skills` — skill categories and items
-- `projects` — project cards (title, description, stack, link)
-- `experience` — work history timeline (role, company, period, highlights)
-
-Sections are individual components under [`components/`](components) and are composed in [`app/page.tsx`](app/page.tsx).
+Sections are declared in [`lib/sections.tsx`](lib/sections.tsx) and rendered by the corresponding panel under [`components/content/`](components/content). The `left/` column (hero, info, socials, availability/email) is in [`components/left/`](components/left).
 
 ### Common changes
 
-- **Avatar/photo**: replace the placeholder in [`components/about.tsx`](components/about.tsx) with a `next/image` component.
-- **Metadata / SEO**: edit the exported `metadata` in [`app/layout.tsx`](app/layout.tsx), and set `siteUrl` in `lib/data.ts` (used by `app/sitemap.ts` and `app/robots.ts`).
-- **Dark mode**: initial theme is applied via the inline script in `app/layout.tsx`; the toggle lives in `components/theme-toggle.tsx`.
+- **Your identity** — edit `profile` in `lib/data.ts` (name, role, tagline, email, socials).
+- **Active sections** — add/remove entries in `lib/sections.tsx` and add a matching panel component + key in `components/content/content-panel.tsx`.
+- **Palette** — adjust the CSS variables in `app/globals.css` (backgrounds, borders, accent).
+- **Grid behavior** — tune `SPACING`, `RADIUS`, `MAX_DISPLACE`, `SPRING`, and `DAMPING` at the top of `components/background-grid.tsx`.
+- **Resume** — drop a `resume.pdf` in `public/` (the Contact panel links to `profile.resumeUrl`).
+- **Deep links** — each section has a hash (`#skills`, `#experience`, …); sharing the URL opens that view.
+
+## Accessibility
+
+- Visible keyboard focus, high-contrast text, semantic HTML, and ARIA labels
+- Keyboard navigable nav (real buttons, `aria-current`)
+- Full `prefers-reduced-motion` support — grid renders static, animations collapse
 
 ## Scripts
 
@@ -50,10 +60,4 @@ npm run lint    # eslint
 
 ## Deploy on Vercel
 
-The easiest way is to push to GitHub and import the repo in Vercel, or run:
-
-```bash
-npx vercel
-```
-
-See the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying) for other providers.
+Push to GitHub and import in Vercel, or run `npx vercel`. See the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying).
