@@ -44,7 +44,7 @@ export default function SocialRow() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={social.label}
-            whileHover={{ y: -3, scale: 1.04 }}
+            whileHover={{ y: -3, scale: 1.04, rotate: 5 }}
             whileTap={{ scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 22 }}
             className="flex h-12 w-12 items-center justify-center rounded-xl border border-line bg-panel/80 text-soft transition-colors hover:border-line-strong hover:text-tx"

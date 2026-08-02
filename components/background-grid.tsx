@@ -105,7 +105,7 @@ export default function BackgroundGrid() {
         ctx.clearRect(0, 0, width, height);
 
         ctx.lineWidth = 1;
-        ctx.strokeStyle = "rgba(246, 242, 232, 0.09)";
+        ctx.strokeStyle = "rgba(246, 242, 232, 0.12)";
         ctx.beginPath();
         for (let i = 0; i < points.length; i++) {
           const p = points[i];

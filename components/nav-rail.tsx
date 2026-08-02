@@ -28,7 +28,7 @@ export default function NavRail() {
     <nav
       aria-label="Sections"
       onKeyDown={onKeyDown}
-      className="flex h-full flex-col justify-center gap-1.5 overflow-x-auto rounded-2xl border border-line bg-panel/80 p-2.5 lg:overflow-y-auto lg:overflow-x-hidden"
+      className="flex h-full flex-col justify-center gap-1 overflow-x-auto rounded-2xl border border-line bg-panel/80 p-2 lg:overflow-y-auto lg:overflow-x-hidden"
     >
       {sections.map(({ id, label, icon: Icon }) => {
         const isActive = active === id;
@@ -39,7 +39,7 @@ export default function NavRail() {
             type="button"
             aria-current={isActive ? "true" : undefined}
             onClick={() => setActive(id)}
-            className={`group relative flex shrink-0 items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 active:scale-95 lg:w-full ${
+            className={`group relative flex shrink-0 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 active:scale-95 lg:w-full ${
               isActive
                 ? "text-tx"
                 : "text-mute hover:scale-[1.04] hover:bg-bg-elevated/70 hover:text-soft hover:shadow-[0_0_26px_-8px_rgba(232,223,200,0.4)]"

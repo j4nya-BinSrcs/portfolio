@@ -21,10 +21,11 @@ export default function Dashboard() {
           variants={reduce ? undefined : revealContainer}
           initial={reduce ? false : "hidden"}
           animate="show"
-          className="grid w-full grid-cols-1 gap-3 lg:h-[65vh] lg:w-[70vw] lg:max-w-[1600px] lg:grid-cols-[minmax(0,280px)_minmax(0,180px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)_auto_auto_auto] lg:[grid-template-areas:'hero_nav_content'_'info_info_content'_'avail_avail_content'_'social_social_content']"
+          className="grid w-full grid-cols-1 gap-3 lg:h-[65vh] lg:w-[70vw] lg:max-w-[1600px] lg:grid-cols-[minmax(0,320px)_minmax(0,170px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)_auto_auto_auto] lg:[grid-template-areas:'hero_nav_content'_'info_info_content'_'avail_avail_content'_'social_social_content']"
         >
           <motion.div
             variants={reduce ? undefined : revealItem}
+            whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
             className="lg:[grid-area:hero]"
           >
             <HeroCard />
@@ -32,6 +33,7 @@ export default function Dashboard() {
 
           <motion.div
             variants={reduce ? undefined : revealItem}
+            whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
             className="lg:[grid-area:nav]"
           >
             <NavRail />
@@ -39,6 +41,7 @@ export default function Dashboard() {
 
           <motion.div
             variants={reduce ? undefined : revealItem}
+            whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
             className="lg:[grid-area:info]"
           >
             <InfoCard />
@@ -46,6 +49,7 @@ export default function Dashboard() {
 
           <motion.div
             variants={reduce ? undefined : revealItem}
+            whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
             className="lg:[grid-area:avail]"
           >
             <AvailabilityEmailRow />
@@ -53,6 +57,7 @@ export default function Dashboard() {
 
           <motion.div
             variants={reduce ? undefined : revealItem}
+            whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
             className="lg:[grid-area:social]"
           >
             <SocialRow />
@@ -60,6 +65,7 @@ export default function Dashboard() {
 
           <motion.div
             variants={reduce ? undefined : revealItem}
+            whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
             className="lg:[grid-area:content]"
           >
             <ContentPanel />

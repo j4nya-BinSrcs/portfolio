@@ -26,7 +26,7 @@ export const siteConfig = {
   email: "hello@jordanreyes.dev",
   resumeUrl: "/resume.pdf",
   available: true,
-  availabilityText: "Open to new opportunities",
+  availabilityText: "Open to internships, jobs & freelance",
 
   /* Socials — order shown is the order rendered */
   socials: [

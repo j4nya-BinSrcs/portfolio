@@ -10,6 +10,7 @@ import ExperiencePanel from "./experience-panel";
 import EducationPanel from "./education-panel";
 import ProjectsPanel from "./projects-panel";
 import ContactPanel from "./contact-panel";
+import PathTypewriter from "./path-typewriter";
 
 const panels: Record<string, React.ComponentType> = {
   about: AboutPanel,
@@ -34,7 +35,7 @@ export default function ContentPanel() {
           <span className="h-2.5 w-2.5 rounded-full bg-bg-elevated ring-1 ring-line" />
           <span className="h-2.5 w-2.5 rounded-full bg-accent/60 ring-1 ring-line" />
         </span>
-        <span className="font-mono text-xs text-soft">{section.path}</span>
+        <PathTypewriter key={active} text={section.path} />
         <span className="flex-1" aria-hidden="true" />
         <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
           {active}
