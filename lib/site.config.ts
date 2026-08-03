@@ -7,14 +7,14 @@
 
 export const siteConfig = {
   /* Identity */
-  name: "Jordan Reyes",
+  name: "Janya Kansara",
   role: "Software Engineer",
   tagline:
-    "Designing and building calm, precise tools for the web — from distributed backends to pixel-perfect interfaces.",
+    "Developer Tools · Search Systems · Infrastructure\n\nI build thoughtful software—from developer tools and search systems to polished, interactive applications—with a focus on performance, developer experience, and long-term maintainability.",
 
   /* Hero card */
   hero: {
-    eyebrow: "~/portfolio",
+    eyebrow: "~/whoami",
   },
 
   /* Quick info strip */
