@@ -16,7 +16,7 @@ import FooterLine from "./footer-line";
 export default function Dashboard() {
   const reduce = useReducedMotion();
   const { booted } = useBoot();
-  const pop = reduce ? undefined : { scale: 1.06, zIndex: 20 };
+  const pop = reduce ? undefined : { scale: 1.06, zIndex: 20, rotate: 5 };
 
   return (
     <SectionProvider>
@@ -60,6 +60,7 @@ export default function Dashboard() {
             <div className="flex flex-col gap-3 lg:flex-row">
               <motion.div
                 variants={reduce ? undefined : revealItem}
+                whileHover={pop}
                 className="min-w-0 flex-1"
               >
                 <AvailabilityEmailRow />
