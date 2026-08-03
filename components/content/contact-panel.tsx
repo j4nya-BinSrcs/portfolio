@@ -2,10 +2,11 @@
 
 import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { ArrowDownToLine, ArrowUpRight, Send } from "lucide-react";
+import { ArrowUpRight, Mail, Send } from "lucide-react";
 import { siteConfig } from "@/lib/site.config";
 import { EASE } from "@/lib/motion";
 import ReflectCard from "../reflect-card";
+import ResumeCta from "./resume-cta";
 
 const container = {
   hidden: {},
@@ -42,23 +43,28 @@ export default function ContactPanel() {
       animate="show"
       className="space-y-5"
     >
-      <motion.ul variants={item} className="space-y-1.5">
-        {c.prompts.map((prompt) => (
-          <li
-            key={prompt}
-            className="flex items-center gap-2.5 text-sm font-medium text-soft transition-colors hover:text-tx"
-          >
-            <span className="shrink-0 font-mono text-accent" aria-hidden="true">
-              ›
-            </span>
-            {prompt}
-          </li>
-        ))}
-      </motion.ul>
+      <div className="grid items-start gap-4 lg:grid-cols-[1fr_auto]">
+        <motion.ul variants={item} className="space-y-1.5">
+          {c.prompts.map((prompt) => (
+            <li
+              key={prompt}
+              className="flex items-center gap-2.5 text-sm font-medium text-soft transition-colors hover:text-tx"
+            >
+              <span className="shrink-0 font-mono text-accent" aria-hidden="true">
+                ›
+              </span>
+              {prompt}
+            </li>
+          ))}
+        </motion.ul>
 
-      <motion.p variants={item} className="text-sm leading-relaxed text-mute">
-        {c.intro}
-      </motion.p>
+        <motion.p
+          variants={item}
+          className="max-w-sm text-sm leading-relaxed text-mute lg:text-right"
+        >
+          {c.intro}
+        </motion.p>
+      </div>
 
       <motion.div variants={item}>
         <ReflectCard className="rounded-xl border border-line bg-panel/70">
@@ -128,28 +134,25 @@ export default function ContactPanel() {
                   <Send className="h-4 w-4" aria-hidden="true" />
                   {c.sendLabel}
                 </button>
-                <a
-                  href={siteConfig.resumeUrl}
-                  download
-                  className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent-soft px-4 py-2.5 text-sm font-semibold text-tx transition-all hover:-translate-y-0.5 hover:border-accent/70 hover:brightness-110 active:scale-[0.98]"
-                >
-                  <ArrowDownToLine className="h-4 w-4 text-accent" aria-hidden="true" />
-                  {c.resumeLabel}
-                </a>
               </div>
             </div>
 
             <aside className="flex flex-col gap-4 lg:border-l lg:border-line lg:pl-5">
+              <ResumeCta />
               <div>
                 <p className="text-[11px] font-medium uppercase tracking-wider text-mute">
                   {c.directLabel}
                 </p>
-                <a
-                  href={`mailto:${siteConfig.email}`}
-                  className="mt-2 inline-block break-all text-sm font-medium text-soft transition-colors hover:text-accent"
-                >
-                  {siteConfig.email}
-                </a>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <a
+                    href={`mailto:${siteConfig.email}`}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-xs font-medium text-soft transition-all hover:border-line-strong hover:text-tx"
+                  >
+                    <Mail className="h-3 w-3 text-mute" aria-hidden="true" />
+                    {siteConfig.email}
+                    <ArrowUpRight className="h-3 w-3 text-mute" aria-hidden="true" />
+                  </a>
+                </div>
               </div>
               <div className="flex flex-wrap gap-2">
                 {siteConfig.socials.map((social) => (

@@ -23,50 +23,55 @@ export default function Dashboard() {
           variants={reduce ? undefined : revealContainer}
           initial={reduce ? false : "hidden"}
           animate={booted ? "show" : "hidden"}
-          className="my-auto grid w-full grid-cols-1 gap-3 lg:h-[65vh] lg:w-[70vw] lg:max-w-[1600px] lg:grid-cols-[minmax(0,320px)_minmax(0,170px)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)_auto_auto_auto] lg:[grid-template-areas:'hero_nav_content'_'info_info_content'_'avail_avail_content'_'social_social_content']"
+          className="my-auto grid w-full grid-cols-1 gap-3 lg:flex lg:h-[65vh] lg:w-[70vw] lg:max-w-[1600px] lg:items-stretch lg:gap-3"
         >
           <motion.div
             variants={reduce ? undefined : revealItem}
-            whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
-            className="lg:[grid-area:hero]"
+            className="grid grid-cols-1 gap-3 lg:grid lg:w-[495px] lg:shrink-0 lg:grid-cols-[minmax(0,320px)_minmax(0,170px)] lg:[grid-template-areas:'hero_nav'_'info_info'_'avail_avail'_'social_social'] lg:content-start"
           >
-            <HeroCard />
+            <motion.div
+              variants={reduce ? undefined : revealItem}
+              whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
+              className="min-w-0 lg:[grid-area:hero] lg:h-full"
+            >
+              <HeroCard />
+            </motion.div>
+
+            <motion.div
+              variants={reduce ? undefined : revealItem}
+              whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
+              className="min-w-0 lg:[grid-area:nav] lg:h-full"
+            >
+              <NavRail />
+            </motion.div>
+
+            <motion.div
+              variants={reduce ? undefined : revealItem}
+              whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
+              className="min-w-0 lg:[grid-area:info]"
+            >
+              <InfoCard />
+            </motion.div>
+
+            <motion.div
+              variants={reduce ? undefined : revealItem}
+              className="min-w-0 lg:[grid-area:avail]"
+            >
+              <AvailabilityEmailRow />
+            </motion.div>
+
+            <motion.div
+              variants={reduce ? undefined : revealItem}
+              whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
+              className="min-w-0 lg:[grid-area:social]"
+            >
+              <SocialRow />
+            </motion.div>
           </motion.div>
 
           <motion.div
             variants={reduce ? undefined : revealItem}
-            whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
-            className="lg:[grid-area:nav]"
-          >
-            <NavRail />
-          </motion.div>
-
-          <motion.div
-            variants={reduce ? undefined : revealItem}
-            whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
-            className="lg:[grid-area:info]"
-          >
-            <InfoCard />
-          </motion.div>
-
-          <motion.div
-            variants={reduce ? undefined : revealItem}
-            className="lg:[grid-area:avail]"
-          >
-            <AvailabilityEmailRow />
-          </motion.div>
-
-          <motion.div
-            variants={reduce ? undefined : revealItem}
-            whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
-            className="lg:[grid-area:social]"
-          >
-            <SocialRow />
-          </motion.div>
-
-          <motion.div
-            variants={reduce ? undefined : revealItem}
-            className="lg:[grid-area:content]"
+            className="min-w-0 lg:flex-1"
           >
             <ContentPanel />
           </motion.div>

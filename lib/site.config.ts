@@ -20,7 +20,7 @@ export const siteConfig = {
   /* Quick info strip */
   location: "San Francisco, CA",
   timezone: "GMT-8 · PST",
-  languages: ["English", "Español", "日本語", "한국어"],
+  languages: ["English", "हिन्दी"],
 
   /* Contact */
   email: "hello@jordanreyes.dev",
@@ -51,6 +51,7 @@ export const siteConfig = {
 
   /* About panel */
   about: {
+    title: "About me",
     intro: [
       "Full-stack engineer obsessed with calm, precise systems.",
       "I build interfaces that feel engineered, not decorated.",
@@ -74,6 +75,7 @@ export const siteConfig = {
     preferences: [
       { label: "Code editor", value: "Zed" },
       { label: "Operating system", value: "Arch Linux" },
+      { label: "Color scheme", value: "Catppuccin" },
     ],
     github: {
       username: "jordanreyes",
@@ -93,6 +95,17 @@ export const siteConfig = {
   /* Skills panel */
   skills: [
     {
+      category: "Infrastructure",
+      iconOnly: true,
+      items: [
+        { name: "Docker", years: 5, frameworks: ["Compose", "BuildKit"] },
+        { name: "Kubernetes", years: 3, frameworks: ["Helm", "Kustomize"] },
+        { name: "AWS", years: 5, frameworks: ["ECS", "Lambda", "S3"] },
+        { name: "Terraform", years: 3, frameworks: ["Modules", "Remote state"] },
+        { name: "CI/CD", years: 4, frameworks: ["GitHub Actions", "ArgoCD"] },
+      ],
+    },
+    {
       category: "Languages",
       items: [
         { name: "TypeScript", years: 6, frameworks: ["React", "Node.js", "Express"] },
@@ -100,16 +113,6 @@ export const siteConfig = {
         { name: "Python", years: 5, frameworks: ["FastAPI", "Django", "pytest"] },
         { name: "Go", years: 3, frameworks: ["Gin", "Cobra", "gRPC"] },
         { name: "Rust", years: 2, frameworks: ["Axum", "Tokio", "Serde"] },
-      ],
-    },
-    {
-      category: "Infrastructure",
-      items: [
-        { name: "Docker", years: 5, frameworks: ["Compose", "BuildKit"] },
-        { name: "Kubernetes", years: 3, frameworks: ["Helm", "Kustomize"] },
-        { name: "AWS", years: 5, frameworks: ["ECS", "Lambda", "S3"] },
-        { name: "Terraform", years: 3, frameworks: ["Modules", "Remote state"] },
-        { name: "CI/CD", years: 4, frameworks: ["GitHub Actions", "ArgoCD"] },
       ],
     },
   ],
@@ -247,26 +250,26 @@ An accessible design system.
   education: {
     schools: [
       {
-        institution: "University of California, Berkeley",
-        degree: "B.S. Computer Science",
-        period: "2014 — 2018",
-        achievement: "Graduated with high honors · Distributed systems research",
-      },
-      {
         institution: "Self-directed · Open source",
         degree: "Continuous learning",
         period: "2018 — Present",
         achievement:
           "Contributor to React, Next.js, and several OSS design tools",
       },
+      {
+        institution: "University of California, Berkeley",
+        degree: "B.S. Computer Science",
+        period: "2014 — 2018",
+        achievement: "Graduated with high honors · Distributed systems research",
+      },
     ],
     certificatesLabel: "Certificates",
     certificates: [
+      { name: "Rust Fundamentals", image: "", year: "2024" },
       { name: "AWS Solutions Architect", image: "", year: "2023" },
       { name: "Google Cloud Engineer", image: "", year: "2022" },
       { name: "CNCF: Kubernetes Admin", image: "", year: "2021" },
       { name: "Meta Frontend Specialization", image: "", year: "2021" },
-      { name: "Rust Fundamentals", image: "", year: "2024" },
     ],
   },
 
@@ -275,7 +278,6 @@ An accessible design system.
     prompts: [
       "Want to collaborate?",
       "Building something interesting?",
-      "Looking for internships?",
       "Open Source?",
       "Let's talk.",
     ],

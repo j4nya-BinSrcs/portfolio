@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { sections } from "@/lib/sections";
 import { useSection } from "../section-provider";
 import { SECTION_STYLES, sectionTransition, EASE } from "@/lib/motion";
@@ -13,6 +14,7 @@ import ProjectsPanel from "./projects-panel";
 import ContactPanel from "./contact-panel";
 import ProjectReadme from "./project-readme";
 import PathTypewriter from "./path-typewriter";
+import TrafficDots from "../traffic-dots";
 
 type PanelProps = { onOpenProject?: (title: string) => void };
 
@@ -25,17 +27,26 @@ const panels: Record<string, React.ComponentType<PanelProps>> = {
   contact: ContactPanel,
 };
 
+const RING_R = 15;
+const RING_C = 2 * Math.PI * RING_R;
+
 export default function ContentPanel() {
   const { active, direction, next, prev } = useSection();
   const reduce = useReducedMotion();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [projectTitle, setProjectTitle] = useState<string | null>(null);
   const lockRef = useRef(0);
+  const fillRef = useRef(0);
+  const ringRef = useRef<SVGCircleElement>(null);
+  const hudRef = useRef({ visible: false, dir: 1 as 1 | -1 });
+  const hudTimerRef = useRef<number | null>(null);
+  const [hud, setHud] = useState({ visible: false, dir: 1 as 1 | -1 });
 
   const section = sections.find((s) => s.id === active) ?? sections[0];
   const Panel = (panels[active] ?? AboutPanel) as React.ComponentType<PanelProps>;
 
   const variants = SECTION_STYLES[active](direction === -1 ? -1 : 1);
+  const activeIndex = sections.findIndex((s) => s.id === active);
 
   const scrollToTop = useCallback(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
@@ -52,30 +63,84 @@ export default function ContentPanel() {
     [next, prev],
   );
 
+  const resetHud = useCallback(() => {
+    if (hudTimerRef.current) {
+      clearTimeout(hudTimerRef.current);
+      hudTimerRef.current = null;
+    }
+    fillRef.current = 0;
+    if (ringRef.current) ringRef.current.style.strokeDashoffset = String(RING_C);
+    if (hudRef.current.visible) {
+      hudRef.current = { ...hudRef.current, visible: false };
+      setHud(hudRef.current);
+    }
+  }, []);
+
+  const showHud = useCallback((dir: 1 | -1) => {
+    if (!hudRef.current.visible || hudRef.current.dir !== dir) {
+      hudRef.current = { visible: true, dir };
+      setHud(hudRef.current);
+    }
+  }, []);
+
+  const scheduleReset = useCallback(() => {
+    if (hudTimerRef.current) clearTimeout(hudTimerRef.current);
+    hudTimerRef.current = window.setTimeout(resetHud, 350);
+  }, [resetHud]);
+
   useEffect(() => {
     scrollToTop();
   }, [active, projectTitle, scrollToTop]);
 
+  useEffect(() => () => {
+    if (hudTimerRef.current) clearTimeout(hudTimerRef.current);
+  }, []);
+
   function onWheel(e: React.WheelEvent<HTMLDivElement>) {
+    if (projectTitle) return;
     const el = scrollRef.current;
     if (!el) return;
-    const atTop = el.scrollTop <= 4;
-    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 4;
-    if (e.deltaY > 0 && atBottom) jump(1);
-    else if (e.deltaY < 0 && atTop) jump(-1);
+    if (hudTimerRef.current) clearTimeout(hudTimerRef.current);
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      resetHud();
+      return;
+    }
+    const atTop = el.scrollTop <= 8;
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 8;
+    const dir: 1 | -1 = e.deltaY > 0 ? 1 : -1;
+    const atEdge = dir === 1 ? atBottom : atTop;
+    if (!atEdge) {
+      resetHud();
+      return;
+    }
+    if (
+      (dir === 1 && activeIndex === sections.length - 1) ||
+      (dir === -1 && activeIndex === 0)
+    ) {
+      resetHud();
+      return;
+    }
+    const amount = Math.min(Math.abs(e.deltaY), 120) / 1000;
+    const fill = Math.min(1, fillRef.current + amount);
+    fillRef.current = fill;
+    showHud(dir);
+    if (ringRef.current) {
+      ringRef.current.style.strokeDashoffset = String(RING_C * (1 - fill));
+    }
+    if (fill >= 1) {
+      resetHud();
+      jump(dir);
+    } else {
+      scheduleReset();
+    }
   }
 
-  const activeIndex = sections.findIndex((s) => s.id === active);
   const path = projectTitle ? `~/projects/${projectTitle}` : section.path;
 
   return (
-    <div className="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-line bg-panel/60 shadow-[0_1px_0_0_rgba(246,242,232,0.03)_inset,0_24px_60px_-40px_rgba(0,0,0,0.9)] lg:h-full">
+    <div className="relative flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-line bg-panel/60 shadow-[0_1px_0_0_rgba(246,242,232,0.03)_inset,0_24px_60px_-40px_rgba(0,0,0,0.9)] lg:h-full">
       <header className="flex items-center gap-3 border-b border-line px-6 py-3.5">
-        <span className="flex gap-1.5" aria-hidden="true">
-          <span className="h-2.5 w-2.5 rounded-full bg-bg-elevated ring-1 ring-line" />
-          <span className="h-2.5 w-2.5 rounded-full bg-bg-elevated ring-1 ring-line" />
-          <span className="h-2.5 w-2.5 rounded-full bg-accent/60 ring-1 ring-line" />
-        </span>
+        <TrafficDots filled={2} />
         <PathTypewriter key={path} text={path} />
         <span className="flex-1" aria-hidden="true" />
         <ProgressDots activeIndex={activeIndex} />
@@ -84,7 +149,7 @@ export default function ContentPanel() {
       <div
         ref={scrollRef}
         onWheel={onWheel}
-        className="flex-1 overflow-y-auto p-6 sm:p-8"
+        className="flex-1 overflow-y-auto overflow-x-hidden p-6 sm:p-8"
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -112,6 +177,55 @@ export default function ContentPanel() {
             )}
           </motion.div>
         </AnimatePresence>
+      </div>
+
+      <ScrollHud visible={hud.visible} dir={hud.dir} ringRef={ringRef} />
+    </div>
+  );
+}
+
+function ScrollHud({
+  visible,
+  dir,
+  ringRef,
+}: {
+  visible: boolean;
+  dir: 1 | -1;
+  ringRef: React.RefObject<SVGCircleElement | null>;
+}) {
+  const Icon = dir === 1 ? ChevronDown : ChevronUp;
+  return (
+    <div
+      aria-hidden="true"
+      className={`pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 transition-opacity duration-200 ${
+        visible ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <div className="relative">
+        <svg width="40" height="40" viewBox="0 0 40 40">
+          <circle
+            cx="20"
+            cy="20"
+            r={RING_R}
+            fill="rgba(10,10,11,0.3)"
+            stroke="rgba(246,242,232,0.08)"
+            strokeWidth="2.5"
+          />
+          <circle
+            ref={ringRef}
+            cx="20"
+            cy="20"
+            r={RING_R}
+            fill="none"
+            stroke="rgba(232,223,200,0.4)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeDasharray={RING_C}
+            strokeDashoffset={RING_C}
+            transform="rotate(-90 20 20)"
+          />
+        </svg>
+        <Icon className="absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-accent/50" />
       </div>
     </div>
   );

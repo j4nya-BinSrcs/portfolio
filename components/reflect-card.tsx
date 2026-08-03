@@ -51,7 +51,7 @@ export default function ReflectCard({
   return (
     <div
       ref={ref}
-      className={`relative ${className}`}
+      className={`relative h-full ${className}`}
       style={
         {
           "--reflect": "0",

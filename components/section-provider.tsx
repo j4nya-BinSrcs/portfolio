@@ -23,10 +23,7 @@ type SectionContextValue = {
 const SectionContext = createContext<SectionContextValue | null>(null);
 
 export function SectionProvider({ children }: { children: ReactNode }) {
-  const [active, setActiveState] = useState<SectionId>(() => {
-    if (typeof window === "undefined") return "about";
-    return getSection(window.location.hash.slice(1)).id;
-  });
+  const [active, setActiveState] = useState<SectionId>("about");
   const [direction, setDirection] = useState<Direction>(0);
 
   const setActive = useCallback((id: SectionId, dir: Direction = 0) => {
@@ -41,7 +38,9 @@ export function SectionProvider({ children }: { children: ReactNode }) {
     (delta: 1 | -1) => {
       setActiveState((current) => {
         const index = sections.findIndex((s) => s.id === current);
-        const next = sections[(index + delta + sections.length) % sections.length];
+        const nextIndex = index + delta;
+        if (nextIndex < 0 || nextIndex >= sections.length) return current;
+        const next = sections[nextIndex];
         if (typeof window !== "undefined") {
           history.replaceState(null, "", `#${next.id}`);
         }
@@ -54,6 +53,12 @@ export function SectionProvider({ children }: { children: ReactNode }) {
 
   const next = useCallback(() => cycle(1), [cycle]);
   const prev = useCallback(() => cycle(-1), [cycle]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash.slice(1) !== "about") {
+      history.replaceState(null, "", "#about");
+    }
+  }, []);
 
   useEffect(() => {
     const onHashChange = () => {
