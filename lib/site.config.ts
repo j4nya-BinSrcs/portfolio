@@ -49,6 +49,37 @@ export const siteConfig = {
     { id: "contact", label: "Contact" },
   ],
 
+  /* Sandbox — iOS-style widget stack shown on the left column */
+  sandbox: {
+    path: "~/sandbox",
+    widgets: [
+      {
+        id: "algorithms",
+        tag: "Algorithms",
+        title: "Pathfinding",
+        hint: "A* · Manhattan heuristic · maze solver",
+      },
+      {
+        id: "simulation",
+        tag: "Simulation",
+        title: "Particle life",
+        hint: "emergent behavior from simple rules",
+      },
+      {
+        id: "mathematics",
+        tag: "Mathematics",
+        title: "Fractals",
+        hint: "Mandelbrot · Julia · Sierpinski · dragon",
+      },
+      {
+        id: "physics",
+        tag: "Physics",
+        title: "Falling sand",
+        hint: "cellular automata playground",
+      },
+    ],
+  },
+
   /* About panel */
   about: {
     title: "About me",

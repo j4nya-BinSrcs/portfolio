@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import type { KeyboardEvent } from "react";
 import { sections } from "@/lib/sections";
 import { useSection } from "./section-provider";
-import TrafficDots from "./traffic-dots";
+import TermPrompt from "./term-prompt";
 
 export default function NavRail() {
   const { active, setActive } = useSection();
@@ -36,7 +36,7 @@ export default function NavRail() {
       className="flex h-full flex-col justify-center gap-0.5 overflow-x-auto rounded-2xl border border-line bg-panel/80 p-2 lg:overflow-y-auto lg:overflow-x-hidden"
     >
       <p className="flex shrink-0 items-center gap-2.5 px-1 pb-1.5 font-mono text-xs tracking-widest text-mute">
-        <TrafficDots filled={1} />
+        <TermPrompt />
         ~/nav
       </p>
       {sections.map(({ id, label, icon: Icon }) => {

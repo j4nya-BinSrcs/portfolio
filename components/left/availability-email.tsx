@@ -24,7 +24,7 @@ export default function AvailabilityEmailRow() {
     <div className="flex gap-3">
       <motion.div
         whileHover={pop}
-        className="flex min-h-[64px] flex-[1] flex-col justify-center gap-2 rounded-2xl border border-line bg-panel/80 px-5 py-3"
+        className="flex min-h-[64px] flex-[1] flex-col justify-center gap-2 rounded-2xl border border-line bg-panel/80 px-4 py-3"
       >
         <span className="flex items-center gap-2 text-sm font-medium text-soft">
           <span className="relative flex h-2 w-2" aria-hidden="true">
@@ -40,7 +40,7 @@ export default function AvailabilityEmailRow() {
 
       <motion.div
         whileHover={pop}
-        className="flex min-h-[64px] flex-[2.2] items-center justify-between gap-3 rounded-2xl border border-line bg-panel/80 px-5 py-3 transition-colors hover:border-line-strong"
+        className="flex min-h-[64px] flex-[2] items-center justify-between gap-3 rounded-2xl border border-line bg-panel/80 px-4 py-3 transition-colors hover:border-line-strong"
       >
         <div className="min-w-0">
           <p className="text-[11px] font-medium uppercase tracking-wider text-mute">

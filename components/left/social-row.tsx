@@ -1,4 +1,4 @@
-import type { ComponentType, SVGProps } from "react";
+import type { SVGProps } from "react";
 import { motion } from "framer-motion";
 import { siteConfig } from "@/lib/site.config";
 
@@ -26,33 +26,58 @@ function LinkedinLogo(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-const logos: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
-  X: XLogo,
-  GitHub: GithubLogo,
-  LinkedIn: LinkedinLogo,
-};
+const cell =
+  "flex min-h-0 items-center justify-center rounded-xl border border-line bg-panel/80 text-soft transition-colors hover:border-line-strong hover:text-tx";
 
 export default function SocialRow() {
+  const github = siteConfig.socials.find((s) => s.id === "GitHub");
+  const x = siteConfig.socials.find((s) => s.id === "X");
+  const linkedin = siteConfig.socials.find((s) => s.id === "LinkedIn");
+
   return (
-    <div className="flex gap-3">
-      {siteConfig.socials.map((social) => {
-        const Logo = logos[social.id] ?? logos.GitHub;
-        return (
-          <motion.a
-            key={social.id}
-            href={social.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={social.label}
-            whileHover={{ y: -3, scale: 1.04, rotate: 5 }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 400, damping: 22 }}
-            className="flex h-12 w-12 items-center justify-center rounded-xl border border-line bg-panel/80 text-soft transition-colors hover:border-line-strong hover:text-tx"
-          >
-            <Logo className="h-5 w-5" />
-          </motion.a>
-        );
-      })}
+    <div className="grid h-full min-h-[64px] grid-cols-2 grid-rows-2 gap-1.5">
+      {github && (
+        <motion.a
+          href={github.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={github.label}
+          whileHover={{ y: -3, scale: 1.04, rotate: 5 }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 400, damping: 22 }}
+          className={`${cell} col-span-2`}
+        >
+          <GithubLogo className="h-5 w-5" />
+        </motion.a>
+      )}
+      {x && (
+        <motion.a
+          href={x.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={x.label}
+          whileHover={{ y: -3, scale: 1.04, rotate: 5 }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 400, damping: 22 }}
+          className={cell}
+        >
+          <XLogo className="h-4 w-4" />
+        </motion.a>
+      )}
+      {linkedin && (
+        <motion.a
+          href={linkedin.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={linkedin.label}
+          whileHover={{ y: -3, scale: 1.04, rotate: 5 }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 400, damping: 22 }}
+          className={cell}
+        >
+          <LinkedinLogo className="h-4 w-4" />
+        </motion.a>
+      )}
     </div>
   );
 }

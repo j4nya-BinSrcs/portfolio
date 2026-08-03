@@ -10,11 +10,13 @@ import HeroCard from "./left/hero-card";
 import InfoCard from "./left/info-card";
 import SocialRow from "./left/social-row";
 import AvailabilityEmailRow from "./left/availability-email";
+import SandboxStack from "./left/sandbox-stack";
 import FooterLine from "./footer-line";
 
 export default function Dashboard() {
   const reduce = useReducedMotion();
   const { booted } = useBoot();
+  const pop = reduce ? undefined : { scale: 1.06, zIndex: 20 };
 
   return (
     <SectionProvider>
@@ -23,49 +25,61 @@ export default function Dashboard() {
           variants={reduce ? undefined : revealContainer}
           initial={reduce ? false : "hidden"}
           animate={booted ? "show" : "hidden"}
-          className="my-auto grid w-full grid-cols-1 gap-3 lg:flex lg:h-[65vh] lg:w-[70vw] lg:max-w-[1600px] lg:items-stretch lg:gap-3"
+          className="my-auto grid w-full grid-cols-1 gap-3 lg:flex lg:h-[71.5vh] lg:w-[70vw] lg:max-w-[1600px] lg:items-stretch lg:gap-3"
         >
           <motion.div
             variants={reduce ? undefined : revealItem}
-            className="grid grid-cols-1 gap-3 lg:grid lg:w-[495px] lg:shrink-0 lg:grid-cols-[minmax(0,320px)_minmax(0,170px)] lg:[grid-template-areas:'hero_nav'_'info_info'_'avail_avail'_'social_social'] lg:content-start"
+            className="flex w-full min-w-0 flex-col gap-3 lg:w-[495px] lg:shrink-0"
           >
-            <motion.div
-              variants={reduce ? undefined : revealItem}
-              whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
-              className="min-w-0 lg:[grid-area:hero] lg:h-full"
-            >
-              <HeroCard />
-            </motion.div>
+            <div className="flex flex-col gap-3 lg:flex-row">
+              <motion.div
+                variants={reduce ? undefined : revealItem}
+                whileHover={pop}
+                className="min-w-0 flex-1"
+              >
+                <HeroCard />
+              </motion.div>
+
+              <motion.div
+                variants={reduce ? undefined : revealItem}
+                whileHover={pop}
+                className="min-w-0 lg:w-[170px]"
+              >
+                <NavRail />
+              </motion.div>
+            </div>
 
             <motion.div
               variants={reduce ? undefined : revealItem}
-              whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
-              className="min-w-0 lg:[grid-area:nav] lg:h-full"
-            >
-              <NavRail />
-            </motion.div>
-
-            <motion.div
-              variants={reduce ? undefined : revealItem}
-              whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
-              className="min-w-0 lg:[grid-area:info]"
+              whileHover={pop}
+              className="min-w-0"
             >
               <InfoCard />
             </motion.div>
 
-            <motion.div
-              variants={reduce ? undefined : revealItem}
-              className="min-w-0 lg:[grid-area:avail]"
-            >
-              <AvailabilityEmailRow />
-            </motion.div>
+            <div className="flex flex-col gap-3 lg:flex-row">
+              <motion.div
+                variants={reduce ? undefined : revealItem}
+                className="min-w-0 flex-1"
+              >
+                <AvailabilityEmailRow />
+              </motion.div>
+
+              <motion.div
+                variants={reduce ? undefined : revealItem}
+                whileHover={pop}
+                className="min-w-0 lg:w-[112px]"
+              >
+                <SocialRow />
+              </motion.div>
+            </div>
 
             <motion.div
               variants={reduce ? undefined : revealItem}
-              whileHover={reduce ? undefined : { scale: 1.06, zIndex: 20 }}
-              className="min-w-0 lg:[grid-area:social]"
+              whileHover={pop}
+              className="min-w-0 flex-1"
             >
-              <SocialRow />
+              <SandboxStack />
             </motion.div>
           </motion.div>
 
