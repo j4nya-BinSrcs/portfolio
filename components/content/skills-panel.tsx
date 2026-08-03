@@ -16,6 +16,12 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
 };
 
+const levelStyles: Record<string, string> = {
+  Advanced: "border-accent/40 bg-accent-soft text-accent",
+  Comfortable: "border-line-strong bg-panel text-soft",
+  Learning: "border-line bg-bg-elevated text-mute",
+};
+
 export default function SkillsPanel() {
   return (
     <motion.div
@@ -58,8 +64,12 @@ export default function SkillsPanel() {
                   <div className="flex h-full flex-col gap-3 p-4">
                     <div className="flex items-center justify-between">
                       <TechLogo name={skill.name} size="lg" />
-                      <span className="rounded-full border border-accent/25 bg-accent-soft px-2 py-0.5 font-mono text-[10px] font-semibold text-accent">
-                        {skill.years} yrs
+                      <span
+                        className={`rounded-full border px-2 py-0.5 font-mono text-[10px] font-semibold ${
+                          levelStyles[skill.level] ?? levelStyles.Comfortable
+                        }`}
+                      >
+                        {skill.level}
                       </span>
                     </div>
                     {skill.frameworks.length > 0 && (
