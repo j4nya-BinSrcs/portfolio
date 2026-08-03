@@ -19,16 +19,24 @@ const BRANDS: Record<string, { color: string; glyph: string }> = {
   "CI/CD": { color: "#E8DFC8", glyph: "CI" },
 };
 
-export default function TechLogo({ name }: { name: string }) {
+export default function TechLogo({
+  name,
+  size = "sm",
+}: {
+  name: string;
+  size?: "sm" | "lg";
+}) {
   const brand = BRANDS[name] ?? { color: "#E8DFC8", glyph: name.slice(0, 2) };
+  const box = size === "lg" ? "h-12 w-12 rounded-lg" : "h-7 w-7 rounded-md";
+  const glyph = size === "lg" ? "text-sm" : "text-[10px]";
   return (
     <span
-      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-line"
+      className={`flex ${box} shrink-0 items-center justify-center border border-line`}
       style={{ backgroundColor: `${brand.color}1f` }}
       aria-hidden="true"
     >
       <span
-        className="text-[10px] font-bold tracking-tight"
+        className={`${glyph} font-bold tracking-tight`}
         style={{ color: brand.color }}
       >
         {brand.glyph}

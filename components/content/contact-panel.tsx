@@ -1,8 +1,21 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ArrowUpRight, Download, Send } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowDownToLine, ArrowUpRight, Send } from "lucide-react";
 import { siteConfig } from "@/lib/site.config";
+import { EASE } from "@/lib/motion";
+import ReflectCard from "../reflect-card";
+
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
+};
 
 export default function ContactPanel() {
   const [name, setName] = useState("");
@@ -20,108 +33,142 @@ export default function ContactPanel() {
   }
 
   const inputClass =
-    "w-full rounded-lg border border-line bg-bg-elevated px-3.5 py-2.5 text-sm text-tx placeholder:text-mute/70 transition-colors focus:border-line-strong focus:outline-none";
+    "w-full rounded-xl border border-line bg-bg-elevated px-4 py-3 text-sm text-tx placeholder:text-mute/70 transition-all focus:border-accent/50 focus:outline-none focus:ring-1 focus:ring-accent/30";
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label
-              htmlFor="contact-name"
-              className="mb-1.5 block text-xs font-medium text-soft"
-            >
-              {c.nameLabel}
-            </label>
-            <input
-              id="contact-name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={c.namePlaceholder}
-              required
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="contact-email"
-              className="mb-1.5 block text-xs font-medium text-soft"
-            >
-              {c.emailLabel}
-            </label>
-            <input
-              id="contact-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={c.emailPlaceholder}
-              required
-              className={inputClass}
-            />
-          </div>
-        </div>
-        <div>
-          <label
-            htmlFor="contact-message"
-            className="mb-1.5 block text-xs font-medium text-soft"
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="space-y-5"
+    >
+      <motion.ul variants={item} className="space-y-1.5">
+        {c.prompts.map((prompt) => (
+          <li
+            key={prompt}
+            className="flex items-center gap-2.5 text-sm font-medium text-soft transition-colors hover:text-tx"
           >
-            {c.messageLabel}
-          </label>
-          <textarea
-            id="contact-message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder={c.messagePlaceholder}
-            rows={5}
-            required
-            className={`${inputClass} resize-none`}
-          />
-        </div>
-        <button
-          type="submit"
-          className="inline-flex items-center gap-2 rounded-lg bg-accent-soft px-4 py-2.5 text-sm font-semibold text-tx transition-all hover:-translate-y-0.5 hover:brightness-110 active:scale-[0.98]"
-        >
-          <Send className="h-4 w-4" aria-hidden="true" />
-          {c.sendLabel}
-        </button>
-      </form>
+            <span className="shrink-0 font-mono text-accent" aria-hidden="true">
+              ›
+            </span>
+            {prompt}
+          </li>
+        ))}
+      </motion.ul>
 
-      <aside className="flex flex-col gap-4">
-        <div className="rounded-xl border border-line bg-panel/70 p-5">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-mute">
-            {c.directLabel}
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {siteConfig.socials.map((social) => (
-              <a
-                key={social.id}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-soft transition-colors hover:border-line-strong hover:text-tx"
-              >
-                {social.label}
-                <ArrowUpRight
-                  className="h-3 w-3 text-mute"
-                  aria-hidden="true"
+      <motion.p variants={item} className="text-sm leading-relaxed text-mute">
+        {c.intro}
+      </motion.p>
+
+      <motion.div variants={item}>
+        <ReflectCard className="rounded-xl border border-line bg-panel/70">
+          <form
+            onSubmit={onSubmit}
+            className="grid gap-5 p-5 lg:grid-cols-[1.5fr_1fr]"
+          >
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="contact-name"
+                    className="mb-1.5 block text-xs font-medium text-soft"
+                  >
+                    {c.nameLabel}
+                  </label>
+                  <input
+                    id="contact-name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={c.namePlaceholder}
+                    required
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="contact-email"
+                    className="mb-1.5 block text-xs font-medium text-soft"
+                  >
+                    {c.emailLabel}
+                  </label>
+                  <input
+                    id="contact-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={c.emailPlaceholder}
+                    required
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+              <div>
+                <label
+                  htmlFor="contact-message"
+                  className="mb-1.5 block text-xs font-medium text-soft"
+                >
+                  {c.messageLabel}
+                </label>
+                <textarea
+                  id="contact-message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={c.messagePlaceholder}
+                  rows={5}
+                  required
+                  className={`${inputClass} resize-none`}
                 />
-              </a>
-            ))}
-          </div>
-        </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-bg transition-all hover:-translate-y-0.5 hover:brightness-110 active:scale-[0.98]"
+                >
+                  <Send className="h-4 w-4" aria-hidden="true" />
+                  {c.sendLabel}
+                </button>
+                <a
+                  href={siteConfig.resumeUrl}
+                  download
+                  className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent-soft px-4 py-2.5 text-sm font-semibold text-tx transition-all hover:-translate-y-0.5 hover:border-accent/70 hover:brightness-110 active:scale-[0.98]"
+                >
+                  <ArrowDownToLine className="h-4 w-4 text-accent" aria-hidden="true" />
+                  {c.resumeLabel}
+                </a>
+              </div>
+            </div>
 
-        <div className="flex flex-1 items-end rounded-xl border border-line bg-panel/70 p-5">
-          <a
-            href={siteConfig.resumeUrl}
-            download
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-line px-3 py-2 text-xs font-medium text-soft transition-all hover:border-line-strong hover:text-tx"
-          >
-            <Download className="h-3.5 w-3.5" aria-hidden="true" />
-            {c.resumeLabel}
-          </a>
-        </div>
-      </aside>
-    </div>
+            <aside className="flex flex-col gap-4 lg:border-l lg:border-line lg:pl-5">
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-wider text-mute">
+                  {c.directLabel}
+                </p>
+                <a
+                  href={`mailto:${siteConfig.email}`}
+                  className="mt-2 inline-block break-all text-sm font-medium text-soft transition-colors hover:text-accent"
+                >
+                  {siteConfig.email}
+                </a>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {siteConfig.socials.map((social) => (
+                  <a
+                    key={social.id}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-xs font-medium text-soft transition-all hover:border-line-strong hover:text-tx"
+                  >
+                    {social.label}
+                    <ArrowUpRight className="h-3 w-3 text-mute" aria-hidden="true" />
+                  </a>
+                ))}
+              </div>
+            </aside>
+          </form>
+        </ReflectCard>
+      </motion.div>
+    </motion.div>
   );
 }

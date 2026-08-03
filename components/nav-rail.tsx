@@ -11,15 +11,18 @@ export default function NavRail() {
   function onKeyDown(e: KeyboardEvent<HTMLElement>) {
     const currentIndex = sections.findIndex((s) => s.id === active);
     let next = currentIndex;
+    let dir: 1 | -1 = 1;
     if (e.key === "ArrowDown" || e.key === "ArrowRight") {
       next = (currentIndex + 1) % sections.length;
+      dir = 1;
     } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
       next = (currentIndex - 1 + sections.length) % sections.length;
+      dir = -1;
     } else {
       return;
     }
     e.preventDefault();
-    setActive(sections[next].id);
+    setActive(sections[next].id, dir);
     const el = document.getElementById(`nav-${sections[next].id}`);
     el?.focus();
   }
@@ -30,6 +33,9 @@ export default function NavRail() {
       onKeyDown={onKeyDown}
       className="flex h-full flex-col justify-center gap-1 overflow-x-auto rounded-2xl border border-line bg-panel/80 p-2 lg:overflow-y-auto lg:overflow-x-hidden"
     >
+      <p className="shrink-0 px-1 pb-1.5 font-mono text-xs tracking-widest text-mute">
+        ~/nav
+      </p>
       {sections.map(({ id, label, icon: Icon }) => {
         const isActive = active === id;
         return (
@@ -38,7 +44,7 @@ export default function NavRail() {
             id={`nav-${id}`}
             type="button"
             aria-current={isActive ? "true" : undefined}
-            onClick={() => setActive(id)}
+            onClick={() => setActive(id, 0)}
             className={`group relative flex shrink-0 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 active:scale-95 lg:w-full ${
               isActive
                 ? "text-tx"

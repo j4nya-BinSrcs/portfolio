@@ -3,6 +3,8 @@ import { Montserrat } from "next/font/google";
 import { siteConfig } from "@/lib/site.config";
 import BackgroundGrid from "@/components/background-grid";
 import CursorGlow from "@/components/cursor-glow";
+import WelcomeScreen from "@/components/welcome-screen";
+import { BootProvider } from "@/components/boot-provider";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -42,9 +44,12 @@ export default function RootLayout({
       className={`${montserrat.variable} h-full antialiased`}
     >
       <body className="relative flex min-h-full flex-col bg-bg text-tx">
-        <BackgroundGrid />
-        <CursorGlow />
-        {children}
+        <BootProvider>
+          <BackgroundGrid />
+          <CursorGlow />
+          <WelcomeScreen />
+          {children}
+        </BootProvider>
       </body>
     </html>
   );

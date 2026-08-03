@@ -51,23 +51,43 @@ export const siteConfig = {
 
   /* About panel */
   about: {
-    keywords: [
-      "performance",
-      "accessibility",
-      "developer experience",
-      "real-time collaboration",
-      "design systems",
+    intro: [
+      "Full-stack engineer obsessed with calm, precise systems.",
+      "I build interfaces that feel engineered, not decorated.",
+      "Comfortable from distributed backends to the last 8px of a UI.",
+      "Believer in small tools that compose into large ones.",
     ],
-    paragraphs: [
-      "Full-stack engineer focused on performance, accessibility, and developer experience. I like small systems that compose into large ones, and interfaces that feel engineered rather than decorated.",
-      "Currently deep in real-time collaboration, design systems, and the fine art of making latency disappear. Previously shipped products at early-stage startups and large platforms alike.",
+    currentlyLabel: "Currently",
+    currently: [
+      { key: "learning", label: "Learning", items: ["WebGPU", "local-first sync", "compiler internals"] },
+      { key: "building", label: "Building", items: ["edge-first note tool", "open-source CLI", "design-system tokens"] },
+      { key: "exploring", label: "Exploring", items: ["Rust tooling", "agentic workflows", "CRDTs"] },
     ],
-    nowLabel: "Now",
-    now: [
-      "Building a multiplayer, edge-first note-taking tool",
-      "Writing about systems and interface craft",
-      "Exploring WebGPU and local-first architecture",
+    principlesLabel: "Principles",
+    principles: [
+      { key: "minimalism", label: "Minimalism", text: "Fewer moving parts, fewer surprises." },
+      { key: "performance", label: "Performance", text: "Latency is a feature; sweat the last millisecond." },
+      { key: "open-source", label: "Open Source", text: "Give back everything you've learned." },
+      { key: "accessibility", label: "Accessibility", text: "Everyone deserves a first-class experience." },
     ],
+    preferencesLabel: "Preferences",
+    preferences: [
+      { label: "Code editor", value: "Zed" },
+      { label: "Operating system", value: "Arch Linux" },
+    ],
+    github: {
+      username: "jordanreyes",
+      profileUrl: "https://github.com/jordanreyes",
+      graphSeed: 7,
+      commits: [
+        { repo: "quillspace", message: "feat: multiplayer cursor presence", date: "Jul 28", sha: "a3f21c9" },
+        { repo: "scaffold", message: "chore: bump otel sdk to 1.18", date: "Jul 26", sha: "9b1e0a4" },
+        { repo: "drift", message: "perf: stream queries over websocket", date: "Jul 23", sha: "c47d2b8" },
+        { repo: "prism-ui", message: "feat: add tokens for focus rings", date: "Jul 21", sha: "e09af13" },
+        { repo: "site", message: "fix: hydration-safe theme switch", date: "Jul 19", sha: "5d6c0e2" },
+        { repo: "quillspace", message: "refactor: extract presence protocol", date: "Jul 17", sha: "b3a8d71" },
+      ],
+    },
   },
 
   /* Skills panel */
@@ -75,41 +95,21 @@ export const siteConfig = {
     {
       category: "Languages",
       items: [
-        { name: "TypeScript" },
-        { name: "JavaScript" },
-        { name: "Python" },
-        { name: "Go" },
-        { name: "Rust" },
-      ],
-    },
-    {
-      category: "Frontend",
-      items: [
-        { name: "React" },
-        { name: "Next.js" },
-        { name: "Tailwind CSS" },
-        { name: "Framer Motion" },
-        { name: "Accessibility" },
-      ],
-    },
-    {
-      category: "Backend",
-      items: [
-        { name: "Node.js" },
-        { name: "PostgreSQL" },
-        { name: "Redis" },
-        { name: "GraphQL" },
-        { name: "gRPC" },
+        { name: "TypeScript", years: 6, frameworks: ["React", "Node.js", "Express"] },
+        { name: "JavaScript", years: 7, frameworks: ["Next.js", "Vue", "Jest"] },
+        { name: "Python", years: 5, frameworks: ["FastAPI", "Django", "pytest"] },
+        { name: "Go", years: 3, frameworks: ["Gin", "Cobra", "gRPC"] },
+        { name: "Rust", years: 2, frameworks: ["Axum", "Tokio", "Serde"] },
       ],
     },
     {
       category: "Infrastructure",
       items: [
-        { name: "Docker" },
-        { name: "Kubernetes" },
-        { name: "AWS" },
-        { name: "Terraform" },
-        { name: "CI/CD" },
+        { name: "Docker", years: 5, frameworks: ["Compose", "BuildKit"] },
+        { name: "Kubernetes", years: 3, frameworks: ["Helm", "Kustomize"] },
+        { name: "AWS", years: 5, frameworks: ["ECS", "Lambda", "S3"] },
+        { name: "Terraform", years: 3, frameworks: ["Modules", "Remote state"] },
+        { name: "CI/CD", years: 4, frameworks: ["GitHub Actions", "ArgoCD"] },
       ],
     },
   ],
@@ -123,7 +123,30 @@ export const siteConfig = {
       stack: ["Next.js", "TypeScript", "WebSockets", "PostgreSQL"],
       href: "https://quillspace.dev",
       code: "https://github.com/jordanreyes/quillspace",
-      featured: true,
+      video: "",
+      ratio: "aspect-[16/10]",
+      readme: `# Quillspace
+
+A real-time collaboration workspace for structured documents.
+
+## Features
+
+- Multiplayer cursors with presence
+- Version history
+- Offline-first sync (CRDT-backed)
+
+## Stack
+
+- **Next.js** + **TypeScript**
+- **WebSockets** for presence
+- **PostgreSQL** for persistence
+
+## Getting started
+
+\`\`\`bash
+npm install
+npm run dev
+\`\`\``,
     },
     {
       title: "Scaffold",
@@ -132,7 +155,17 @@ export const siteConfig = {
       stack: ["Go", "Cobra", "Docker", "OpenTelemetry"],
       href: "https://github.com/jordanreyes/scaffold",
       code: "https://github.com/jordanreyes/scaffold",
-      featured: true,
+      video: "",
+      ratio: "aspect-square",
+      readme: `# Scaffold
+
+An opinionated service generator.
+
+\`\`\`bash
+scaffold new api --lang=go
+\`\`\`
+
+Ships with observability, tests, and CI out of the box.`,
     },
     {
       title: "Drift",
@@ -141,7 +174,15 @@ export const siteConfig = {
       stack: ["React", "ClickHouse", "Kafka", "Kubernetes"],
       href: "https://github.com/jordanreyes/drift",
       code: "https://github.com/jordanreyes/drift",
-      featured: false,
+      video: "",
+      ratio: "aspect-[4/3]",
+      readme: `# Drift
+
+Privacy-first, real-time analytics.
+
+- Edge aggregation
+- Streaming queries over WebSocket
+- ClickHouse storage`,
     },
     {
       title: "Prism UI",
@@ -150,7 +191,15 @@ export const siteConfig = {
       stack: ["TypeScript", "React", "Storybook", "Turborepo"],
       href: "https://github.com/jordanreyes/prism-ui",
       code: "https://github.com/jordanreyes/prism-ui",
-      featured: false,
+      video: "",
+      ratio: "aspect-[16/10]",
+      readme: `# Prism UI
+
+An accessible design system.
+
+- Token-driven theming
+- 60+ components
+- Storybook documentation`,
     },
   ],
 
@@ -195,24 +244,41 @@ export const siteConfig = {
   ],
 
   /* Education panel */
-  education: [
-    {
-      institution: "University of California, Berkeley",
-      degree: "B.S. Computer Science",
-      period: "2014 — 2018",
-      achievement: "Graduated with high honors · Distributed systems research",
-    },
-    {
-      institution: "Self-directed · Open source",
-      degree: "Continuous learning",
-      period: "2018 — Present",
-      achievement:
-        "Contributor to React, Next.js, and several OSS design tools",
-    },
-  ],
+  education: {
+    schools: [
+      {
+        institution: "University of California, Berkeley",
+        degree: "B.S. Computer Science",
+        period: "2014 — 2018",
+        achievement: "Graduated with high honors · Distributed systems research",
+      },
+      {
+        institution: "Self-directed · Open source",
+        degree: "Continuous learning",
+        period: "2018 — Present",
+        achievement:
+          "Contributor to React, Next.js, and several OSS design tools",
+      },
+    ],
+    certificatesLabel: "Certificates",
+    certificates: [
+      { name: "AWS Solutions Architect", image: "", year: "2023" },
+      { name: "Google Cloud Engineer", image: "", year: "2022" },
+      { name: "CNCF: Kubernetes Admin", image: "", year: "2021" },
+      { name: "Meta Frontend Specialization", image: "", year: "2021" },
+      { name: "Rust Fundamentals", image: "", year: "2024" },
+    ],
+  },
 
   /* Contact panel */
   contact: {
+    prompts: [
+      "Want to collaborate?",
+      "Building something interesting?",
+      "Looking for internships?",
+      "Open Source?",
+      "Let's talk.",
+    ],
     intro:
       "I'm always open to interesting conversations and new opportunities. My inbox is always open — whether you have a question, want to collaborate, or just want to say hi.",
     nameLabel: "Name",
