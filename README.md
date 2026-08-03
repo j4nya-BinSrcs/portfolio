@@ -66,3 +66,9 @@ npm run lint    # eslint
 ## Deploy on Vercel
 
 Push to GitHub and import in Vercel, or run `npx vercel`. See the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying).
+
+
+---
+<div align="center">
+  Built with ❤️, lots of coffee, and an unhealthy amount of attention to spacing.
+</div>
