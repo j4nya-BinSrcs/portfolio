@@ -36,19 +36,20 @@ export function SectionProvider({ children }: { children: ReactNode }) {
 
   const cycle = useCallback(
     (delta: 1 | -1) => {
-      setActiveState((current) => {
-        const index = sections.findIndex((s) => s.id === current);
-        const nextIndex = index + delta;
-        if (nextIndex < 0 || nextIndex >= sections.length) return current;
-        const next = sections[nextIndex];
-        if (typeof window !== "undefined") {
-          history.replaceState(null, "", `#${next.id}`);
-        }
-        return next.id;
-      });
+      const index = sections.findIndex((s) => s.id === active);
+      const nextIndex = index + delta;
+      if (nextIndex < 0 || nextIndex >= sections.length) {
+        setDirection(delta);
+        return;
+      }
+      const next = sections[nextIndex];
+      setActiveState(next.id);
       setDirection(delta);
+      if (typeof window !== "undefined") {
+        history.replaceState(null, "", `#${next.id}`);
+      }
     },
-    [],
+    [active],
   );
 
   const next = useCallback(() => cycle(1), [cycle]);
