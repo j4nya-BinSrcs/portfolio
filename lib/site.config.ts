@@ -10,7 +10,7 @@ export const siteConfig = {
   name: "Janya Kansara",
   role: "Software Engineer",
   tagline:
-    "Developer Tools · Search Systems · Infrastructure\n\nI build thoughtful software—from developer tools and search systems to polished, interactive applications—with a focus on performance, developer experience, and long-term maintainability.",
+    "Developer Tools · Systems Design · Infrastructure\n\nI build thoughtful software—from complex developer tools and search systems to polished interfaces—with a focus on performance, DX, and maintainability.",
 
   /* Hero card */
   hero: {
@@ -91,16 +91,48 @@ export const siteConfig = {
     ],
     currentlyLabel: "Currently",
     currently: [
-      { key: "learning", label: "Learning", items: ["WebGPU", "local-first sync", "compiler internals"] },
-      { key: "building", label: "Building", items: ["edge-first note tool", "open-source CLI", "design-system tokens"] },
-      { key: "exploring", label: "Exploring", items: ["Rust tooling", "agentic workflows", "CRDTs"] },
+      {
+        key: "learning",
+        label: "Learning",
+        items: ["WebGPU", "local-first sync", "compiler internals"],
+      },
+      {
+        key: "building",
+        label: "Building",
+        items: [
+          "edge-first note tool",
+          "open-source CLI",
+          "design-system tokens",
+        ],
+      },
+      {
+        key: "exploring",
+        label: "Exploring",
+        items: ["Rust tooling", "agentic workflows", "CRDTs"],
+      },
     ],
     principlesLabel: "Principles",
     principles: [
-      { key: "minimalism", label: "Minimalism", text: "Fewer moving parts, fewer surprises." },
-      { key: "performance", label: "Performance", text: "Latency is a feature; sweat the last millisecond." },
-      { key: "open-source", label: "Open Source", text: "Give back everything you've learned." },
-      { key: "accessibility", label: "Accessibility", text: "Everyone deserves a first-class experience." },
+      {
+        key: "minimalism",
+        label: "Minimalism",
+        text: "Fewer moving parts, fewer surprises.",
+      },
+      {
+        key: "performance",
+        label: "Performance",
+        text: "Latency is a feature; sweat the last millisecond.",
+      },
+      {
+        key: "open-source",
+        label: "Open Source",
+        text: "Give back everything you've learned.",
+      },
+      {
+        key: "accessibility",
+        label: "Accessibility",
+        text: "Everyone deserves a first-class experience.",
+      },
     ],
     preferencesLabel: "Preferences",
     preferences: [
@@ -114,12 +146,42 @@ export const siteConfig = {
       profileUrl: "https://github.com/jordanreyes",
       graphSeed: 7,
       commits: [
-        { repo: "quillspace", message: "feat: multiplayer cursor presence", date: "Jul 28", sha: "a3f21c9" },
-        { repo: "scaffold", message: "chore: bump otel sdk to 1.18", date: "Jul 26", sha: "9b1e0a4" },
-        { repo: "drift", message: "perf: stream queries over websocket", date: "Jul 23", sha: "c47d2b8" },
-        { repo: "prism-ui", message: "feat: add tokens for focus rings", date: "Jul 21", sha: "e09af13" },
-        { repo: "site", message: "fix: hydration-safe theme switch", date: "Jul 19", sha: "5d6c0e2" },
-        { repo: "quillspace", message: "refactor: extract presence protocol", date: "Jul 17", sha: "b3a8d71" },
+        {
+          repo: "quillspace",
+          message: "feat: multiplayer cursor presence",
+          date: "Jul 28",
+          sha: "a3f21c9",
+        },
+        {
+          repo: "scaffold",
+          message: "chore: bump otel sdk to 1.18",
+          date: "Jul 26",
+          sha: "9b1e0a4",
+        },
+        {
+          repo: "drift",
+          message: "perf: stream queries over websocket",
+          date: "Jul 23",
+          sha: "c47d2b8",
+        },
+        {
+          repo: "prism-ui",
+          message: "feat: add tokens for focus rings",
+          date: "Jul 21",
+          sha: "e09af13",
+        },
+        {
+          repo: "site",
+          message: "fix: hydration-safe theme switch",
+          date: "Jul 19",
+          sha: "5d6c0e2",
+        },
+        {
+          repo: "quillspace",
+          message: "refactor: extract presence protocol",
+          date: "Jul 17",
+          sha: "b3a8d71",
+        },
       ],
     },
   },
@@ -130,21 +192,57 @@ export const siteConfig = {
       category: "Infrastructure",
       iconOnly: true,
       items: [
-        { name: "Docker", level: "Advanced", frameworks: ["Compose", "BuildKit"] },
-        { name: "Kubernetes", level: "Comfortable", frameworks: ["Helm", "Kustomize"] },
+        {
+          name: "Docker",
+          level: "Advanced",
+          frameworks: ["Compose", "BuildKit"],
+        },
+        {
+          name: "Kubernetes",
+          level: "Comfortable",
+          frameworks: ["Helm", "Kustomize"],
+        },
         { name: "AWS", level: "Advanced", frameworks: ["ECS", "Lambda", "S3"] },
-        { name: "Terraform", level: "Comfortable", frameworks: ["Modules", "Remote state"] },
-        { name: "CI/CD", level: "Comfortable", frameworks: ["GitHub Actions", "ArgoCD"] },
+        {
+          name: "Terraform",
+          level: "Comfortable",
+          frameworks: ["Modules", "Remote state"],
+        },
+        {
+          name: "CI/CD",
+          level: "Comfortable",
+          frameworks: ["GitHub Actions", "ArgoCD"],
+        },
       ],
     },
     {
       category: "Languages",
       items: [
-        { name: "TypeScript", level: "Advanced", frameworks: ["React", "Node.js", "Express"] },
-        { name: "JavaScript", level: "Advanced", frameworks: ["Next.js", "Vue", "Jest"] },
-        { name: "Python", level: "Advanced", frameworks: ["FastAPI", "Django", "pytest"] },
-        { name: "Go", level: "Comfortable", frameworks: ["Gin", "Cobra", "gRPC"] },
-        { name: "Rust", level: "Learning", frameworks: ["Axum", "Tokio", "Serde"] },
+        {
+          name: "TypeScript",
+          level: "Advanced",
+          frameworks: ["React", "Node.js", "Express"],
+        },
+        {
+          name: "JavaScript",
+          level: "Advanced",
+          frameworks: ["Next.js", "Vue", "Jest"],
+        },
+        {
+          name: "Python",
+          level: "Advanced",
+          frameworks: ["FastAPI", "Django", "pytest"],
+        },
+        {
+          name: "Go",
+          level: "Comfortable",
+          frameworks: ["Gin", "Cobra", "gRPC"],
+        },
+        {
+          name: "Rust",
+          level: "Learning",
+          frameworks: ["Axum", "Tokio", "Serde"],
+        },
       ],
     },
   ],
@@ -219,12 +317,42 @@ Tombstones and undo across concurrent edits were the hardest part — merge sema
 - Presence is a UX feature, not an afterthought
 - Build the offline path before the online path`,
       gallery: [
-        { type: "image", src: "", caption: "Editor overview", ratio: "aspect-[4/3]" },
-        { type: "video", src: "", caption: "Multiplayer cursors", ratio: "aspect-video" },
-        { type: "gif", src: "", caption: "Presence demo", ratio: "aspect-square" },
-        { type: "image", src: "", caption: "Version history panel", ratio: "aspect-[3/4]" },
-        { type: "image", src: "", caption: "Offline mode", ratio: "aspect-video" },
-        { type: "gif", src: "", caption: "Undo across sessions", ratio: "aspect-[4/3]" },
+        {
+          type: "image",
+          src: "",
+          caption: "Editor overview",
+          ratio: "aspect-[4/3]",
+        },
+        {
+          type: "video",
+          src: "",
+          caption: "Multiplayer cursors",
+          ratio: "aspect-video",
+        },
+        {
+          type: "gif",
+          src: "",
+          caption: "Presence demo",
+          ratio: "aspect-square",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Version history panel",
+          ratio: "aspect-[3/4]",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Offline mode",
+          ratio: "aspect-video",
+        },
+        {
+          type: "gif",
+          src: "",
+          caption: "Undo across sessions",
+          ratio: "aspect-[4/3]",
+        },
       ],
     },
     {
@@ -282,11 +410,36 @@ Keeping generated code stable across Go module versions while supporting additiv
 - The template is a product — version it like one
 - Defaults matter more than options`,
       gallery: [
-        { type: "gif", src: "", caption: "scaffold new api --lang=go", ratio: "aspect-video" },
-        { type: "image", src: "", caption: "Generated project tree", ratio: "aspect-[4/3]" },
-        { type: "video", src: "", caption: "Telemetry out of the box", ratio: "aspect-square" },
-        { type: "image", src: "", caption: "CI pipeline on first push", ratio: "aspect-video" },
-        { type: "image", src: "", caption: "Subcommand reference", ratio: "aspect-[3/4]" },
+        {
+          type: "gif",
+          src: "",
+          caption: "scaffold new api --lang=go",
+          ratio: "aspect-video",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Generated project tree",
+          ratio: "aspect-[4/3]",
+        },
+        {
+          type: "video",
+          src: "",
+          caption: "Telemetry out of the box",
+          ratio: "aspect-square",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "CI pipeline on first push",
+          ratio: "aspect-video",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Subcommand reference",
+          ratio: "aspect-[3/4]",
+        },
       ],
     },
     {
@@ -342,11 +495,36 @@ Exactly-once semantics across edge retries and keeping query latency flat as car
 - Edge filtering is a privacy feature with a perf bonus
 - Streaming queries beat batch refreshes for dashboards`,
       gallery: [
-        { type: "image", src: "", caption: "Real-time dashboard", ratio: "aspect-[4/3]" },
-        { type: "video", src: "", caption: "Live query streaming", ratio: "aspect-video" },
-        { type: "gif", src: "", caption: "Edge reduction demo", ratio: "aspect-square" },
-        { type: "image", src: "", caption: "Privacy controls", ratio: "aspect-[3/4]" },
-        { type: "image", src: "", caption: "Cardinality drilldown", ratio: "aspect-video" },
+        {
+          type: "image",
+          src: "",
+          caption: "Real-time dashboard",
+          ratio: "aspect-[4/3]",
+        },
+        {
+          type: "video",
+          src: "",
+          caption: "Live query streaming",
+          ratio: "aspect-video",
+        },
+        {
+          type: "gif",
+          src: "",
+          caption: "Edge reduction demo",
+          ratio: "aspect-square",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Privacy controls",
+          ratio: "aspect-[3/4]",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Cardinality drilldown",
+          ratio: "aspect-video",
+        },
       ],
     },
     {
@@ -402,12 +580,42 @@ Design-token naming across three themes, and keeping SSR-safe theming that doesn
 - Docs are a product surface, not a chore
 - Standardize the primitives, keep the escapes rare`,
       gallery: [
-        { type: "image", src: "", caption: "Component gallery", ratio: "aspect-[4/3]" },
-        { type: "gif", src: "", caption: "Theme switching", ratio: "aspect-square" },
-        { type: "image", src: "", caption: "Token playground", ratio: "aspect-video" },
-        { type: "video", src: "", caption: "Focus ring audit", ratio: "aspect-[3/4]" },
-        { type: "image", src: "", caption: "Storybook stories", ratio: "aspect-video" },
-        { type: "gif", src: "", caption: "SSR-safe theming", ratio: "aspect-[4/3]" },
+        {
+          type: "image",
+          src: "",
+          caption: "Component gallery",
+          ratio: "aspect-[4/3]",
+        },
+        {
+          type: "gif",
+          src: "",
+          caption: "Theme switching",
+          ratio: "aspect-square",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Token playground",
+          ratio: "aspect-video",
+        },
+        {
+          type: "video",
+          src: "",
+          caption: "Focus ring audit",
+          ratio: "aspect-[3/4]",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Storybook stories",
+          ratio: "aspect-video",
+        },
+        {
+          type: "gif",
+          src: "",
+          caption: "SSR-safe theming",
+          ratio: "aspect-[4/3]",
+        },
       ],
     },
   ],
@@ -466,7 +674,8 @@ Design-token naming across three themes, and keeping SSR-safe theming that doesn
         institution: "University of California, Berkeley",
         degree: "B.S. Computer Science",
         period: "2014 — 2018",
-        achievement: "Graduated with high honors · Distributed systems research",
+        achievement:
+          "Graduated with high honors · Distributed systems research",
       },
     ],
     certificatesLabel: "Certificates",
@@ -475,7 +684,12 @@ Design-token naming across three themes, and keeping SSR-safe theming that doesn
       { name: "AWS Solutions Architect", image: "", year: "2023", href: "#" },
       { name: "Google Cloud Engineer", image: "", year: "2022", href: "#" },
       { name: "CNCF: Kubernetes Admin", image: "", year: "2021", href: "#" },
-      { name: "Meta Frontend Specialization", image: "", year: "2021", href: "#" },
+      {
+        name: "Meta Frontend Specialization",
+        image: "",
+        year: "2021",
+        href: "#",
+      },
     ],
   },
 
