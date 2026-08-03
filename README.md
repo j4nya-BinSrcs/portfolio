@@ -2,6 +2,8 @@
 
 A premium, single-page software engineer portfolio inspired by Bento Grid dashboards and terminal workspaces. Built with Next.js 16 (App Router), TypeScript, Tailwind CSS v4, Framer Motion, and Lucide.
 
+Portfolio is an interactive developer workspace that showcases my projects, engineering journey, and technical interests through a desktop-inspired interface. Rather than behaving like a traditional scrolling website, it emphasizes thoughtful interactions, clean information architecture, and engineering-focused storytelling.
+
 ![Design: near-black bento grid dashboard with warm-white accent, magnetic grid background, terminal-style content panel]
 
 ## Design language
