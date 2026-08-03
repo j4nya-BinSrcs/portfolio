@@ -24,7 +24,7 @@ export default function AvailabilityEmailRow() {
     <div className="flex gap-3">
       <motion.div
         whileHover={pop}
-        className="flex min-h-[64px] flex-[1] flex-col justify-center gap-2 rounded-2xl border border-line bg-panel/80 px-4 py-3"
+        className="flex min-h-[56px] flex-[1] flex-col justify-center gap-2 rounded-2xl border border-line bg-panel/80 px-4 py-3"
       >
         <span className="flex items-center gap-2 text-sm font-medium text-soft">
           <span className="relative flex h-2 w-2" aria-hidden="true">
@@ -40,13 +40,13 @@ export default function AvailabilityEmailRow() {
 
       <motion.div
         whileHover={pop}
-        className="flex min-h-[64px] flex-[2] items-center justify-between gap-3 rounded-2xl border border-line bg-panel/80 px-4 py-3 transition-colors hover:border-line-strong"
+        className="flex min-h-[56px] flex-[2] items-center justify-between gap-2 rounded-2xl border border-line bg-panel/80 px-3 py-2 transition-colors hover:border-line-strong"
       >
         <div className="min-w-0">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-mute">
+          <p className="text-[10px] font-medium uppercase tracking-wider text-mute">
             Email
           </p>
-          <p className="truncate text-sm font-medium text-soft">
+          <p className="truncate text-[13px] font-medium text-soft">
             {siteConfig.email}
           </p>
         </div>
@@ -54,7 +54,7 @@ export default function AvailabilityEmailRow() {
           type="button"
           onClick={copyEmail}
           aria-label={copied ? "Email copied" : `Copy email ${siteConfig.email}`}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line text-mute transition-colors hover:border-line-strong hover:text-tx"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-line text-mute transition-colors hover:border-line-strong hover:text-tx -mt-1"
         >
           {copied ? (
             <Check className="h-4 w-4 text-ok" aria-hidden="true" />
