@@ -8,7 +8,7 @@ import { siteConfig } from "@/lib/site.config";
 export default function AvailabilityEmailRow() {
   const [copied, setCopied] = useState(false);
   const reduce = useReducedMotion();
-  const pop = reduce ? undefined : { scale: 1.06, zIndex: 20, rotate: 5 };
+  const pop = reduce ? undefined : { scale: 1.06, zIndex: 20, rotate: 2 };
 
   async function copyEmail() {
     try {

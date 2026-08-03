@@ -16,7 +16,7 @@ import FooterLine from "./footer-line";
 export default function Dashboard() {
   const reduce = useReducedMotion();
   const { booted } = useBoot();
-  const pop = reduce ? undefined : { scale: 1.06, zIndex: 20, rotate: 5 };
+  const pop = reduce ? undefined : { scale: 1.06, zIndex: 20 };
 
   return (
     <SectionProvider>
@@ -34,7 +34,6 @@ export default function Dashboard() {
             <div className="flex flex-col gap-3 lg:flex-row">
               <motion.div
                 variants={reduce ? undefined : revealItem}
-                whileHover={pop}
                 className="min-w-0 flex-1"
               >
                 <HeroCard />
@@ -42,7 +41,6 @@ export default function Dashboard() {
 
               <motion.div
                 variants={reduce ? undefined : revealItem}
-                whileHover={pop}
                 className="min-w-0 lg:w-[170px]"
               >
                 <NavRail />
@@ -51,7 +49,7 @@ export default function Dashboard() {
 
             <motion.div
               variants={reduce ? undefined : revealItem}
-              whileHover={pop}
+              whileHover={{ ...pop, rotate: 2 }}
               className="min-w-0"
             >
               <InfoCard />
@@ -60,7 +58,7 @@ export default function Dashboard() {
             <div className="flex flex-col gap-3 lg:flex-row">
               <motion.div
                 variants={reduce ? undefined : revealItem}
-                whileHover={pop}
+                whileHover={{ ...pop, rotate: 2 }}
                 className="min-w-0 flex-1"
               >
                 <AvailabilityEmailRow />
@@ -68,7 +66,7 @@ export default function Dashboard() {
 
               <motion.div
                 variants={reduce ? undefined : revealItem}
-                whileHover={pop}
+                whileHover={{ ...pop, rotate: 2 }}
                 className="min-w-0 lg:w-[112px]"
               >
                 <SocialRow />
@@ -77,7 +75,6 @@ export default function Dashboard() {
 
             <motion.div
               variants={reduce ? undefined : revealItem}
-              whileHover={pop}
               className="min-w-0 flex-1"
             >
               <SandboxStack />
