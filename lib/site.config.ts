@@ -10,7 +10,7 @@ export const siteConfig = {
   name: "Janya Kansara",
   role: "Software Engineer",
   tagline:
-    "Developer Tools · Systems Design · Infrastructure\n\nI build thoughtful software—from complex developer tools and search systems to polished interfaces—with a focus on performance, DX, and maintainability.",
+    "I build thoughtful software — from complex dev tools and search systems to polished interfaces — with a focus on performance, DX, and maintainability.",
 
   /* Hero card */
   hero: {
@@ -18,24 +18,24 @@ export const siteConfig = {
   },
 
   /* Quick info strip */
-  location: "San Francisco, CA",
-  timezone: "GMT-8 · PST",
+  location: "Gujarat, India, Earth",
+  timezone: "IST (UTC+5:30)",
   languages: ["English", "हिन्दी"],
 
   /* Contact */
-  email: "hello@jordanreyes.dev",
+  email: "j4nya.kansara@gmail.com",
   resumeUrl: "/resume.pdf",
   available: true,
   availabilityText: "Open to internships, jobs & freelance",
 
   /* Socials — order shown is the order rendered */
   socials: [
-    { id: "X", label: "X", href: "https://x.com/jordanreyes" },
-    { id: "GitHub", label: "GitHub", href: "https://github.com/jordanreyes" },
+    { id: "X", label: "X", href: "https://x.com/j4nyya" },
+    { id: "GitHub", label: "GitHub", href: "https://github.com/j4nya-BinSrcs" },
     {
       id: "LinkedIn",
       label: "LinkedIn",
-      href: "https://linkedin.com/in/jordanreyes",
+      href: "https://www.linkedin.com/in/janya-kansara-6b718a3a0/",
     },
   ],
 
