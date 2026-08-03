@@ -74,6 +74,7 @@ export const siteConfig = {
     preferencesLabel: "Preferences",
     preferences: [
       { label: "Code editor", value: "Zed" },
+      { label: "Terminal", value: "Ghostty" },
       { label: "Operating system", value: "Arch Linux" },
       { label: "Color scheme", value: "Catppuccin" },
     ],
@@ -150,6 +151,50 @@ A real-time collaboration workspace for structured documents.
 npm install
 npm run dev
 \`\`\``,
+      caseStudy: `# Quillspace — Case study
+
+## The problem
+Distributed teams struggle to keep structured documents in sync. Existing tools either sacrifice offline support for real-time collaboration or lose version history entirely.
+
+## Goals and vision
+- Real-time multiplayer editing with presence
+- Offline-first sync backed by CRDTs
+- Granular, searchable version history
+
+## Constraints
+- Must work over flaky mobile networks
+- No central "source of truth" lockstep — any node may be offline
+- Under 150ms perceived latency for keystrokes
+
+## Research
+I studied Operational Transform vs CRDT approaches, read Yjs internals, and benchmarked WebSocket presence against WebRTC for cursor sharing.
+
+## Architecture
+- **Yjs** CRDT for document state
+- **WebSocket** gateway for presence and ephemeral events
+- **PostgreSQL** for durable history snapshots
+- Cache-first client reads with server reconciliation
+
+## Challenges
+Tombstones and undo across concurrent edits were the hardest part — merge semantics needed careful design and an extensive property-based test suite.
+
+## Metrics
+- 40ms median keystroke latency
+- 30k+ concurrent rooms in a single region
+- 99.98% sync success rate in the field
+
+## Lessons learned
+- CRDTs shift complexity to the client; invest in test suites early
+- Presence is a UX feature, not an afterthought
+- Build the offline path before the online path`,
+      gallery: [
+        { type: "image", src: "", caption: "Editor overview", ratio: "aspect-[4/3]" },
+        { type: "video", src: "", caption: "Multiplayer cursors", ratio: "aspect-video" },
+        { type: "gif", src: "", caption: "Presence demo", ratio: "aspect-square" },
+        { type: "image", src: "", caption: "Version history panel", ratio: "aspect-[3/4]" },
+        { type: "image", src: "", caption: "Offline mode", ratio: "aspect-video" },
+        { type: "gif", src: "", caption: "Undo across sessions", ratio: "aspect-[4/3]" },
+      ],
     },
     {
       title: "Scaffold",
@@ -169,6 +214,49 @@ scaffold new api --lang=go
 \`\`\`
 
 Ships with observability, tests, and CI out of the box.`,
+      caseStudy: `# Scaffold — Case study
+
+## The problem
+Bootstrapping a new service meant copy-pasting configs, wiring telemetry by hand, and drifting from the platform baseline within weeks.
+
+## Goals and vision
+- Generate production-ready services from a single command
+- Batteries-included observability, testing, and CI
+- One canonical template, enforced by codegen rather than docs
+
+## Constraints
+- Support Go and TypeScript targets from day one
+- Generated projects must be understandable, not magic
+- Work offline with no service dependencies
+
+## Research
+I compared codegen approaches (text/template vs struct-based AST generation), audited the team's existing services, and distilled them into a single source of truth.
+
+## Architecture
+- **Cobra** CLI with subcommands
+- Go templates for files; HCL for Terraform wiring
+- OpenTelemetry SDK wired into every generated service
+- CI templates for GitHub Actions and ArgoCD
+
+## Challenges
+Keeping generated code stable across Go module versions while supporting additive customization (flag \`--features\`) without bloating the output.
+
+## Metrics
+- 6x faster service bootstrap
+- 100% of new services ship with tracing on day one
+- 90% fewer config drift incidents after adoption
+
+## Lessons learned
+- Codegen beats documentation for enforcing conventions
+- The template is a product — version it like one
+- Defaults matter more than options`,
+      gallery: [
+        { type: "gif", src: "", caption: "scaffold new api --lang=go", ratio: "aspect-video" },
+        { type: "image", src: "", caption: "Generated project tree", ratio: "aspect-[4/3]" },
+        { type: "video", src: "", caption: "Telemetry out of the box", ratio: "aspect-square" },
+        { type: "image", src: "", caption: "CI pipeline on first push", ratio: "aspect-video" },
+        { type: "image", src: "", caption: "Subcommand reference", ratio: "aspect-[3/4]" },
+      ],
     },
     {
       title: "Drift",
@@ -186,6 +274,49 @@ Privacy-first, real-time analytics.
 - Edge aggregation
 - Streaming queries over WebSocket
 - ClickHouse storage`,
+      caseStudy: `# Drift — Case study
+
+## The problem
+Privacy-first analytics is a contradiction for most tools — they either drop events to the client or ship raw data to third parties.
+
+## Goals and vision
+- Real-time aggregation with no raw-event retention
+- Edge computing for event normalization and filtering
+- Streaming queries without batch warehouses
+
+## Constraints
+- GDPR-first: raw events must never persist
+- Sub-second dashboard freshness
+- Survive regional edge outages
+
+## Research
+I evaluated ClickHouse vs Druid, studied Kafka Streams vs in-flight edge reduction, and interviewed product teams about the events they actually needed.
+
+## Architecture
+- **React** dashboard with streaming WebSocket feeds
+- **Kafka** for the event bus
+- **ClickHouse** for aggregated materialized views
+- Edge workers reduce and filter events before they hit the bus
+
+## Challenges
+Exactly-once semantics across edge retries and keeping query latency flat as cardinality grew by 10x.
+
+## Metrics
+- 800ms median dashboard freshness
+- 70% less data shipped to storage
+- Zero raw events retained at rest
+
+## Lessons learned
+- Delete-by-default changes how you design schemas
+- Edge filtering is a privacy feature with a perf bonus
+- Streaming queries beat batch refreshes for dashboards`,
+      gallery: [
+        { type: "image", src: "", caption: "Real-time dashboard", ratio: "aspect-[4/3]" },
+        { type: "video", src: "", caption: "Live query streaming", ratio: "aspect-video" },
+        { type: "gif", src: "", caption: "Edge reduction demo", ratio: "aspect-square" },
+        { type: "image", src: "", caption: "Privacy controls", ratio: "aspect-[3/4]" },
+        { type: "image", src: "", caption: "Cardinality drilldown", ratio: "aspect-video" },
+      ],
     },
     {
       title: "Prism UI",
@@ -203,6 +334,50 @@ An accessible design system.
 - Token-driven theming
 - 60+ components
 - Storybook documentation`,
+      caseStudy: `# Prism UI — Case study
+
+## The problem
+Four products maintained four bespoke component kits. Every design change multiplied across codebases, and accessibility was an afterthought.
+
+## Goals and vision
+- One accessible, token-driven design system
+- Monorepo architecture that scales to 60+ components
+- Docs that double as living, testable specs
+
+## Constraints
+- Support React 18 and Next.js App Router
+- Tree-shakeable, minimal runtime cost
+- AA contrast as a non-negotiable
+
+## Research
+I audited the four existing kits, studied theming approaches (CSS vars vs runtime), and benchmarked bundle impact of each primitive.
+
+## Architecture
+- **Turborepo** monorepo with packages per layer
+- Token pipeline → CSS custom properties
+- **Storybook** as the contract surface
+- Visual regression tests on every component
+
+## Challenges
+Design-token naming across three themes, and keeping SSR-safe theming that doesn't flash on first paint.
+
+## Metrics
+- 3x faster component handoff
+- 41% smaller average bundle for consumer apps
+- 0 accessibility regressions shipped in two years
+
+## Lessons learned
+- Tokens are a language — name them like one
+- Docs are a product surface, not a chore
+- Standardize the primitives, keep the escapes rare`,
+      gallery: [
+        { type: "image", src: "", caption: "Component gallery", ratio: "aspect-[4/3]" },
+        { type: "gif", src: "", caption: "Theme switching", ratio: "aspect-square" },
+        { type: "image", src: "", caption: "Token playground", ratio: "aspect-video" },
+        { type: "video", src: "", caption: "Focus ring audit", ratio: "aspect-[3/4]" },
+        { type: "image", src: "", caption: "Storybook stories", ratio: "aspect-video" },
+        { type: "gif", src: "", caption: "SSR-safe theming", ratio: "aspect-[4/3]" },
+      ],
     },
   ],
 
@@ -265,11 +440,11 @@ An accessible design system.
     ],
     certificatesLabel: "Certificates",
     certificates: [
-      { name: "Rust Fundamentals", image: "", year: "2024" },
-      { name: "AWS Solutions Architect", image: "", year: "2023" },
-      { name: "Google Cloud Engineer", image: "", year: "2022" },
-      { name: "CNCF: Kubernetes Admin", image: "", year: "2021" },
-      { name: "Meta Frontend Specialization", image: "", year: "2021" },
+      { name: "Rust Fundamentals", image: "", year: "2024", href: "#" },
+      { name: "AWS Solutions Architect", image: "", year: "2023", href: "#" },
+      { name: "Google Cloud Engineer", image: "", year: "2022", href: "#" },
+      { name: "CNCF: Kubernetes Admin", image: "", year: "2021", href: "#" },
+      { name: "Meta Frontend Specialization", image: "", year: "2021", href: "#" },
     ],
   },
 

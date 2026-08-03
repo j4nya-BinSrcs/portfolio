@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Award, GraduationCap, ScrollText } from "lucide-react";
+import { Award, ExternalLink, Eye, GraduationCap, ScrollText } from "lucide-react";
 import { siteConfig } from "@/lib/site.config";
 import { EASE } from "@/lib/motion";
 import ReflectCard from "../reflect-card";
@@ -74,24 +74,36 @@ export default function EducationPanel() {
                 transition={{ duration: 0.45, ease: EASE, delay: 0.05 * i }}
                 className="w-40 shrink-0"
               >
-                <ReflectCard className="rounded-xl border border-line bg-panel/70 transition-transform duration-300 hover:-translate-y-0.5">
-                  <div className="flex flex-col gap-2.5 p-3">
+                <ReflectCard className="group rounded-xl border border-line bg-panel/70 transition-all duration-300 hover:-translate-y-1 hover:rotate-1 hover:shadow-[0_0_30px_-8px_rgba(232,223,200,0.45)]">
+                  <a
+                    href={cert.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Open ${cert.name} credential`}
+                    className="flex h-full flex-col gap-2.5 p-3"
+                  >
                     <div className="relative flex h-24 items-center justify-center overflow-hidden rounded-lg border border-line bg-bg-elevated">
                       {cert.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={cert.image}
                           alt={`${cert.name} certificate`}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                       ) : (
-                        <span className="flex h-full w-full flex-col items-center justify-center gap-1 bg-gradient-to-br from-accent-soft to-transparent">
+                        <span className="flex h-full w-full flex-col items-center justify-center gap-1 bg-gradient-to-br from-accent-soft to-transparent transition-transform duration-300 group-hover:scale-105">
                           <Award className="h-6 w-6 text-accent" aria-hidden="true" />
                           <span className="px-2 text-center text-[9px] leading-tight text-soft">
                             {cert.name}
                           </span>
                         </span>
                       )}
+                      <span className="absolute inset-0 flex items-center justify-center bg-bg/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <span className="flex items-center gap-1.5 rounded-full border border-accent/40 bg-bg/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent backdrop-blur-sm">
+                          <Eye className="h-3 w-3" aria-hidden="true" />
+                          Preview
+                        </span>
+                      </span>
                     </div>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[11px] font-medium leading-tight text-soft">
@@ -101,7 +113,14 @@ export default function EducationPanel() {
                         {cert.year}
                       </span>
                     </div>
-                  </div>
+                    <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-accent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      Open credential
+                      <ExternalLink
+                        className="h-3 w-3"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </a>
                 </ReflectCard>
               </motion.div>
             ))}

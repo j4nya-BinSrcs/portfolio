@@ -1,10 +1,19 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BookOpen, Code2, ExternalLink, Play } from "lucide-react";
+import {
+  BookOpen,
+  Code2,
+  ExternalLink,
+  FileText,
+  Images,
+  Play,
+} from "lucide-react";
 import { siteConfig } from "@/lib/site.config";
 import { EASE } from "@/lib/motion";
 import ReflectCard from "../reflect-card";
+
+export type ProjectMode = "readme" | "case" | "gallery";
 
 const container = {
   hidden: {},
@@ -35,7 +44,7 @@ function gradientFor(title: string) {
 export default function ProjectsPanel({
   onOpenProject,
 }: {
-  onOpenProject?: (title: string) => void;
+  onOpenProject?: (title: string, mode: ProjectMode) => void;
 }) {
   const open = onOpenProject ?? (() => {});
   const projects = siteConfig.projects;
@@ -73,7 +82,7 @@ function ProjectCard({
   onOpen,
 }: {
   title: string;
-  onOpen: (title: string) => void;
+  onOpen: (title: string, mode: ProjectMode) => void;
 }) {
   const project = siteConfig.projects.find((p) => p.title === title)!;
 
@@ -131,11 +140,27 @@ function ProjectCard({
           </ul>
 
           <div className="mt-3.5 grid grid-cols-2 gap-2 border-t border-line pt-3.5">
+            <button
+              type="button"
+              onClick={() => onOpen(project.title, "case")}
+              className="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-full border border-accent/30 bg-accent-soft px-3 py-2 text-xs font-semibold text-tx transition-all hover:-translate-y-0.5 hover:border-accent/60 hover:brightness-110 active:scale-[0.98]"
+            >
+              <FileText className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
+              Case study
+            </button>
+            <button
+              type="button"
+              onClick={() => onOpen(project.title, "gallery")}
+              className="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-full border border-line px-3 py-2 text-xs font-semibold text-soft transition-all hover:-translate-y-0.5 hover:border-line-strong hover:text-tx active:scale-[0.98]"
+            >
+              <Images className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
+              Gallery
+            </button>
             <a
               href={project.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-accent/30 bg-accent-soft px-3 py-2 text-xs font-semibold text-tx transition-all hover:-translate-y-0.5 hover:border-accent/60 hover:brightness-110 active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-line px-3 py-2 text-xs font-semibold text-soft transition-all hover:-translate-y-0.5 hover:border-line-strong hover:text-tx active:scale-[0.98]"
             >
               <ExternalLink className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
               Visit live
@@ -151,7 +176,7 @@ function ProjectCard({
             </a>
             <button
               type="button"
-              onClick={() => onOpen(project.title)}
+              onClick={() => onOpen(project.title, "readme")}
               className="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-full border border-line px-3 py-2 text-xs font-semibold text-soft transition-all hover:-translate-y-0.5 hover:border-line-strong hover:text-tx active:scale-[0.98]"
             >
               <BookOpen className="h-3.5 w-3.5 text-accent" aria-hidden="true" />

@@ -11,12 +11,19 @@ import SkillsPanel from "./skills-panel";
 import ExperiencePanel from "./experience-panel";
 import EducationPanel from "./education-panel";
 import ProjectsPanel from "./projects-panel";
+import type { ProjectMode } from "./projects-panel";
 import ContactPanel from "./contact-panel";
 import ProjectReadme from "./project-readme";
+import ProjectCaseStudy from "./project-case-study";
+import ProjectGallery from "./project-gallery";
 import PathTypewriter from "./path-typewriter";
 import TrafficDots from "../traffic-dots";
 
-type PanelProps = { onOpenProject?: (title: string) => void };
+type PanelProps = {
+  onOpenProject?: (title: string, mode: ProjectMode) => void;
+};
+
+type ProjectView = { title: string; mode: ProjectMode };
 
 const panels: Record<string, React.ComponentType<PanelProps>> = {
   about: AboutPanel,
@@ -34,7 +41,7 @@ export default function ContentPanel() {
   const { active, direction, next, prev } = useSection();
   const reduce = useReducedMotion();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [projectTitle, setProjectTitle] = useState<string | null>(null);
+  const [view, setView] = useState<ProjectView | null>(null);
   const lockRef = useRef(0);
   const fillRef = useRef(0);
   const ringRef = useRef<SVGCircleElement>(null);
@@ -58,7 +65,7 @@ export default function ContentPanel() {
       lockRef.current = Date.now();
       if (dir === 1) next();
       else prev();
-      setProjectTitle(null);
+      setView(null);
     },
     [next, prev],
   );
@@ -90,14 +97,14 @@ export default function ContentPanel() {
 
   useEffect(() => {
     scrollToTop();
-  }, [active, projectTitle, scrollToTop]);
+  }, [active, view, scrollToTop]);
 
   useEffect(() => () => {
     if (hudTimerRef.current) clearTimeout(hudTimerRef.current);
   }, []);
 
   function onWheel(e: React.WheelEvent<HTMLDivElement>) {
-    if (projectTitle) return;
+    if (view) return;
     const el = scrollRef.current;
     if (!el) return;
     if (hudTimerRef.current) clearTimeout(hudTimerRef.current);
@@ -135,7 +142,13 @@ export default function ContentPanel() {
     }
   }
 
-  const path = projectTitle ? `~/projects/${projectTitle}` : section.path;
+  const modePath =
+    view?.mode === "readme"
+      ? "readme"
+      : view?.mode === "case"
+        ? "casestudy"
+        : "gallery";
+  const path = view ? `~/projects/${view.title}/${modePath}` : section.path;
 
   return (
     <div className="relative flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-line bg-panel/60 shadow-[0_1px_0_0_rgba(246,242,232,0.03)_inset,0_24px_60px_-40px_rgba(0,0,0,0.9)] lg:h-full">
@@ -153,25 +166,47 @@ export default function ContentPanel() {
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
-            key={projectTitle ? `readme-${projectTitle}` : active}
+            key={view ? `${view.mode}-${view.title}` : active}
             initial={reduce ? false : variants.initial}
             animate={variants.animate}
             exit={reduce ? undefined : variants.exit}
             transition={sectionTransition()}
           >
-            {projectTitle ? (
-              <ProjectReadme
-                title={projectTitle}
-                onBack={() => {
-                  scrollToTop();
-                  setProjectTitle(null);
-                }}
-              />
+            {view ? (
+              <>
+                {view.mode === "readme" && (
+                  <ProjectReadme
+                    title={view.title}
+                    onBack={() => {
+                      scrollToTop();
+                      setView(null);
+                    }}
+                  />
+                )}
+                {view.mode === "case" && (
+                  <ProjectCaseStudy
+                    title={view.title}
+                    onBack={() => {
+                      scrollToTop();
+                      setView(null);
+                    }}
+                  />
+                )}
+                {view.mode === "gallery" && (
+                  <ProjectGallery
+                    title={view.title}
+                    onBack={() => {
+                      scrollToTop();
+                      setView(null);
+                    }}
+                  />
+                )}
+              </>
             ) : (
               <Panel
-                onOpenProject={(title) => {
+                onOpenProject={(title, mode) => {
                   scrollToTop();
-                  setProjectTitle(title);
+                  setView({ title, mode });
                 }}
               />
             )}

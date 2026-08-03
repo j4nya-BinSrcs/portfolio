@@ -11,13 +11,17 @@ import ReflectCard from "../reflect-card";
 export default function ProjectReadme({
   title,
   onBack,
+  markdown,
 }: {
   title: string;
   onBack: () => void;
+  markdown?: string;
 }) {
   const project = siteConfig.projects.find((p) => p.title === title);
 
   if (!project) return null;
+
+  const content = markdown ?? project.readme;
 
   return (
     <motion.div
@@ -110,7 +114,7 @@ export default function ProjectReadme({
               ),
             }}
           >
-            {project.readme}
+            {content}
           </ReactMarkdown>
         </div>
       </ReflectCard>
