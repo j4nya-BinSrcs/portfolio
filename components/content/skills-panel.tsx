@@ -42,7 +42,7 @@ export default function SkillsPanel() {
                   key={skill.name}
                   className="group relative w-fit rounded-xl border border-line bg-panel/70 transition-transform duration-300 hover:-translate-y-0.5"
                 >
-                  <span className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-line bg-bg-elevated px-2.5 py-1 text-xs font-semibold text-soft opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100">
+                  <span className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-line bg-bg-elevated px-2.5 py-1 text-xs font-semibold text-soft opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100">
                     {skill.name}
                   </span>
                   <div className="flex items-center justify-center p-2">
@@ -58,7 +58,7 @@ export default function SkillsPanel() {
                   key={skill.name}
                   className="group relative rounded-xl border border-line bg-panel/70 transition-transform duration-300 hover:-translate-y-0.5"
                 >
-                  <span className="pointer-events-none absolute left-1/2 top-16 z-10 -translate-x-1/2 whitespace-nowrap rounded-md border border-line bg-bg-elevated px-2.5 py-1 text-xs font-semibold text-soft opacity-0 shadow-lg transition-all duration-200 group-hover:-translate-y-1 group-hover:opacity-100">
+                  <span className="pointer-events-none absolute left-1/2 top-16 z-20 -translate-x-1/2 whitespace-nowrap rounded-md border border-line bg-bg-elevated px-2.5 py-1 text-xs font-semibold text-soft opacity-0 shadow-lg transition-all duration-200 group-hover:-translate-y-1 group-hover:opacity-100">
                     {skill.name}
                   </span>
                   <div className="flex h-full flex-col gap-3 p-4">
