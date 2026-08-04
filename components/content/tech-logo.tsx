@@ -6,11 +6,18 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 import {
   siArchlinux,
   siDocker,
+  siDjango,
+  siExpress,
+  siFramer,
+  siGit,
+  siGithub,
+  siGithubactions,
   siGo,
   siGraphql,
   siHyprland,
   siJavascript,
   siKubernetes,
+  siMongodb,
   siNextdotjs,
   siNodedotjs,
   siPostgresql,
@@ -18,11 +25,13 @@ import {
   siReact,
   siRedis,
   siRust,
+  siSqlite,
   siTailwindcss,
   siTerraform,
   siTypescript,
   siGhostty,
   siZedindustries,
+  siFastapi,
 } from "simple-icons";
 
 const AWS_PATH =
@@ -47,6 +56,15 @@ const BRANDS: Record<string, BrandDef> = {
   Kubernetes: { path: siKubernetes.path, color: "#326CE5" },
   AWS: { path: AWS_PATH, color: "#FF9900" },
   Terraform: { path: siTerraform.path, color: "#7B42BC" },
+  FastAPI: { path: siFastapi.path, color: "#009688" },
+  Django: { path: siDjango.path, color: "#092E20" },
+  Express: { path: siExpress.path, color: "#E8DFC8" },
+  Git: { path: siGit.path, color: "#F05032" },
+  GitHub: { path: siGithub.path, color: "#E8DFC8" },
+  SQLite: { path: siSqlite.path, color: "#003B57" },
+  MongoDB: { path: siMongodb.path, color: "#47A248" },
+  "GitHub Actions": { path: siGithubactions.path, color: "#2088FF" },
+  "Framer Motion": { path: siFramer.path, color: "#E8DFC8" },
   Zed: { path: siZedindustries.path, color: "#FFFFFF" },
   Ghostty: { path: siGhostty.path, color: "#F5C2E7" },
   "Arch Linux": { path: siArchlinux.path, color: "#1793D1" },
@@ -56,6 +74,11 @@ const BRANDS: Record<string, BrandDef> = {
 const WORDMARKS: Record<string, { label: string; color: string }> = {
   "CI/CD": { label: "CI/CD", color: "#E8DFC8" },
   gRPC: { label: "gRPC", color: "#4290FB" },
+  Java: { label: "Java", color: "#ED8B00" },
+  WebGPU: { label: "WebGPU", color: "#E8DFC8" },
+  "REST APIs": { label: "REST", color: "#E8DFC8" },
+  WebSockets: { label: "WS", color: "#E8DFC8" },
+  Linux: { label: "Linux", color: "#E8DFC8" },
 };
 
 function useDockScale() {

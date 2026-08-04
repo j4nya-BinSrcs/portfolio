@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Cpu } from "lucide-react";
 import { siteConfig } from "@/lib/site.config";
 import { EASE } from "@/lib/motion";
 import TechLogo from "./tech-logo";
@@ -8,18 +9,12 @@ import ReflectCard from "../reflect-card";
 
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
+  show: { transition: { staggerChildren: 0.06 } },
 };
 
 const item = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
-};
-
-const levelStyles: Record<string, string> = {
-  Advanced: "border-accent/40 bg-accent-soft text-accent",
-  Comfortable: "border-line-strong bg-panel text-soft",
-  Learning: "border-line bg-bg-elevated text-mute",
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
 };
 
 export default function SkillsPanel() {
@@ -28,69 +23,54 @@ export default function SkillsPanel() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-5"
+      className="grid grid-cols-1 gap-6 lg:grid-cols-[1.6fr_1fr]"
     >
-      {siteConfig.skills.map((group) => (
-        <motion.section key={group.category} variants={item} className="space-y-3">
-          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-mute">
-            {group.category}
-          </h3>
-          {"iconOnly" in group && group.iconOnly ? (
-            <div className="flex flex-wrap gap-3">
+      <div className="space-y-5">
+        {siteConfig.skills.map((group) => (
+          <motion.section key={group.category} variants={item} className="space-y-2.5">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-mute">
+              {group.category}
+            </h3>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4">
               {group.items.map((skill) => (
                 <ReflectCard
                   key={skill.name}
-                  className="group relative w-fit rounded-xl border border-line bg-panel/70 transition-transform duration-300 hover:-translate-y-0.5"
+                  className="group relative rounded-xl border border-line bg-panel/70 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_16px_-4px_rgba(232,223,200,0.2)]"
                 >
-                  <span className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-line bg-bg-elevated px-2.5 py-1 text-xs font-semibold text-soft opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100">
-                    {skill.name}
-                  </span>
-                  <div className="flex items-center justify-center p-2">
+                  <div className="flex items-center gap-2.5 p-3">
                     <TechLogo name={skill.name} size="lg" />
+                    <span className="text-[12px] font-medium text-soft transition-colors duration-200 group-hover:text-tx">
+                      {skill.name}
+                    </span>
                   </div>
                 </ReflectCard>
               ))}
             </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {group.items.map((skill) => (
-                <ReflectCard
-                  key={skill.name}
-                  className="group relative rounded-xl border border-line bg-panel/70 transition-transform duration-300 hover:-translate-y-0.5"
-                >
-                  <span className="pointer-events-none absolute left-1/2 top-16 z-20 -translate-x-1/2 whitespace-nowrap rounded-md border border-line bg-bg-elevated px-2.5 py-1 text-xs font-semibold text-soft opacity-0 shadow-lg transition-all duration-200 group-hover:-translate-y-1 group-hover:opacity-100">
-                    {skill.name}
-                  </span>
-                  <div className="flex h-full flex-col gap-3 p-4">
-                    <div className="flex items-center justify-between">
-                      <TechLogo name={skill.name} size="lg" />
-                      <span
-                        className={`rounded-full border px-2 py-0.5 font-mono text-[10px] font-semibold ${
-                          levelStyles[skill.level] ?? levelStyles.Comfortable
-                        }`}
-                      >
-                        {skill.level}
-                      </span>
-                    </div>
-                    {skill.frameworks.length > 0 && (
-                      <ul className="mt-auto flex flex-wrap gap-1.5">
-                        {skill.frameworks.map((f) => (
-                          <li
-                            key={f}
-                            className="rounded-full border border-line px-2 py-0.5 text-[10px] font-medium text-mute transition-colors hover:border-line-strong hover:text-soft"
-                          >
-                            {f}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                </ReflectCard>
-              ))}
-            </div>
-          )}
-        </motion.section>
-      ))}
+          </motion.section>
+        ))}
+      </div>
+
+      <motion.section variants={item} className="lg:border-l lg:border-line lg:pl-6">
+        <div className="sticky top-4 space-y-3">
+          <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+            <Cpu className="h-3.5 w-3.5" aria-hidden="true" />
+            Engineering Concepts
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {siteConfig.engineeringConcepts.map((concept, i) => (
+              <motion.span
+                key={concept}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.35, ease: EASE, delay: 0.03 * i }}
+                className="rounded-full border border-line bg-panel/70 px-3 py-1.5 text-[11px] font-medium text-soft transition-all duration-300 hover:border-accent/40 hover:text-tx hover:shadow-[0_0_12px_-4px_rgba(232,223,200,0.25)]"
+              >
+                {concept}
+              </motion.span>
+            ))}
+          </div>
+        </div>
+      </motion.section>
     </motion.div>
   );
 }

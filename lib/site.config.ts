@@ -205,62 +205,60 @@ currentlyLabel: "Currently",
   /* Skills panel */
   skills: [
     {
-      category: "Infrastructure",
-      iconOnly: true,
+      category: "Languages",
       items: [
-        {
-          name: "Docker",
-          level: "Advanced",
-          frameworks: ["Compose", "BuildKit"],
-        },
-        {
-          name: "Kubernetes",
-          level: "Comfortable",
-          frameworks: ["Helm", "Kustomize"],
-        },
-        { name: "AWS", level: "Advanced", frameworks: ["ECS", "Lambda", "S3"] },
-        {
-          name: "Terraform",
-          level: "Comfortable",
-          frameworks: ["Modules", "Remote state"],
-        },
-        {
-          name: "CI/CD",
-          level: "Comfortable",
-          frameworks: ["GitHub Actions", "ArgoCD"],
-        },
+        { name: "TypeScript" },
+        { name: "Python" },
+        { name: "Java" },
+        { name: "Go" },
+        { name: "Rust" },
       ],
     },
     {
-      category: "Languages",
+      category: "Frontend",
       items: [
-        {
-          name: "TypeScript",
-          level: "Advanced",
-          frameworks: ["React", "Node.js", "Express"],
-        },
-        {
-          name: "JavaScript",
-          level: "Advanced",
-          frameworks: ["Next.js", "Vue", "Jest"],
-        },
-        {
-          name: "Python",
-          level: "Advanced",
-          frameworks: ["FastAPI", "Django", "pytest"],
-        },
-        {
-          name: "Go",
-          level: "Comfortable",
-          frameworks: ["Gin", "Cobra", "gRPC"],
-        },
-        {
-          name: "Rust",
-          level: "Learning",
-          frameworks: ["Axum", "Tokio", "Serde"],
-        },
+        { name: "React" },
+        { name: "Next.js" },
+        { name: "Tailwind CSS" },
+        { name: "Framer Motion" },
+        { name: "WebGPU" },
       ],
     },
+    {
+      category: "Backend",
+      items: [
+        { name: "FastAPI" },
+        { name: "Django" },
+        { name: "Express" },
+        { name: "REST APIs" },
+        { name: "WebSockets" },
+      ],
+    },
+    {
+      category: "Infrastructure",
+      items: [
+        { name: "Linux" },
+        { name: "Docker" },
+        { name: "Git" },
+        { name: "PostgreSQL" },
+        { name: "SQLite" },
+        { name: "MongoDB" },
+        { name: "AWS" },
+        { name: "GitHub Actions" },
+      ],
+    },
+  ],
+  engineeringConcepts: [
+    "Concurrency",
+    "Caching",
+    "Authentication",
+    "CI/CD",
+    "Search Indexing",
+    "API Design",
+    "Performance",
+    "Accessibility",
+    "System Design",
+    "Developer Experience",
   ],
 
   /* Projects panel */
