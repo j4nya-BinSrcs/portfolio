@@ -42,7 +42,6 @@ export default function Dashboard() {
 
               <motion.div
                 variants={reduce ? undefined : revealItem}
-                whileHover={pop}
                 className="min-w-0 lg:w-[170px]"
               >
                 <NavRail />
