@@ -676,31 +676,39 @@ Design-token naming across three themes, and keeping SSR-safe theming that doesn
   education: {
     schools: [
       {
-        institution: "Self-directed · Open source",
-        degree: "Continuous learning",
-        period: "2018 — Present",
+        institution: "LJ University, Ahmedabad",
+        degree: "B.Tech in Computer Science",
+        period: "2022 — Current",
         achievement:
-          "Contributor to React, Next.js, and several OSS design tools",
+          "Coursework in algorithms, operating systems, computer networks, databases, software engineering, and compiler fundamentals.",
       },
       {
-        institution: "University of California, Berkeley",
-        degree: "B.S. Computer Science",
-        period: "2014 — 2018",
+        institution: "Sri Sri Ravishankar Vidhya Mandir, Ahmedabad",
+        degree: "Physics · Chemistry · Maths",
+        period: "2022",
         achievement:
-          "Graduated with high honors · Distributed systems research",
+          "Built a strong foundation in mathematics, physics, and problem solving before transitioning into Computer Science.",
       },
     ],
     certificatesLabel: "Certificates",
     certificates: [
-      { name: "Rust Fundamentals", image: "", year: "2024", href: "#" },
-      { name: "AWS Solutions Architect", image: "", year: "2023", href: "#" },
-      { name: "Google Cloud Engineer", image: "", year: "2022", href: "#" },
-      { name: "CNCF: Kubernetes Admin", image: "", year: "2021", href: "#" },
       {
-        name: "Meta Frontend Specialization",
-        image: "",
-        year: "2021",
-        href: "#",
+        name: "Introduction to HTML, CSS, & JavaScript",
+        image: "/certificates/ibm.png",
+        year: "2025",
+        href: "/certificates/ibm.pdf",
+      },
+      {
+        name: "Inheritance and Data Structures in Java",
+        image: "/certificates/penn.png",
+        year: "2025",
+        href: "/certificates/penn.pdf",
+      },
+      {
+        name: "Introduction to Java",
+        image: "/certificates/learnquest.png",
+        year: "2025",
+        href: "/certificates/learnquest.pdf",
       },
     ],
   },

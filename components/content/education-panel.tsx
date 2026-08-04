@@ -47,10 +47,12 @@ export default function EducationPanel() {
                 </h3>
                 <span className="font-mono text-xs text-mute">{entry.period}</span>
               </div>
-              <p className="mt-1 flex items-center gap-1.5 text-sm text-soft">
-                <GraduationCap className="h-4 w-4 text-mute" aria-hidden="true" />
-                {entry.degree}
-              </p>
+              {entry.degree ? (
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-soft">
+                  <GraduationCap className="h-4 w-4 text-mute" aria-hidden="true" />
+                  {entry.degree}
+                </p>
+              ) : null}
               <p className="mt-2 text-xs leading-relaxed text-mute">
                 {entry.achievement}
               </p>
@@ -83,7 +85,7 @@ export default function EducationPanel() {
                     className="flex h-full flex-col gap-2.5 p-3"
                   >
                     <div className="relative flex h-24 items-center justify-center overflow-hidden rounded-lg border border-line bg-bg-elevated">
-                      {cert.image ? (
+                      {cert.image.length > 0 ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={cert.image}
