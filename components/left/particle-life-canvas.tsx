@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { mulberry32 } from "@/lib/rand";
+import { drawSubtleGrid } from "@/lib/canvas-grid";
 
 const COUNT = 900;
 const SPECIES = 4;
@@ -183,6 +184,7 @@ export default function ParticleLifeCanvas() {
       trail();
       physics(width, height);
       drawParticles();
+      drawSubtleGrid(c2d, width, height, 44);
       raf = requestAnimationFrame(frame);
     }
 
@@ -192,6 +194,7 @@ export default function ParticleLifeCanvas() {
       c2d.fillRect(0, 0, width, height);
       for (let s = 0; s < 500; s++) physics(width, height);
       drawParticles();
+      drawSubtleGrid(c2d, width, height, 44);
     } else {
       raf = requestAnimationFrame(frame);
     }

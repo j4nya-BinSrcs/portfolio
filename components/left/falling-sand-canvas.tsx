@@ -32,6 +32,10 @@ const WATER_STOPS: [number, number, number][] = [
 const WALL_COLOR: [number, number, number] = [35, 40, 55];
 const WALL = 255;
 const LS_KEY = "falling_sand_v2";
+const GRID_EVERY = CELL * 5;
+const GRID: [number, number, number] = [16, 20, 32];
+const SOURCES = [0.25, 0.5, 0.75];
+const SWITCH_THRESHOLD = 0.4;
 
 interface Sim {
   gw: number;
@@ -197,7 +201,9 @@ export default function FallingSandCanvas() {
           DRAG_RATE,
         );
       } else {
-        emit(Math.floor(sim!.gw / 2), 0, CENTER_RATE);
+        for (const f of SOURCES) {
+          emit(Math.floor(sim!.gw * f), 0, CENTER_RATE);
+        }
       }
     }
 
@@ -268,15 +274,10 @@ export default function FallingSandCanvas() {
     function checkTransition() {
       if (!sim) return;
       const total = sim.gw * sim.gh;
-      if (sim.mode === 0 && sim.grains >= total * 0.2) {
+      if (sim.grains >= total * SWITCH_THRESHOLD) {
         sim.grid.fill(0);
         sim.grains = 0;
-        sim.mode = 1;
-        generateObstacles(sim.grid, sim.gw, sim.gh);
-      } else if (sim.mode === 1 && sim.grains >= total * 0.2) {
-        sim.grid.fill(0);
-        sim.grains = 0;
-        sim.mode = 0;
+        sim.mode = sim.mode === 0 ? 1 : 0;
         generateObstacles(sim.grid, sim.gw, sim.gh);
       }
     }
@@ -287,9 +288,18 @@ export default function FallingSandCanvas() {
       const d = rgba;
       const len = width * height * 4;
       for (let i = 0; i < len; i += 4) {
-        d[i] = BG[0];
-        d[i + 1] = BG[1];
-        d[i + 2] = BG[2];
+        const p = i / 4;
+        const px = p % width;
+        const py = (p / width) | 0;
+        if (px % GRID_EVERY === 0 || py % GRID_EVERY === 0) {
+          d[i] = GRID[0];
+          d[i + 1] = GRID[1];
+          d[i + 2] = GRID[2];
+        } else {
+          d[i] = BG[0];
+          d[i + 1] = BG[1];
+          d[i + 2] = BG[2];
+        }
         d[i + 3] = 255;
       }
       for (let gy = 0; gy < gh; gy++) {

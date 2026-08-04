@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
+import { drawSubtleGrid } from "@/lib/canvas-grid";
 
 const STOPS: [number, number, number][] = [
   [6, 8, 14],
@@ -201,11 +202,12 @@ export default function FractalCanvas() {
     let renderScale = 1;
     let last = performance.now();
     let frameCount = 0;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
 
     function resizePixel() {
       const rect = canvasEl.getBoundingClientRect();
-      const w = Math.max(1, Math.round(rect.width * renderScale));
-      const h = Math.max(1, Math.round(rect.height * renderScale));
+      const w = Math.max(1, Math.round(rect.width * dpr * renderScale));
+      const h = Math.max(1, Math.round(rect.height * dpr * renderScale));
       if (w !== width || h !== height) {
         width = w;
         height = h;
@@ -217,8 +219,8 @@ export default function FractalCanvas() {
 
     function resizeGeo() {
       const rect = canvasEl.getBoundingClientRect();
-      const w = Math.max(1, Math.round(rect.width));
-      const h = Math.max(1, Math.round(rect.height));
+      const w = Math.max(1, Math.round(rect.width * dpr));
+      const h = Math.max(1, Math.round(rect.height * dpr));
       if (w !== width || h !== height) {
         width = w;
         height = h;
@@ -283,11 +285,12 @@ export default function FractalCanvas() {
       if (def.kind === "pixel") {
         const elapsed = now - last;
         last = now;
-        if (elapsed > 24) renderScale = Math.max(0.4, renderScale * 0.9);
-        else if (elapsed < 12) renderScale = Math.min(1, renderScale * 1.06);
+        if (elapsed > 33) renderScale = Math.max(0.7, renderScale * 0.94);
+        else if (elapsed < 13) renderScale = Math.min(1, renderScale * 1.05);
         if (!reduce) sharedScale *= ZOOM_PER_FRAME;
         resizePixel();
         const budget = renderPixel(def);
+        drawSubtleGrid(c2d, width, height);
         if (frameCount % 30 === 0 && readoutRef.current) {
           readoutRef.current.textContent = `${def.name} · zoom ${sharedScale.toExponential(
             2,
@@ -296,6 +299,7 @@ export default function FractalCanvas() {
       } else {
         if (!reduce) sharedScale *= ZOOM_PER_FRAME;
         renderLine(def);
+        drawSubtleGrid(c2d, width, height);
         if (frameCount % 30 === 0 && readoutRef.current) {
           readoutRef.current.textContent = `${def.name} · zoom ${sharedScale.toExponential(
             2,
@@ -316,9 +320,11 @@ export default function FractalCanvas() {
     if (def.kind === "pixel") {
       resizePixel();
       const budget = renderPixel(def);
+      drawSubtleGrid(c2d, width, height);
       initial = `${def.name} · zoom ${sharedScale.toExponential(2)} · it ${budget}`;
     } else {
       renderLine(def);
+      drawSubtleGrid(c2d, width, height);
       initial = `${def.name} · zoom ${sharedScale.toExponential(2)}`;
     }
     if (readoutRef.current) readoutRef.current.textContent = initial;
