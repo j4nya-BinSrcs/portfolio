@@ -13,6 +13,7 @@ import {
 import { SectionProvider } from "./section-provider";
 import { useBoot } from "./boot-provider";
 import NavRail from "./nav-rail";
+import ThemeToggle from "./theme-toggle";
 import ContentPanel from "./content/content-panel";
 import HeroCard from "./left/hero-card";
 import InfoCard from "./left/info-card";
@@ -36,7 +37,7 @@ export default function Dashboard() {
           className="my-auto grid w-full grid-cols-1 gap-3 lg:flex lg:h-[71.5vh] lg:w-[70vw] lg:max-w-[1600px] lg:items-stretch lg:gap-3"
         >
           <div className="flex w-full min-w-0 flex-col gap-3 lg:w-[495px] lg:shrink-0">
-            <div className="flex flex-col gap-3 lg:flex-row">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start">
               <motion.div
                 variants={reduce ? undefined : enterHero}
                 whileHover={pop}
@@ -47,10 +48,11 @@ export default function Dashboard() {
 
               <motion.div
                 variants={reduce ? undefined : enterNav}
-                className="min-w-0 lg:w-[170px]"
+                className="flex min-w-0 flex-col items-stretch gap-2 lg:w-[170px]"
               >
-                <NavRail />
-              </motion.div>
+                  <ThemeToggle />
+                  <NavRail />
+                </motion.div>
             </div>
 
             <motion.div

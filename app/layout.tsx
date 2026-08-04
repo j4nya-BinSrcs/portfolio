@@ -5,6 +5,7 @@ import BackgroundGrid from "@/components/background-grid";
 import CursorGlow from "@/components/cursor-glow";
 import WelcomeScreen from "@/components/welcome-screen";
 import { BootProvider } from "@/components/boot-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -45,10 +46,12 @@ export default function RootLayout({
     >
       <body className="relative flex min-h-full flex-col bg-bg text-tx">
         <BootProvider>
-          <BackgroundGrid />
-          <CursorGlow />
-          <WelcomeScreen />
-          {children}
+          <ThemeProvider>
+            <BackgroundGrid />
+            <CursorGlow />
+            <WelcomeScreen />
+            {children}
+          </ThemeProvider>
         </BootProvider>
       </body>
     </html>

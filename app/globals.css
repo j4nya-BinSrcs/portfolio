@@ -17,6 +17,21 @@
   --err: #d98a80;
 }
 
+/* Light theme overrides (applied when <html class="light">). */
+.light {
+  color-scheme: light;
+  --bg: #f6f2e8;
+  --bg-elevated: #ebe7de;
+  --panel: #e9e5dc;
+  --border: rgba(20, 20, 21, 0.08);
+  --border-strong: rgba(20, 20, 21, 0.16);
+  --tx: #141415;
+  --tx-soft: rgba(20, 20, 21, 0.72);
+  --tx-mute: rgba(20, 20, 21, 0.44);
+  --accent: #b8860b;
+  --accent-soft: rgba(184, 134, 11, 0.16);
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-bg-elevated: var(--bg-elevated);

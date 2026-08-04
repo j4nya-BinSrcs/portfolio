@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export default function CursorGlow() {
@@ -8,6 +8,7 @@ export default function CursorGlow() {
   const y = useMotionValue(-400);
   const sx = useSpring(x, { stiffness: 120, damping: 22, mass: 0.4 });
   const sy = useSpring(y, { stiffness: 120, damping: 22, mass: 0.4 });
+  const glowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const reduceMotion = window.matchMedia(
@@ -15,12 +16,32 @@ export default function CursorGlow() {
     ).matches;
     if (reduceMotion) return;
 
+    const updateGlow = () => {
+      const accent = getComputedStyle(document.documentElement)
+        .getPropertyValue("--accent")
+        .trim();
+      const el = glowRef.current;
+      if (el && accent) {
+        el.style.background = `radial-gradient(circle, ${accent} 0%, transparent 65%)`;
+      }
+    };
+
+    updateGlow();
+    const mo = new MutationObserver(updateGlow);
+    mo.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
     const onMove = (e: PointerEvent) => {
       x.set(e.clientX);
       y.set(e.clientY);
     };
     window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
+    return () => {
+      mo.disconnect();
+      window.removeEventListener("pointermove", onMove);
+    };
   }, [x, y]);
 
   return (
@@ -30,6 +51,7 @@ export default function CursorGlow() {
       style={{ x: sx, y: sy }}
     >
       <div
+        ref={glowRef}
         className="-translate-x-1/2 -translate-y-1/2"
         style={{
           width: 420,

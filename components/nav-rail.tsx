@@ -30,15 +30,15 @@ export default function NavRail() {
   }
 
   return (
-    <nav
-      aria-label="Sections"
-      onKeyDown={onKeyDown}
-      className="flex h-full flex-col justify-center gap-0.5 overflow-x-auto rounded-2xl border border-line bg-panel/80 p-2 lg:overflow-y-auto lg:overflow-x-hidden"
-    >
-      <p className="flex shrink-0 items-center gap-2.5 px-1 pb-1.5 font-mono text-xs tracking-widest text-mute">
-        <TermPrompt />
-        ~/nav
-      </p>
+      <nav
+        aria-label="Sections"
+        onKeyDown={onKeyDown}
+        className="flex h-fit flex-col gap-0.5 overflow-x-auto rounded-xl border border-line bg-panel/80 p-1.5 text-tx lg:overflow-y-auto lg:overflow-x-hidden"
+      >
+        <p className="flex shrink-0 items-center gap-2.5 px-1 pb-1 font-mono text-xs tracking-widest text-mute">
+          <TermPrompt />
+          ~/nav
+        </p>
       {sections.map(({ id, label, icon: Icon }) => {
         const isActive = active === id;
         return (
