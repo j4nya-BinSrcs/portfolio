@@ -29,27 +29,45 @@ const WATER_STOPS: [number, number, number][] = [
   [58, 156, 220],
 ];
 
+const ACID_STOPS: [number, number, number][] = [
+  [148, 225, 80],
+  [130, 208, 60],
+  [168, 235, 110],
+  [116, 196, 50],
+  [182, 240, 130],
+  [106, 190, 44],
+];
+
 const WALL_COLOR: [number, number, number] = [35, 40, 55];
 const WALL = 255;
 const LS_KEY = "falling_sand_v2";
 const GRID_EVERY = CELL * 5;
-const GRID: [number, number, number] = [16, 20, 32];
+const GRID: [number, number, number] = [32, 38, 60];
 const SOURCES = [0.25, 0.5, 0.75];
 const SWITCH_THRESHOLD = 0.4;
+
+const SAND_MIN = 1;
+const WATER_MIN = 9;
+const ACID_MIN = 15;
+const ACID_EAT_RATE = 0.02;
+const ACID_SLIDE_RATE = 0.6;
+const ACID_SPREAD_RATE = 0.55;
 
 interface Sim {
   gw: number;
   gh: number;
   grid: Uint8Array;
   grains: number;
-  mode: 0 | 1;
+  mode: 0 | 1 | 2;
 }
 
 let sim: Sim | null = null;
 
 function cellColor(c: number): [number, number, number] {
   if (c === WALL) return WALL_COLOR;
-  return c > 8 ? WATER_STOPS[c - 9] : SAND_STOPS[c - 1];
+  if (c >= ACID_MIN) return ACID_STOPS[c - ACID_MIN];
+  if (c >= WATER_MIN) return WATER_STOPS[c - WATER_MIN];
+  return SAND_STOPS[c - SAND_MIN];
 }
 
 function generateObstacles(grid: Uint8Array, gw: number, gh: number) {
@@ -178,8 +196,14 @@ export default function FallingSandCanvas() {
     function emit(gx: number, gy: number, count: number) {
       if (!sim) return;
       const { grid, gw, gh } = sim;
-      const pool = sim.mode === 1 ? 9 : 1;
-      const shades = sim.mode === 1 ? WATER_STOPS.length : SAND_STOPS.length;
+      const pool =
+        sim.mode === 1 ? WATER_MIN : sim.mode === 2 ? ACID_MIN : SAND_MIN;
+      const shades =
+        sim.mode === 1
+          ? WATER_STOPS.length
+          : sim.mode === 2
+            ? ACID_STOPS.length
+            : SAND_STOPS.length;
       for (let i = 0; i < count; i++) {
         if (sim.grains >= MAX_GRAINS) return;
         const x = gx + Math.floor(Math.random() * 5) - 2;
@@ -219,28 +243,40 @@ export default function FallingSandCanvas() {
           const c = grid[idx];
           if (c === 0 || c === WALL) continue;
           if (y + 1 >= gh) continue;
+          const isFluid = c >= WATER_MIN;
+          const isAcid = c >= ACID_MIN;
           const below = idx + gw;
+
+          if (isAcid && grid[below] === WALL && Math.random() < ACID_EAT_RATE) {
+            grid[below] = 0;
+          }
+
           if (grid[below] === 0) {
             grid[below] = c;
             grid[idx] = 0;
             continue;
           }
+
           if (grid[below] === WALL) {
-            if (c > 8) {
-              const d = Math.random() < 0.5 ? -1 : 1;
-              if (x + d >= 0 && x + d < gw && grid[below + d] === 0) {
-                grid[below + d] = c;
-                grid[idx] = 0;
-                continue;
-              }
-              if (x - d >= 0 && x - d < gw && grid[below - d] === 0) {
-                grid[below - d] = c;
-                grid[idx] = 0;
-                continue;
+            if (isFluid) {
+              const canSlide = isAcid ? Math.random() < ACID_SLIDE_RATE : true;
+              if (canSlide) {
+                const d = Math.random() < 0.5 ? -1 : 1;
+                if (x + d >= 0 && x + d < gw && grid[below + d] === 0) {
+                  grid[below + d] = c;
+                  grid[idx] = 0;
+                  continue;
+                }
+                if (x - d >= 0 && x - d < gw && grid[below - d] === 0) {
+                  grid[below - d] = c;
+                  grid[idx] = 0;
+                  continue;
+                }
               }
             }
             continue;
           }
+
           const d = Math.random() < 0.5 ? -1 : 1;
           if (x + d >= 0 && x + d < gw && grid[below + d] === 0) {
             grid[below + d] = c;
@@ -252,18 +288,22 @@ export default function FallingSandCanvas() {
             grid[idx] = 0;
             continue;
           }
-          if (c > 8) {
-            const dirs = Math.random() < 0.5 ? [1, -1] : [-1, 1];
-            for (const dd of dirs) {
-              const nx1 = x + dd;
-              if (nx1 < 0 || nx1 >= gw) continue;
-              if (grid[row + nx1] !== 0) continue;
-              const nx2 = x + dd * 2;
-              if (nx2 < 0 || nx2 >= gw) continue;
-              if (grid[row + nx2] !== 0) continue;
-              grid[row + nx2] = c;
-              grid[idx] = 0;
-              break;
+
+          if (isFluid) {
+            if (isAcid && Math.random() >= ACID_SPREAD_RATE) {
+            } else {
+              const dirs = Math.random() < 0.5 ? [1, -1] : [-1, 1];
+              for (const dd of dirs) {
+                const nx1 = x + dd;
+                if (nx1 < 0 || nx1 >= gw) continue;
+                if (grid[row + nx1] !== 0) continue;
+                const nx2 = x + dd * 2;
+                if (nx2 < 0 || nx2 >= gw) continue;
+                if (grid[row + nx2] !== 0) continue;
+                grid[row + nx2] = c;
+                grid[idx] = 0;
+                break;
+              }
             }
             if (grid[idx] === 0) continue;
           }
@@ -277,7 +317,7 @@ export default function FallingSandCanvas() {
       if (sim.grains >= total * SWITCH_THRESHOLD) {
         sim.grid.fill(0);
         sim.grains = 0;
-        sim.mode = sim.mode === 0 ? 1 : 0;
+        sim.mode = ((sim.mode + 1) % 3) as 0 | 1 | 2;
         generateObstacles(sim.grid, sim.gw, sim.gh);
       }
     }
@@ -337,7 +377,9 @@ export default function FallingSandCanvas() {
     function render() {
       draw();
       if (frameCount % 30 === 0 && readoutRef.current && sim) {
-        readoutRef.current.textContent = `${sim.mode === 1 ? "water" : "sand"} · ${sim.grains.toLocaleString()}`;
+        const material =
+          sim.mode === 1 ? "water" : sim.mode === 2 ? "acid" : "sand";
+        readoutRef.current.textContent = `${material} · ${sim.grains.toLocaleString()}`;
       }
       if (frameCount % 60 === 0 && sim) {
         saveToStorage(sim);
