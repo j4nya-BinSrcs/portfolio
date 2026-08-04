@@ -31,6 +31,7 @@ const WATER_STOPS: [number, number, number][] = [
 
 const WALL_COLOR: [number, number, number] = [35, 40, 55];
 const WALL = 255;
+const LS_KEY = "falling_sand_v2";
 
 interface Sim {
   gw: number;
@@ -47,6 +48,71 @@ function cellColor(c: number): [number, number, number] {
   return c > 8 ? WATER_STOPS[c - 9] : SAND_STOPS[c - 1];
 }
 
+function generateObstacles(grid: Uint8Array, gw: number, gh: number) {
+  const platformCount = 5 + Math.floor(Math.random() * 5);
+  for (let i = 0; i < platformCount; i++) {
+    const y = Math.floor(gh * 0.55 + Math.random() * gh * 0.35);
+    const x = Math.floor(Math.random() * gw * 0.5);
+    const w = Math.floor(gw * 0.12 + Math.random() * gw * 0.22);
+    for (let dx = 0; dx < w && x + dx < gw; dx++) {
+      grid[y * gw + x + dx] = WALL;
+    }
+  }
+  const wallCount = 3 + Math.floor(Math.random() * 4);
+  for (let i = 0; i < wallCount; i++) {
+    const x = Math.floor(gw * 0.15 + Math.random() * gw * 0.7);
+    const yStart = Math.floor(gh * 0.55 + Math.random() * gh * 0.25);
+    const h = Math.floor(gh * 0.1 + Math.random() * gh * 0.15);
+    for (let dy = 0; dy < h && yStart + dy < gh; dy++) {
+      grid[(yStart + dy) * gw + x] = WALL;
+    }
+  }
+  const diagCount = 2 + Math.floor(Math.random() * 3);
+  for (let i = 0; i < diagCount; i++) {
+    const startX = Math.floor(Math.random() * gw * 0.6);
+    const startY = Math.floor(gh * 0.6 + Math.random() * gh * 0.25);
+    const len = Math.floor(3 + Math.random() * 6);
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    for (let j = 0; j < len; j++) {
+      const px = startX + j * dir;
+      const py = startY + j;
+      if (px >= 0 && px < gw && py < gh) {
+        grid[py * gw + px] = WALL;
+      }
+    }
+  }
+}
+
+function loadFromStorage(): Sim | null {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data.gw || !data.gh || !data.grid) return null;
+    const grid = new Uint8Array(data.grid);
+    return { gw: data.gw, gh: data.gh, grid, grains: data.grains ?? 0, mode: data.mode ?? 0 };
+  } catch {
+    return null;
+  }
+}
+
+function saveToStorage(s: Sim) {
+  try {
+    localStorage.setItem(
+      LS_KEY,
+      JSON.stringify({
+        gw: s.gw,
+        gh: s.gh,
+        grid: Array.from(s.grid),
+        grains: s.grains,
+        mode: s.mode,
+      }),
+    );
+  } catch {
+    /* ignore */
+  }
+}
+
 export default function FallingSandCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const readoutRef = useRef<HTMLSpanElement>(null);
@@ -54,13 +120,9 @@ export default function FallingSandCanvas() {
   const reduce = useReducedMotion();
 
   function clearSand() {
-    if (sim) {
-      sim.grid.fill(0);
-      sim.grains = 0;
-      sim.mode = 0;
-    }
+    sim = null;
     try {
-      localStorage.removeItem("falling_sand_v1");
+      localStorage.removeItem(LS_KEY);
     } catch {
       /* ignore */
     }
@@ -94,14 +156,18 @@ export default function FallingSandCanvas() {
       rgba = img.data;
       const ngw = Math.max(1, Math.floor(w / CELL));
       const ngh = Math.max(1, Math.floor(h / CELL));
-      if (!sim || sim.gw !== ngw || sim.gh !== ngh) {
-        const ng = new Uint8Array(ngw * ngh);
-        let ng2 = 0;
-        if (sim && sim.gw === ngw && sim.gh === ngh) {
-          ng.set(sim.grid);
-          ng2 = sim.grains;
+      if (!sim) {
+        const saved = loadFromStorage();
+        if (saved && saved.gw === ngw && saved.gh === ngh) {
+          sim = saved;
+        } else {
+          sim = { gw: ngw, gh: ngh, grid: new Uint8Array(ngw * ngh), grains: 0, mode: 0 };
+          generateObstacles(sim.grid, ngw, ngh);
         }
-        sim = { gw: ngw, gh: ngh, grid: ng, grains: ng2, mode: sim?.mode ?? 0 };
+      } else if (sim.gw !== ngw || sim.gh !== ngh) {
+        const old = sim;
+        sim = { gw: ngw, gh: ngh, grid: new Uint8Array(ngw * ngh), grains: 0, mode: old.mode };
+        generateObstacles(sim.grid, ngw, ngh);
       }
     }
 
@@ -153,6 +219,22 @@ export default function FallingSandCanvas() {
             grid[idx] = 0;
             continue;
           }
+          if (grid[below] === WALL) {
+            if (c > 8) {
+              const d = Math.random() < 0.5 ? -1 : 1;
+              if (x + d >= 0 && x + d < gw && grid[below + d] === 0) {
+                grid[below + d] = c;
+                grid[idx] = 0;
+                continue;
+              }
+              if (x - d >= 0 && x - d < gw && grid[below - d] === 0) {
+                grid[below - d] = c;
+                grid[idx] = 0;
+                continue;
+              }
+            }
+            continue;
+          }
           const d = Math.random() < 0.5 ? -1 : 1;
           if (x + d >= 0 && x + d < gw && grid[below + d] === 0) {
             grid[below + d] = c;
@@ -166,20 +248,18 @@ export default function FallingSandCanvas() {
           }
           if (c > 8) {
             const dirs = Math.random() < 0.5 ? [1, -1] : [-1, 1];
-            const dists = Math.random() < 0.5 ? [1, 2] : [2, 1];
             for (const dd of dirs) {
-              for (const k of dists) {
-                const nx = x + dd * k;
-                if (nx < 0 || nx >= gw) continue;
-                const ni = row + nx;
-                if (grid[ni] === 0) {
-                  grid[ni] = c;
-                  grid[idx] = 0;
-                  break;
-                }
-              }
-              if (grid[idx] === 0) break;
+              const nx1 = x + dd;
+              if (nx1 < 0 || nx1 >= gw) continue;
+              if (grid[row + nx1] !== 0) continue;
+              const nx2 = x + dd * 2;
+              if (nx2 < 0 || nx2 >= gw) continue;
+              if (grid[row + nx2] !== 0) continue;
+              grid[row + nx2] = c;
+              grid[idx] = 0;
+              break;
             }
+            if (grid[idx] === 0) continue;
           }
         }
       }
@@ -192,35 +272,12 @@ export default function FallingSandCanvas() {
         sim.grid.fill(0);
         sim.grains = 0;
         sim.mode = 1;
-        generateObstacles();
+        generateObstacles(sim.grid, sim.gw, sim.gh);
       } else if (sim.mode === 1 && sim.grains >= total * 0.2) {
         sim.grid.fill(0);
         sim.grains = 0;
         sim.mode = 0;
-        generateObstacles();
-      }
-    }
-
-    function generateObstacles() {
-      if (!sim) return;
-      const { gw, gh } = sim;
-      const platformCount = 2 + Math.floor(Math.random() * 3);
-      for (let i = 0; i < platformCount; i++) {
-        const y = Math.floor(gh * 0.25 + Math.random() * gh * 0.5);
-        const x = Math.floor(Math.random() * gw * 0.6);
-        const w = Math.floor(gw * 0.15 + Math.random() * gw * 0.25);
-        for (let dx = 0; dx < w && x + dx < gw; dx++) {
-          sim.grid[y * gw + x + dx] = WALL;
-        }
-      }
-      const wallCount = Math.floor(Math.random() * 2);
-      for (let i = 0; i < wallCount; i++) {
-        const x = Math.floor(gw * 0.2 + Math.random() * gw * 0.6);
-        const yStart = Math.floor(gh * 0.3 + Math.random() * gh * 0.2);
-        const h = Math.floor(gh * 0.15 + Math.random() * gh * 0.2);
-        for (let dy = 0; dy < h && yStart + dy < gh; dy++) {
-          sim.grid[(yStart + dy) * gw + x] = WALL;
-        }
+        generateObstacles(sim.grid, sim.gw, sim.gh);
       }
     }
 
@@ -273,20 +330,7 @@ export default function FallingSandCanvas() {
         readoutRef.current.textContent = `${sim.mode === 1 ? "water" : "sand"} · ${sim.grains.toLocaleString()}`;
       }
       if (frameCount % 60 === 0 && sim) {
-        try {
-          localStorage.setItem(
-            "falling_sand_v1",
-            JSON.stringify({
-              gw: sim.gw,
-              gh: sim.gh,
-              grid: Array.from(sim.grid),
-              grains: sim.grains,
-              mode: sim.mode,
-            }),
-          );
-        } catch {
-          /* ignore */
-        }
+        saveToStorage(sim);
       }
     }
 
