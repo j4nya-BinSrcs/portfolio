@@ -49,7 +49,11 @@ const BRANDS: Record<string, BrandDef> = {
   Python: { path: siPython.path, color: "#3776AB" },
   Go: { path: siGo.path, color: "#00ADD8" },
   Rust: { path: siRust.path, color: "#F74C00" },
-   "C++": { path: siCplusplus.path, color: "#00599C" },
+  "C++": { path: siCplusplus.path, color: "#00599C" },
+  Java: {
+    path: "M6 11.5h12a3 3 0 0 1 0 6h-12a3 3 0 0 1 0-6zM16.5 12.5h2.2a2.6 2.6 0 1 1 0 5h-2.2z",
+    color: "#ED8B00",
+  },
   React: { path: siReact.path, color: "#61DAFB" },
   "Next.js": { path: siNextdotjs.path, color: "#E8DFC8" },
   "Tailwind CSS": { path: siTailwindcss.path, color: "#38BDF8" },
@@ -81,7 +85,6 @@ const BRANDS: Record<string, BrandDef> = {
 const WORDMARKS: Record<string, { label: string; color: string }> = {
   "CI/CD": { label: "CI/CD", color: "#E8DFC8" },
   gRPC: { label: "gRPC", color: "#4290FB" },
-  Java: { label: "Java", color: "#ED8B00" },
 };
 
 function useDockScale() {
