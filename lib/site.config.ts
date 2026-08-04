@@ -685,7 +685,7 @@ Design-token naming across three themes, and keeping SSR-safe theming that doesn
       {
         institution: "Sri Sri Ravishankar Vidhya Mandir, Ahmedabad",
         degree: "Physics · Chemistry · Maths",
-        period: "2022",
+        period: "Until 2022",
         achievement:
           "Built a strong foundation in mathematics, physics, and problem solving before transitioning into Computer Science.",
       },
@@ -696,19 +696,19 @@ Design-token naming across three themes, and keeping SSR-safe theming that doesn
         name: "Introduction to HTML, CSS, & JavaScript",
         image: "/certificates/ibm.png",
         year: "2025",
-        href: "/certificates/ibm.pdf",
+        href: "https://coursera.org/verify/7VS6NWHMVM9T",
       },
       {
         name: "Inheritance and Data Structures in Java",
         image: "/certificates/penn.png",
         year: "2025",
-        href: "/certificates/penn.pdf",
+        href: "https://coursera.org/verify/YGPXGU2NIRKG",
       },
       {
         name: "Introduction to Java",
         image: "/certificates/learnquest.png",
         year: "2025",
-        href: "/certificates/learnquest.pdf",
+        href: "https://coursera.org/verify/LHSW3WJ6N11E",
       },
     ],
   },
