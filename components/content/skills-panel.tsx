@@ -17,6 +17,12 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
 };
 
+const LEVEL_STYLES: Record<string, string> = {
+  Proficient: "border-ok/30 bg-ok/10 text-ok",
+  Comfortable: "border-accent/30 bg-accent/10 text-accent",
+  Learning: "border-err/30 bg-err/10 text-err",
+};
+
 export default function SkillsPanel() {
   return (
     <motion.div
@@ -31,18 +37,25 @@ export default function SkillsPanel() {
             <h3 className="text-[11px] font-semibold uppercase tracking-wider text-mute">
               {group.category}
             </h3>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4">
               {group.items.map((skill) => (
                 <ReflectCard
                   key={skill.name}
-                  className="group relative rounded-xl border border-line bg-panel/70 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_16px_-4px_rgba(232,223,200,0.2)]"
+                  className="group relative flex flex-col items-center space-y-1.5 rounded-xl border border-line bg-panel/70 p-2.5 pb-3 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_16px_-4px_rgba(232,223,200,0.2)]"
                 >
-                  <div className="flex items-center gap-2.5 p-3">
+                  <div className="flex h-[80px] w-full items-center justify-center">
                     <TechLogo name={skill.name} size="lg" />
-                    <span className="text-[12px] font-medium text-soft transition-colors duration-200 group-hover:text-tx">
-                      {skill.name}
-                    </span>
                   </div>
+                  <span className="w-full min-w-0 text-[12px] font-medium leading-tight text-soft transition-colors duration-200 group-hover:text-tx">
+                    {skill.name}
+                  </span>
+                  {"level" in skill && skill.level ? (
+                    <span
+                      className={`rounded-full border px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide ${LEVEL_STYLES[skill.level] ?? "border-line text-mute"}`}
+                    >
+                      {skill.level}
+                    </span>
+                  ) : null}
                 </ReflectCard>
               ))}
             </div>
@@ -63,7 +76,7 @@ export default function SkillsPanel() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.35, ease: EASE, delay: 0.03 * i }}
-                className="rounded-full border border-line bg-panel/70 px-3 py-1.5 text-[11px] font-medium text-soft transition-all duration-300 hover:border-accent/40 hover:text-tx hover:shadow-[0_0_12px_-4px_rgba(232,223,200,0.25)]"
+                className="rounded-full border border-line bg-panel/70 px-3 py-1 text-[12px] font-medium text-soft transition-all duration-300 hover:border-accent/40 hover:text-tx hover:shadow-[0_0_12px_-4px_rgba(232,223,200,0.25)]"
               >
                 {concept}
               </motion.span>
