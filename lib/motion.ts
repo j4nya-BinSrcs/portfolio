@@ -1,3 +1,5 @@
+import type { Variant } from "framer-motion";
+
 export const EASE = [0.22, 1, 0.36, 1] as const;
 
 export const panelVariants = {
@@ -11,7 +13,7 @@ export const panelTransition = { duration: 0.3, ease: EASE };
 export const revealContainer = {
   hidden: {},
   show: {
-    transition: { staggerChildren: 0.22, delayChildren: 0.1 },
+    transition: { staggerChildren: 0, delayChildren: 0.12 },
   },
 };
 
@@ -24,6 +26,64 @@ export const revealItem = {
     transition: { duration: 0.55, ease: EASE },
   },
 };
+
+function dashVariant(
+  initial: Variant,
+  target: Variant,
+  delay: number,
+  duration = 0.55,
+) {
+  return {
+    hidden: initial,
+    show: {
+      ...target,
+      transition: { duration, ease: EASE, delay },
+    },
+  };
+}
+
+export const dashboardReveal = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0, delayChildren: 0.12 },
+  },
+};
+
+export const enterHero = dashVariant(
+  { opacity: 0, y: -24, filter: "blur(6px)" },
+  { opacity: 1, y: 0, filter: "blur(0px)" },
+  0,
+);
+
+export const enterNav = dashVariant(
+  { opacity: 0, y: -20, filter: "blur(6px)" },
+  { opacity: 1, y: 0, filter: "blur(0px)" },
+  0.08,
+);
+
+export const enterSandbox = dashVariant(
+  { opacity: 0, x: -28, filter: "blur(5px)" },
+  { opacity: 1, x: 0, filter: "blur(0px)" },
+  0.36,
+);
+
+export const enterInfo = dashVariant(
+  { opacity: 0, filter: "blur(6px)" },
+  { opacity: 1, filter: "blur(0px)" },
+  0.52,
+);
+
+export const enterInfoRow = dashVariant(
+  { opacity: 0, filter: "blur(6px)" },
+  { opacity: 1, filter: "blur(0px)" },
+  0.56,
+);
+
+export const enterContent = dashVariant(
+  { opacity: 0, x: 28, filter: "blur(5px)" },
+  { opacity: 1, x: 0, filter: "blur(0px)" },
+  0.86,
+);
 
 export const slideInLeft = {
   hidden: { opacity: 0, x: -16, filter: "blur(4px)" },

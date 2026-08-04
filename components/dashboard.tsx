@@ -2,10 +2,13 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import {
-  revealContainer,
-  revealItem,
-  slideInLeft,
-  slideInRight,
+  dashboardReveal,
+  enterHero,
+  enterNav,
+  enterSandbox,
+  enterInfo,
+  enterInfoRow,
+  enterContent,
 } from "@/lib/motion";
 import { SectionProvider } from "./section-provider";
 import { useBoot } from "./boot-provider";
@@ -27,18 +30,15 @@ export default function Dashboard() {
     <SectionProvider>
       <div className="flex min-h-dvh w-full flex-col items-center px-4 py-6 sm:px-8 lg:h-dvh lg:overflow-hidden lg:px-0 lg:py-0">
         <motion.div
-          variants={reduce ? undefined : revealContainer}
+          variants={reduce ? undefined : dashboardReveal}
           initial={reduce ? false : "hidden"}
           animate={booted ? "show" : "hidden"}
           className="my-auto grid w-full grid-cols-1 gap-3 lg:flex lg:h-[71.5vh] lg:w-[70vw] lg:max-w-[1600px] lg:items-stretch lg:gap-3"
         >
-          <motion.div
-            variants={reduce ? undefined : slideInLeft}
-            className="flex w-full min-w-0 flex-col gap-3 lg:w-[495px] lg:shrink-0"
-          >
+          <div className="flex w-full min-w-0 flex-col gap-3 lg:w-[495px] lg:shrink-0">
             <div className="flex flex-col gap-3 lg:flex-row">
               <motion.div
-                variants={reduce ? undefined : revealItem}
+                variants={reduce ? undefined : enterHero}
                 whileHover={pop}
                 className="min-w-0 flex-1"
               >
@@ -46,7 +46,7 @@ export default function Dashboard() {
               </motion.div>
 
               <motion.div
-                variants={reduce ? undefined : revealItem}
+                variants={reduce ? undefined : enterNav}
                 className="min-w-0 lg:w-[170px]"
               >
                 <NavRail />
@@ -54,7 +54,7 @@ export default function Dashboard() {
             </div>
 
             <motion.div
-              variants={reduce ? undefined : revealItem}
+              variants={reduce ? undefined : enterInfo}
               whileHover={pop}
               className="min-w-0"
             >
@@ -63,7 +63,7 @@ export default function Dashboard() {
 
             <div className="flex flex-col gap-3 lg:flex-row">
               <motion.div
-                variants={reduce ? undefined : revealItem}
+                variants={reduce ? undefined : enterInfoRow}
                 whileHover={pop}
                 className="min-w-0 flex-1"
               >
@@ -71,7 +71,7 @@ export default function Dashboard() {
               </motion.div>
 
               <motion.div
-                variants={reduce ? undefined : revealItem}
+                variants={reduce ? undefined : enterInfoRow}
                 whileHover={pop}
                 className="min-w-0 lg:w-[112px]"
               >
@@ -80,16 +80,16 @@ export default function Dashboard() {
             </div>
 
             <motion.div
-              variants={reduce ? undefined : revealItem}
+              variants={reduce ? undefined : enterSandbox}
               whileHover={pop}
               className="min-w-0 flex-1"
             >
               <SandboxStack />
             </motion.div>
-          </motion.div>
+          </div>
 
           <motion.div
-            variants={reduce ? undefined : slideInRight}
+            variants={reduce ? undefined : enterContent}
             className="min-w-0 lg:flex-1"
           >
             <ContentPanel />
