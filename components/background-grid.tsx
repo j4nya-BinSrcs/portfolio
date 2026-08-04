@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { canvasColors } from "@/lib/theme-colors";
-import { useTheme } from "@/components/theme-provider";
 
 type Point = {
   bx: number;
@@ -28,7 +26,6 @@ const DAMPING = 0.84;
 
 export default function BackgroundGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { resolved } = useTheme();
 
   useEffect(() => {
     const element = canvasRef.current;
@@ -41,9 +38,6 @@ export default function BackgroundGrid() {
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-
-    const colors = canvasColors[resolved];
-    const lineRgba = `rgba(${colors.bg.join(",")},${colors.gridAlpha})`;
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let width = window.innerWidth;
@@ -111,7 +105,7 @@ export default function BackgroundGrid() {
         ctx.clearRect(0, 0, width, height);
 
         ctx.lineWidth = 1;
-        ctx.strokeStyle = lineRgba;
+        ctx.strokeStyle = "rgba(246, 242, 232, 0.12)";
         ctx.beginPath();
         for (let i = 0; i < points.length; i++) {
           const p = points[i];
@@ -140,10 +134,8 @@ export default function BackgroundGrid() {
             node.y,
             r,
           );
-          const c = colors.bg;
-          const midRgba = `rgba(${c.join(",")},${0.06 * alpha})`;
-          grad.addColorStop(0, midRgba);
-          grad.addColorStop(1, "rgba(0,0,0,0)");
+          grad.addColorStop(0, `rgba(232, 223, 200, ${0.1 * alpha})`);
+          grad.addColorStop(1, "rgba(232, 223, 200, 0)");
           ctx.fillStyle = grad;
           ctx.beginPath();
           ctx.arc(node.x, node.y, r, 0, Math.PI * 2);
@@ -197,7 +189,7 @@ export default function BackgroundGrid() {
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("resize", resize);
     };
-  }, [resolved]);
+  }, []);
 
   return (
     <canvas
