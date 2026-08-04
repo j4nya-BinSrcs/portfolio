@@ -1,5 +1,6 @@
 "use client";
 
+import useSWR from "swr";
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
@@ -9,28 +10,35 @@ import {
   Heart,
   Gauge,
   GitCommit,
-  MonitorCog,
   Boxes,
-  Accessibility as A11y,
   GitBranch,
   TerminalSquare,
-  Sparkles,
+  Grid3X3,
+  Wrench,
+  Compass,
+  ListOrdered,
+  Star,
+  FolderGit2,
+  User,
+  Target,
+  Settings,
 } from "lucide-react";
 import { siteConfig } from "@/lib/site.config";
 import { EASE } from "@/lib/motion";
+import { fetchGitHubStats, generateContributionGraph, cellColor, type GitHubCommit } from "@/lib/github";
 import ReflectCard from "../reflect-card";
+import TechLogo from "./tech-logo";
 
 const principleIcons: Record<string, typeof Heart> = {
-  minimalism: Sparkles,
+  minimalism: Grid3X3,
   performance: Gauge,
   "open-source": Boxes,
-  accessibility: A11y,
 };
 
 const currentlyIcons: Record<string, typeof Heart> = {
   learning: BookOpen,
   building: Hammer,
-  exploring: FlaskConical,
+  researching: FlaskConical,
 };
 
 const container = {
@@ -45,11 +53,38 @@ const item = {
 
 export default function AboutPanel() {
   const { about } = siteConfig;
-  const graph = useMemo(
-    () => buildGraph(about.github.graphSeed, 24, 7),
-    [about.github.graphSeed],
+  const { data: githubStats } = useSWR(
+    "/api/github/stats",
+    () => fetchGitHubStats(),
+    { refreshInterval: 300000, revalidateOnFocus: true }
   );
-  const maxCell = Math.max(...graph.flat());
+  const { data: githubCommits } = useSWR<GitHubCommit[]>(
+    "/api/github/commits",
+    () => fetch("/api/github/commits").then((r) => r.json()),
+    { refreshInterval: 300000, revalidateOnFocus: true }
+  );
+
+  const isLive = githubCommits != null;
+  const commits = isLive
+    ? githubCommits?.slice(0, 5) ?? []
+    : about.github.commits.slice(0, 5).map((c) => ({
+        sha: c.sha,
+        commit: {
+          message: c.message,
+          author: { name: "", date: c.date },
+        },
+        repo: c.repo,
+      }));
+  const graph = useMemo(
+    () => generateContributionGraph(githubCommits ?? [], 120),
+    [githubCommits]
+  );
+  const stats = githubStats ?? {
+    repos: about.github.repos,
+    stars: about.github.stars,
+    followers: 0,
+    following: 0,
+  };
 
   return (
     <motion.div
@@ -60,6 +95,7 @@ export default function AboutPanel() {
     >
       <motion.section variants={item} className="space-y-3">
         <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+          <User className="h-3.5 w-3.5" aria-hidden="true" />
           {about.title}
         </h3>
         <motion.ul variants={item} className="space-y-1">
@@ -76,6 +112,7 @@ export default function AboutPanel() {
 
       <motion.section variants={item} className="space-y-3">
         <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+          <Target className="h-3.5 w-3.5" aria-hidden="true" />
           {about.currentlyLabel}
         </h3>
         <div className="grid gap-3 sm:grid-cols-3">
@@ -113,6 +150,7 @@ export default function AboutPanel() {
       >
         <div className="space-y-3">
           <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+            <Settings className="h-3.5 w-3.5" aria-hidden="true" />
             {about.principlesLabel}
           </h3>
           <div className="grid gap-2.5 sm:grid-cols-2">
@@ -129,7 +167,9 @@ export default function AboutPanel() {
                     </span>
                     <div>
                       <p className="text-sm font-semibold text-tx">{p.label}</p>
-                      <p className="mt-0.5 text-xs leading-relaxed text-mute">{p.text}</p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-mute whitespace-pre-line">
+                        {p.text}
+                      </p>
                     </div>
                   </div>
                 </ReflectCard>
@@ -138,23 +178,70 @@ export default function AboutPanel() {
           </div>
         </div>
 
+        <div className="space-y-3 lg:border-l lg:border-line lg:pl-4">
+          <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+            <ListOrdered className="h-3.5 w-3.5" aria-hidden="true" />
+            {about.engineeringRulesLabel}
+          </h3>
+          <div className="space-y-3">
+            {about.engineeringRules.map((rule) => (
+              <div
+                key={rule.number}
+                className="flex items-baseline gap-2"
+              >
+                <span className="font-mono text-xs text-accent">{rule.number}</span>
+                <span className="text-sm text-soft">{rule.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      <motion.section
+        variants={item}
+        className="grid items-start gap-5 lg:grid-cols-[1fr_1.5fr]"
+      >
+        <div className="space-y-3">
+          <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+            <Compass className="h-3.5 w-3.5" aria-hidden="true" />
+            {about.engineeringInterestsLabel}
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {about.engineeringInterests.map((interest) => (
+              <span
+                key={interest}
+                className="rounded-full border border-line bg-panel/70 px-3 py-1 text-xs text-soft transition-colors duration-300 hover:border-line-strong"
+              >
+                {interest}
+              </span>
+            ))}
+          </div>
+        </div>
+
         <div className="space-y-3 lg:border-l lg:border-line lg:pl-5">
           <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
-            {about.preferencesLabel}
+            <Wrench className="h-3.5 w-3.5" aria-hidden="true" />
+            {about.workbenchLabel}
           </h3>
-          <div className="flex flex-col gap-2.5">
-            {about.preferences.map((p) => (
-              <ReflectCard
-                key={p.label}
-                className="rounded-lg border border-line bg-panel/70 transition-colors duration-300"
-              >
-                <span className="flex items-center gap-2 px-3.5 py-2.5 text-sm text-soft">
-                  <MonitorCog className="h-4 w-4 text-accent" aria-hidden="true" />
-                  <span className="text-mute">{p.label}:</span>
-                  <span className="font-medium text-tx">{p.value}</span>
-                </span>
-              </ReflectCard>
-            ))}
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            {about.workbench.map((w) => {
+              return (
+                <ReflectCard
+                  key={w.value}
+                  className="rounded-xl border border-line bg-panel/70 transition-colors duration-300"
+                >
+                  <div className="flex items-start gap-3 p-3.5">
+                    <TechLogo name={w.value} size="lg" />
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-soft">
+                        {w.category}
+                      </p>
+                      <p className="mt-0.5 text-sm font-medium text-tx">{w.value}</p>
+                    </div>
+                  </div>
+                </ReflectCard>
+              );
+            })}
           </div>
         </div>
       </motion.section>
@@ -162,30 +249,29 @@ export default function AboutPanel() {
       <motion.section variants={item} className="space-y-3">
         <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
           <GitCommit className="h-3.5 w-3.5" aria-hidden="true" />
-          Recent commits
+          {about.activityLabel}
         </h3>
         <div className="flex items-start gap-6">
-          <ul className="min-w-0 max-w-[420px] flex-1 space-y-0.5">
-            {about.github.commits.map((c, i) => (
+          <div className="min-w-0 w-[65%] space-y-0.5">
+            {commits.map((c, i) => (
               <motion.li
                 key={`${c.repo}-${c.sha}`}
                 initial={{ opacity: 0, x: -14 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, ease: EASE, delay: 0.05 * i }}
-                className="flex items-center gap-2 rounded-lg px-2 py-1 text-xs transition-colors hover:bg-bg-elevated"
+                className="flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-soft transition-colors duration-200 hover:bg-bg-elevated hover:text-tx cursor-pointer"
               >
                 <GitBranch className="h-3.5 w-3.5 shrink-0 text-accent" aria-hidden="true" />
                 <span className="w-24 shrink-0 truncate font-medium text-soft">{c.repo}</span>
-                <span className="flex-1 truncate text-mute">{c.message}</span>
-                <span className="shrink-0 font-mono text-mute/70">{c.date}</span>
-                <span className="hidden shrink-0 rounded border border-line px-1.5 py-0.5 font-mono text-[10px] text-mute sm:inline">
-                  {c.sha}
+                <span className="flex-1 truncate text-mute">
+                  {c.commit.message.split("\n")[0]}
                 </span>
+                <span className="shrink-0 font-mono text-mute/70">{c.commit.author.date}</span>
               </motion.li>
             ))}
-          </ul>
+          </div>
 
-          <div className="shrink-0">
+          <div className="shrink-0 space-y-3">
             <div className="rounded-xl border border-line bg-panel/70 p-3.5">
               <div className="flex items-center justify-between gap-6">
                 <p className="font-mono text-[10px] uppercase tracking-wider text-mute">
@@ -199,12 +285,25 @@ export default function AboutPanel() {
                     {week.map((level, di) => (
                       <span
                         key={di}
-                        className="h-[9px] w-[9px] rounded-[2px] transition-colors duration-200"
-                        style={{ backgroundColor: cellColor(level, maxCell) }}
+                        className="h-[9px] w-[9px] rounded-[2px] transition-colors duration-200 hover:ring-1 hover:ring-accent/50"
+                        style={{ backgroundColor: cellColor(level) }}
                       />
                     ))}
                   </div>
                 ))}
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <div className="flex items-center gap-2 rounded-lg border border-line bg-panel/70 px-4 py-1.5">
+                <FolderGit2 className="h-3 w-3 text-accent" aria-hidden="true" />
+                <span className="text-[10px] uppercase tracking-wider text-mute">Repos</span>
+                <span className="text-sm font-semibold text-tx">{stats.repos}</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border border-line bg-panel/70 px-4 py-1.5">
+                <Star className="h-3 w-3 text-accent" aria-hidden="true" />
+                <span className="text-[10px] uppercase tracking-wider text-mute">Stars</span>
+                <span className="text-sm font-semibold text-tx">{stats.stars}</span>
               </div>
             </div>
           </div>
@@ -214,26 +313,3 @@ export default function AboutPanel() {
   );
 }
 
-function buildGraph(seed: number, weeks: number, days: number) {
-  let state = seed >>> 0;
-  const rand = () => {
-    state = (state * 1664525 + 1013904223) >>> 0;
-    return state / 4294967296;
-  };
-  return Array.from({ length: weeks }, () =>
-    Array.from({ length: days }, () => {
-      const r = rand();
-      if (r > 0.45) return 0;
-      if (r > 0.3) return 1;
-      if (r > 0.17) return 2;
-      if (r > 0.08) return 3;
-      return 4;
-    }),
-  );
-}
-
-function cellColor(level: number, max: number) {
-  if (level === 0) return "rgba(246,242,232,0.06)";
-  const alpha = 0.12 + (level / (max || 4)) * 0.5;
-  return `rgba(232,223,200,${alpha.toFixed(3)})`;
-}

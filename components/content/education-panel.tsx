@@ -74,7 +74,7 @@ export default function EducationPanel() {
                 transition={{ duration: 0.45, ease: EASE, delay: 0.05 * i }}
                 className="w-40 shrink-0"
               >
-                <ReflectCard className="group rounded-xl border border-line bg-panel/70 transition-all duration-300 hover:-translate-y-1 hover:rotate-1 hover:shadow-[0_0_30px_-8px_rgba(232,223,200,0.45)]">
+                <ReflectCard className="group rounded-xl border border-line bg-panel/70 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_-8px_rgba(232,223,200,0.45)]">
                   <a
                     href={cert.href}
                     target="_blank"

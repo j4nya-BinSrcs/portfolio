@@ -69,7 +69,7 @@ export const siteConfig = {
         id: "mathematics",
         tag: "Mathematics",
         title: "Fractals",
-        hint: "Mandelbrot · Julia · Sierpinski · dragon",
+        hint: "Mandelbrot · Julia · dragon curve",
       },
       {
         id: "physics",
@@ -84,68 +84,85 @@ export const siteConfig = {
   about: {
     title: "About me",
     intro: [
-      "Full-stack engineer obsessed with calm, precise systems.",
-      "I build interfaces that feel engineered, not decorated.",
-      "Comfortable from distributed backends to the last 8px of a UI.",
-      "Believer in small tools that compose into large ones.",
+      "I build software that is calm, predictable, and enjoyable to use.",
+      "Interested in systems where infrastructure, developer experience, and design intersect.",
+      "Comfortable moving from backend architecture to polished user interfaces.",
+      "I enjoy building small tools that compose into larger ecosystems.",
     ],
-    currentlyLabel: "Currently",
-    currently: [
-      {
-        key: "learning",
-        label: "Learning",
-        items: ["WebGPU", "local-first sync", "compiler internals"],
-      },
-      {
-        key: "building",
-        label: "Building",
-        items: [
-          "edge-first note tool",
-          "open-source CLI",
-          "design-system tokens",
-        ],
-      },
-      {
-        key: "exploring",
-        label: "Exploring",
-        items: ["Rust tooling", "agentic workflows", "CRDTs"],
-      },
-    ],
-    principlesLabel: "Principles",
-    principles: [
-      {
-        key: "minimalism",
-        label: "Minimalism",
-        text: "Fewer moving parts, fewer surprises.",
-      },
-      {
-        key: "performance",
-        label: "Performance",
-        text: "Latency is a feature; sweat the last millisecond.",
-      },
-      {
-        key: "open-source",
-        label: "Open Source",
-        text: "Give back everything you've learned.",
-      },
-      {
-        key: "accessibility",
-        label: "Accessibility",
-        text: "Everyone deserves a first-class experience.",
-      },
-    ],
-    preferencesLabel: "Preferences",
-    preferences: [
-      { label: "Code editor", value: "Zed" },
-      { label: "Terminal", value: "Ghostty" },
-      { label: "Operating system", value: "Arch Linux" },
-      { label: "Color scheme", value: "Catppuccin" },
-    ],
-    github: {
-      username: "jordanreyes",
-      profileUrl: "https://github.com/jordanreyes",
-      graphSeed: 7,
-      commits: [
+currentlyLabel: "Currently",
+      currently: [
+        {
+          key: "learning",
+          label: "Learning",
+          items: ["Agentic workflows", "Async Rust", "Search indexing"],
+        },
+        {
+          key: "building",
+          label: "Building",
+          items: [
+            "Qwry: Search Engine",
+            "GlyphStream: terminal renderer",
+            "Portfolio sandbox widgets",
+          ],
+        },
+        {
+          key: "researching",
+          label: "Researching",
+          items: ["Graphics programming", "Rendering pipelines", "Browser internals"],
+        },
+      ],
+      principlesLabel: "Engineering Principles",
+      principles: [
+        {
+          key: "minimalism",
+          label: "Minimalism",
+          text: "Compose complex software from simple parts.",
+        },
+        {
+          key: "performance",
+          label: "Performance",
+          text: "Latency is a feature.\nEvery millisecond matters.",
+        },
+        {
+          key: "open-source",
+          label: "Open-Source",
+          text: "Knowledge compounds when it's shared.",
+        },
+      ],
+      engineeringRulesLabel: "Engineering Rules",
+      engineeringRules: [
+        { number: "01", text: "Make it work." },
+        { number: "02", text: "Make it understandable." },
+        { number: "03", text: "Make it fast." },
+        { number: "04", text: "Make it maintainable." },
+        { number: "05", text: "Make it automatic." },
+      ],
+      workbenchLabel: "Workbench",
+      workbench: [
+        { category: "Editor", value: "Zed" },
+        { category: "Terminal", value: "Ghostty" },
+        { category: "Operating System", value: "Arch Linux" },
+        { category: "Compositor", value: "Hyprland" },
+      ],
+      engineeringInterestsLabel: "Engineering Interests",
+      engineeringInterests: [
+        "Computer Graphics",
+        "Developer Tools",
+        "Performance Engineering",
+        "Search Systems",
+        "Linux Customization",
+        "Simulations",
+        "Shader Programs",
+        "Physics Engines",
+      ],
+      activityLabel: "Activity",
+      github: {
+        username: "j4nya-BinSrcs",
+        profileUrl: "https://github.com/j4nya-BinSrcs",
+        graphSeed: 7,
+        repos: 42,
+        stars: 128,
+        commits: [
         {
           repo: "quillspace",
           message: "feat: multiplayer cursor presence",

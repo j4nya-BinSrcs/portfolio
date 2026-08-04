@@ -29,6 +29,9 @@ const WATER_STOPS: [number, number, number][] = [
   [58, 156, 220],
 ];
 
+const WALL_COLOR: [number, number, number] = [35, 40, 55];
+const WALL = 255;
+
 interface Sim {
   gw: number;
   gh: number;
@@ -40,6 +43,7 @@ interface Sim {
 let sim: Sim | null = null;
 
 function cellColor(c: number): [number, number, number] {
+  if (c === WALL) return WALL_COLOR;
   return c > 8 ? WATER_STOPS[c - 9] : SAND_STOPS[c - 1];
 }
 
@@ -141,7 +145,7 @@ export default function FallingSandCanvas() {
           const x = goRight ? i : gw - 1 - i;
           const idx = row + x;
           const c = grid[idx];
-          if (c === 0) continue;
+          if (c === 0 || c === WALL) continue;
           if (y + 1 >= gh) continue;
           const below = idx + gw;
           if (grid[below] === 0) {
@@ -188,10 +192,35 @@ export default function FallingSandCanvas() {
         sim.grid.fill(0);
         sim.grains = 0;
         sim.mode = 1;
+        generateObstacles();
       } else if (sim.mode === 1 && sim.grains >= total * 0.2) {
         sim.grid.fill(0);
         sim.grains = 0;
         sim.mode = 0;
+        generateObstacles();
+      }
+    }
+
+    function generateObstacles() {
+      if (!sim) return;
+      const { gw, gh } = sim;
+      const platformCount = 2 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < platformCount; i++) {
+        const y = Math.floor(gh * 0.25 + Math.random() * gh * 0.5);
+        const x = Math.floor(Math.random() * gw * 0.6);
+        const w = Math.floor(gw * 0.15 + Math.random() * gw * 0.25);
+        for (let dx = 0; dx < w && x + dx < gw; dx++) {
+          sim.grid[y * gw + x + dx] = WALL;
+        }
+      }
+      const wallCount = Math.floor(Math.random() * 2);
+      for (let i = 0; i < wallCount; i++) {
+        const x = Math.floor(gw * 0.2 + Math.random() * gw * 0.6);
+        const yStart = Math.floor(gh * 0.3 + Math.random() * gh * 0.2);
+        const h = Math.floor(gh * 0.15 + Math.random() * gh * 0.2);
+        for (let dy = 0; dy < h && yStart + dy < gh; dy++) {
+          sim.grid[(yStart + dy) * gw + x] = WALL;
+        }
       }
     }
 

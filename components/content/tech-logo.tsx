@@ -4,9 +4,11 @@ import { useRef } from "react";
 import type { MouseEvent } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import {
+  siArchlinux,
   siDocker,
   siGo,
   siGraphql,
+  siHyprland,
   siJavascript,
   siKubernetes,
   siNextdotjs,
@@ -19,6 +21,8 @@ import {
   siTailwindcss,
   siTerraform,
   siTypescript,
+  siGhostty,
+  siZedindustries,
 } from "simple-icons";
 
 const AWS_PATH =
@@ -43,6 +47,10 @@ const BRANDS: Record<string, BrandDef> = {
   Kubernetes: { path: siKubernetes.path, color: "#326CE5" },
   AWS: { path: AWS_PATH, color: "#FF9900" },
   Terraform: { path: siTerraform.path, color: "#7B42BC" },
+  Zed: { path: siZedindustries.path, color: "#FFFFFF" },
+  Ghostty: { path: siGhostty.path, color: "#F5C2E7" },
+  "Arch Linux": { path: siArchlinux.path, color: "#1793D1" },
+  Hyprland: { path: siHyprland.path, color: "#E8DFC8" },
 };
 
 const WORDMARKS: Record<string, { label: string; color: string }> = {

@@ -42,7 +42,7 @@ export default function SocialRow() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={github.label}
-          whileHover={{ y: -3, scale: 1.04, rotate: 5 }}
+          whileHover={{ y: -3, scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
           transition={{ type: "spring", stiffness: 400, damping: 22 }}
           className={`${cell} col-span-2`}
@@ -56,7 +56,7 @@ export default function SocialRow() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={x.label}
-          whileHover={{ y: -3, scale: 1.04, rotate: 5 }}
+          whileHover={{ y: -3, scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
           transition={{ type: "spring", stiffness: 400, damping: 22 }}
           className={cell}
@@ -70,7 +70,7 @@ export default function SocialRow() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={linkedin.label}
-          whileHover={{ y: -3, scale: 1.04, rotate: 5 }}
+          whileHover={{ y: -3, scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
           transition={{ type: "spring", stiffness: 400, damping: 22 }}
           className={cell}

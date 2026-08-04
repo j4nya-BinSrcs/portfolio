@@ -18,7 +18,6 @@ const ZOOM_PER_FRAME = 1.008;
 const SWITCH_MS = 6000;
 const ACCENT = "rgb(232,223,200)";
 const BG = "rgb(8,10,18)";
-const T = 1.6;
 
 type PixelFn = (cre: number, cim: number, budget: number) => [number, boolean];
 
@@ -64,93 +63,8 @@ function juliaPixel(
   return [((nu % CYCLE) / CYCLE + 1) % 1, false];
 }
 
-const TRI_A = [0, -T * (Math.sqrt(3) / 3)];
-const TRI_B = [-T / 2, T * (Math.sqrt(3) / 6)];
-const TRI_C = [T / 2, T * (Math.sqrt(3) / 6)];
-
-function sign(
-  px: number,
-  py: number,
-  ax: number,
-  ay: number,
-  bx: number,
-  by: number,
-): number {
-  return (px - bx) * (ay - by) - (ax - bx) * (py - by);
-}
-
-function pointInTriangle(
-  px: number,
-  py: number,
-  ax: number,
-  ay: number,
-  bx: number,
-  by: number,
-  cx: number,
-  cy: number,
-): boolean {
-  const d1 = sign(px, py, ax, ay, bx, by);
-  const d2 = sign(px, py, bx, by, cx, cy);
-  const d3 = sign(px, py, cx, cy, ax, ay);
-  const neg = d1 < 0 || d2 < 0 || d3 < 0;
-  const pos = d1 > 0 || d2 > 0 || d3 > 0;
-  return !(neg && pos);
-}
-
-function sierpinskiPixel(
-  cre: number,
-  cim: number,
-  budget: number,
-): [number, boolean] {
-  if (
-    !pointInTriangle(cre, cim, TRI_A[0], TRI_A[1], TRI_B[0], TRI_B[1], TRI_C[0], TRI_C[1])
-  ) {
-    return [0, true];
-  }
-  let ax = TRI_A[0];
-  let ay = TRI_A[1];
-  let bx = TRI_B[0];
-  let by = TRI_B[1];
-  let cx = TRI_C[0];
-  let cy = TRI_C[1];
-  let depth = 0;
-  while (depth < budget) {
-    const mABx = (ax + bx) / 2;
-    const mABy = (ay + by) / 2;
-    const mBCx = (bx + cx) / 2;
-    const mBCy = (by + cy) / 2;
-    const mCAx = (cx + ax) / 2;
-    const mCAy = (cy + ay) / 2;
-    if (pointInTriangle(cre, cim, mABx, mABy, mBCx, mBCy, mCAx, mCAy)) {
-      return [depth / budget, false];
-    }
-    if (pointInTriangle(cre, cim, ax, ay, mABx, mABy, mCAx, mCAy)) {
-      bx = mABx;
-      by = mABy;
-      cx = mCAx;
-      cy = mCAy;
-    } else if (pointInTriangle(cre, cim, mABx, mABy, bx, by, mBCx, mBCy)) {
-      ax = mABx;
-      ay = mABy;
-      cx = mBCx;
-      cy = mBCy;
-    } else {
-      ax = mCAx;
-      ay = mCAy;
-      bx = mBCx;
-      by = mBCy;
-    }
-    depth++;
-  }
-  return [1, false];
-}
-
 function budgetEscape(scale: number): number {
   return Math.min(600, Math.floor(120 + Math.log2(Math.max(1, scale)) * 18));
-}
-
-function budgetSierpinski(scale: number): number {
-  return Math.min(28, 8 + Math.ceil(Math.log2(Math.max(1, scale))));
 }
 
 interface Viewport {
@@ -242,7 +156,6 @@ type FractalDef = PixelDef | LineDef;
 const FRACTALS: FractalDef[] = [
   { kind: "pixel", name: "Mandelbrot", cx: -0.743643887037151, cy: 0.13182590420533, span: 3.2, pixel: mandelbrotPixel, budget: budgetEscape },
   { kind: "pixel", name: "Julia", cx: 0.25, cy: 0.52, span: 3.2, pixel: juliaPixel, budget: budgetEscape },
-  { kind: "pixel", name: "Sierpinski triangle", cx: 0, cy: T * (Math.sqrt(3) / 6), span: 2.8, pixel: sierpinskiPixel, budget: budgetSierpinski },
   { kind: "line", name: "Dragon curve", cx: 0, cy: 0, span: 2.6, draw: drawDragon },
 ];
 
