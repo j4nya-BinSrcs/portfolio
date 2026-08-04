@@ -3,8 +3,6 @@
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 import { drawSubtleGrid } from "@/lib/canvas-grid";
-import { canvasColors } from "@/lib/theme-colors";
-import { useTheme } from "@/components/theme-provider";
 
 const STOPS: [number, number, number][] = [
   [6, 8, 14],
@@ -19,6 +17,8 @@ const STOPS: [number, number, number][] = [
 const CYCLE = 24;
 const ZOOM_PER_FRAME = 1.008;
 const SWITCH_MS = 6000;
+const ACCENT = "rgb(232,223,200)";
+const BG = "rgb(8,10,18)";
 
 type PixelFn = (cre: number, cim: number, budget: number) => [number, boolean];
 
@@ -82,7 +82,6 @@ type LineDraw = (
   vp: Viewport,
   xf: (x: number) => number,
   yf: (y: number) => number,
-  colors: { bg: [number, number, number]; accent: [number, number, number] },
 ) => void;
 
 const DRAGON_L = 1.7;
@@ -118,16 +117,8 @@ function dragonMid(
   dragonMid(n - 1, bx, by, cx, cy, vp, xf, yf, g);
 }
 
-function drawDragon(
-  g: CanvasRenderingContext2D,
-  w: number,
-  h: number,
-  vp: Viewport,
-  xf: (x: number) => number,
-  yf: (y: number) => number,
-  colors: { bg: [number, number, number]; accent: [number, number, number] },
-) {
-  g.fillStyle = `rgb(${colors.bg.join(",")})`;
+function drawDragon(g: CanvasRenderingContext2D, w: number, h: number, vp: Viewport, xf: (x: number) => number, yf: (y: number) => number) {
+  g.fillStyle = BG;
   g.fillRect(0, 0, w, h);
   const pixelWorld = (vp.right - vp.left) / w;
   const depth = Math.min(22, Math.max(4, Math.ceil(2 * Math.log2(DRAGON_L / (pixelWorld * 2)))));
@@ -135,7 +126,7 @@ function drawDragon(
   const ay = -0.17 * DRAGON_L;
   const bx = ax + DRAGON_L;
   const by = ay;
-  g.strokeStyle = `rgb(${colors.accent.join(",")})`;
+  g.strokeStyle = ACCENT;
   g.lineWidth = 1.25;
   g.beginPath();
   dragonMid(depth, ax, ay, bx, by, vp, xf, yf, g);
@@ -172,7 +163,7 @@ const FRACTALS: FractalDef[] = [
 let fractalIndex = 0;
 let sharedScale = 1;
 
-function interpolateStops(t: number): [number, number, number] {
+function palette(t: number): [number, number, number] {
   const pos = ((t % 1) + 1) % 1;
   const scaled = pos * (STOPS.length - 1);
   const i = Math.floor(scaled);
@@ -190,8 +181,6 @@ export default function FractalCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const readoutRef = useRef<HTMLSpanElement>(null);
   const reduce = useReducedMotion();
-  const { resolved } = useTheme();
-  const palette = canvasColors[resolved];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -200,8 +189,6 @@ export default function FractalCanvas() {
     const context = canvasEl.getContext("2d", { alpha: false });
     if (!context) return;
     const c2d = context;
-
-    const gridRgba = `rgba(${palette.grid.join(",")},${palette.gridAlpha})`;
 
     const geo = document.createElement("canvas");
     const geoCtxRaw = geo.getContext("2d");
@@ -262,13 +249,12 @@ export default function FractalCanvas() {
           const cre = left + (px / width) * spanX;
           const [t, inSet] = def.pixel(cre, cim, budget);
           if (inSet) {
-            const bg = palette.fractalInSet;
-            buf[idx] = bg[0];
-            buf[idx + 1] = bg[1];
-            buf[idx + 2] = bg[2];
+            buf[idx] = 8;
+            buf[idx + 1] = 10;
+            buf[idx + 2] = 18;
             buf[idx + 3] = 255;
           } else {
-            const [r, g, b] = interpolateStops(t);
+            const [r, g, b] = palette(t);
             buf[idx] = r;
             buf[idx + 1] = g;
             buf[idx + 2] = b;
@@ -290,10 +276,7 @@ export default function FractalCanvas() {
       const vp: Viewport = { left, top, right: left + spanX, bottom: top + spanY };
       const xf = (x: number) => ((x - left) / spanX) * geo.width;
       const yf = (y: number) => ((y - top) / spanY) * geo.height;
-      def.draw(geoCtx, geo.width, geo.height, vp, xf, yf, {
-        bg: palette.fractalBg,
-        accent: palette.fractalAccent,
-      });
+      def.draw(geoCtx, geo.width, geo.height, vp, xf, yf);
       c2d.drawImage(geo, 0, 0);
     }
 
@@ -307,7 +290,7 @@ export default function FractalCanvas() {
         if (!reduce) sharedScale *= ZOOM_PER_FRAME;
         resizePixel();
         const budget = renderPixel(def);
-        drawSubtleGrid(c2d, width, height, 48, gridRgba);
+        drawSubtleGrid(c2d, width, height);
         if (frameCount % 30 === 0 && readoutRef.current) {
           readoutRef.current.textContent = `${def.name} · zoom ${sharedScale.toExponential(
             2,
@@ -316,7 +299,7 @@ export default function FractalCanvas() {
       } else {
         if (!reduce) sharedScale *= ZOOM_PER_FRAME;
         renderLine(def);
-        drawSubtleGrid(c2d, width, height, 48, gridRgba);
+        drawSubtleGrid(c2d, width, height);
         if (frameCount % 30 === 0 && readoutRef.current) {
           readoutRef.current.textContent = `${def.name} · zoom ${sharedScale.toExponential(
             2,
@@ -337,11 +320,11 @@ export default function FractalCanvas() {
     if (def.kind === "pixel") {
       resizePixel();
       const budget = renderPixel(def);
-      drawSubtleGrid(c2d, width, height, 48, gridRgba);
+      drawSubtleGrid(c2d, width, height);
       initial = `${def.name} · zoom ${sharedScale.toExponential(2)} · it ${budget}`;
     } else {
       renderLine(def);
-      drawSubtleGrid(c2d, width, height, 48, gridRgba);
+      drawSubtleGrid(c2d, width, height);
       initial = `${def.name} · zoom ${sharedScale.toExponential(2)}`;
     }
     if (readoutRef.current) readoutRef.current.textContent = initial;
@@ -351,7 +334,7 @@ export default function FractalCanvas() {
       cancelAnimationFrame(raf);
       clearInterval(switchTimer);
     };
-  }, [reduce, resolved, palette]);
+  }, [reduce]);
 
   return (
     <div className="relative h-full w-full">

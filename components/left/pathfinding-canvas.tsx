@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { mulberry32, shuffle } from "@/lib/rand";
-import { canvasColors } from "@/lib/theme-colors";
-import { useTheme } from "@/components/theme-provider";
 
 const COLS = 110;
 const ROWS = 86;
@@ -15,6 +13,9 @@ const START = 1 * TILE_W + 1;
 const GOAL = (TILE_H - 2) * TILE_W + (TILE_W - 2);
 const BATCH = 10;
 
+const WALL: [number, number, number] = [22, 25, 42];
+const OPEN: [number, number, number] = [13, 15, 26];
+const ACCENT: [number, number, number] = [232, 223, 200];
 const START_C: [number, number, number] = [126, 201, 143];
 const GOAL_C: [number, number, number] = [217, 138, 128];
 
@@ -210,8 +211,6 @@ export default function PathfindingCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const readoutRef = useRef<HTMLSpanElement>(null);
   const reduce = useReducedMotion();
-  const { resolved } = useTheme();
-  const palette = canvasColors[resolved];
   const [regen, setRegen] = useState(0);
 
   useEffect(() => {
@@ -283,9 +282,9 @@ export default function PathfindingCanvas() {
 
       const showPath = done && step >= expOrder.length;
       const pulse = 0.5 + 0.22 * Math.sin(now * 0.004);
-      const pr = Math.round(palette.pathfinding.accent[0] * pulse);
-      const pg = Math.round(palette.pathfinding.accent[1] * pulse);
-      const pb = Math.round(palette.pathfinding.accent[2] * pulse);
+      const pr = Math.round(ACCENT[0] * pulse);
+      const pg = Math.round(ACCENT[1] * pulse);
+      const pb = Math.round(ACCENT[2] * pulse);
 
       let i = 0;
       for (let y = 0; y < TILE_H; y++) {
@@ -306,13 +305,13 @@ export default function PathfindingCanvas() {
             buf[o + 1] = pg;
             buf[o + 2] = pb;
           } else if (grid[i] === 1) {
-            buf[o] = palette.pathfinding.wall[0];
-            buf[o + 1] = palette.pathfinding.wall[1];
-            buf[o + 2] = palette.pathfinding.wall[2];
+            buf[o] = WALL[0];
+            buf[o + 1] = WALL[1];
+            buf[o + 2] = WALL[2];
           } else {
-            buf[o] = palette.pathfinding.open[0];
-            buf[o + 1] = palette.pathfinding.open[1];
-            buf[o + 2] = palette.pathfinding.open[2];
+            buf[o] = OPEN[0];
+            buf[o + 1] = OPEN[1];
+            buf[o + 2] = OPEN[2];
           }
           buf[o + 3] = 255;
         }
@@ -320,7 +319,7 @@ export default function PathfindingCanvas() {
 
       offCtx.putImageData(img, 0, 0);
 
-      c2d.fillStyle = `rgb(${palette.bg.join(",")})`;
+      c2d.fillStyle = "rgb(8,10,18)";
       c2d.fillRect(0, 0, width, height);
       const cell = Math.max(
         1,
@@ -331,14 +330,13 @@ export default function PathfindingCanvas() {
       c2d.drawImage(off, ox, oy, cell * TILE_W, cell * TILE_H);
 
       if (showPath) {
-        const acc = palette.pathfinding.accent;
-        c2d.fillStyle = `rgba(${acc.join(",")},0.18)`;
+        c2d.fillStyle = "rgba(255,255,255,0.14)";
         for (const n of path) {
           const px = ox + (n % TILE_W) * cell;
           const py = oy + ((n / TILE_W) | 0) * cell;
           c2d.fillRect(px - 1, py - 1, cell + 2, cell + 2);
         }
-        c2d.fillStyle = `rgb(${acc.join(",")})`;
+        c2d.fillStyle = "rgb(255,255,255)";
         for (const n of path) {
           const px = ox + (n % TILE_W) * cell;
           const py = oy + ((n / TILE_W) | 0) * cell;
@@ -390,7 +388,7 @@ export default function PathfindingCanvas() {
       cancelAnimationFrame(raf);
       if (restartTimer !== null) clearTimeout(restartTimer);
     };
-  }, [regen, reduce, resolved, palette]);
+  }, [regen, reduce]);
 
   return (
     <div className="relative h-full w-full">

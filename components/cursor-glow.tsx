@@ -1,66 +1,108 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export default function CursorGlow() {
-  const x = useMotionValue(-400);
-  const y = useMotionValue(-400);
-  const sx = useSpring(x, { stiffness: 120, damping: 22, mass: 0.4 });
-  const sy = useSpring(y, { stiffness: 120, damping: 22, mass: 0.4 });
-  const glowRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    const canvasEl = canvasRef.current;
+    if (!canvasEl) return;
+    const canvas = canvasEl;
+    const g = canvas.getContext("2d");
+    if (!g) return;
+    const ctx = g;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let width = 0;
+    let height = 0;
+    let raf = 0;
+    let tx = -9999;
+    let ty = -9999;
+    let active = false;
+
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    if (reduceMotion) return;
 
-    const updateGlow = () => {
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+
+    function draw() {
+      if (!active) {
+        ctx.clearRect(0, 0, width, height);
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+
       const accent = getComputedStyle(document.documentElement)
         .getPropertyValue("--accent")
         .trim();
-      const el = glowRef.current;
-      if (el && accent) {
-        el.style.background = `radial-gradient(circle, ${accent} 0%, transparent 65%)`;
-      }
-    };
+      const lineColor = accent
+        ? accent
+        : "rgb(217, 211, 198)";
 
-    updateGlow();
-    const mo = new MutationObserver(updateGlow);
-    mo.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
+      ctx.clearRect(0, 0, width, height);
+
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = `rgba(${hexToRgb(lineColor)},0.06)`;
+      ctx.beginPath();
+      ctx.moveTo(tx, 0);
+      ctx.lineTo(tx, height);
+      ctx.moveTo(0, ty);
+      ctx.lineTo(width, ty);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(tx, ty, 6, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${hexToRgb(lineColor)},0.14)`;
+      ctx.fill();
+
+      raf = requestAnimationFrame(draw);
+    }
 
     const onMove = (e: PointerEvent) => {
-      x.set(e.clientX);
-      y.set(e.clientY);
+      tx = e.clientX;
+      ty = e.clientY;
+      active = true;
+    };
+    const onLeave = () => {
+      active = false;
     };
     window.addEventListener("pointermove", onMove, { passive: true });
+    if (!reduceMotion) {
+      window.addEventListener("pointerleave", onLeave);
+      window.addEventListener("resize", resize);
+      raf = requestAnimationFrame(draw);
+    }
+
     return () => {
-      mo.disconnect();
+      cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("resize", resize);
     };
-  }, [x, y]);
+  }, []);
 
   return (
-    <motion.div
+    <canvas
+      ref={canvasRef}
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-0 hidden md:block"
-      style={{ x: sx, y: sy }}
-    >
-      <div
-        ref={glowRef}
-        className="-translate-x-1/2 -translate-y-1/2"
-        style={{
-          width: 420,
-          height: 420,
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle, rgba(232, 223, 200, 0.045) 0%, rgba(232, 223, 200, 0) 65%)",
-        }}
-      />
-    </motion.div>
+      className="pointer-events-none fixed inset-0 -z-10 hidden h-full w-full md:block"
+    />
   );
+}
+
+function hexToRgb(hex: string): string {
+  let h = hex.replace("#", "");
+  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  const n = parseInt(h, 16);
+  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
 }

@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { mulberry32 } from "@/lib/rand";
 import { drawSubtleGrid } from "@/lib/canvas-grid";
-import { canvasColors } from "@/lib/theme-colors";
-import { useTheme } from "@/components/theme-provider";
 
 const COUNT = 900;
 const SPECIES = 4;
@@ -40,8 +38,6 @@ function makeGlow(color: [number, number, number], size = 48): HTMLCanvasElement
 export default function ParticleLifeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduce = useReducedMotion();
-  const { resolved } = useTheme();
-  const palette = canvasColors[resolved];
   const [runId, setRunId] = useState(0);
 
   useEffect(() => {
@@ -52,12 +48,10 @@ export default function ParticleLifeCanvas() {
     if (!context) return;
     const c2d = context;
 
-    const rand = mulberry32(runId * 104729 + 7 + (resolved === "light" ? 1 : 0));
+    const rand = mulberry32(runId * 104729 + 7);
     const rect = canvasEl.getBoundingClientRect();
     const w0 = Math.max(1, Math.round(rect.width));
     const h0 = Math.max(1, Math.round(rect.height));
-
-    const gridRgba = `rgba(${palette.grid.join(",")},${palette.gridAlpha})`;
 
     const sx = new Float32Array(COUNT);
     const sy = new Float32Array(COUNT);
@@ -181,8 +175,7 @@ export default function ParticleLifeCanvas() {
 
     function trail() {
       c2d.globalCompositeOperation = "source-over";
-      const bg = palette.bg;
-      c2d.fillStyle = `rgba(${bg.join(",")},0.22)`;
+      c2d.fillStyle = "rgba(8,10,18,0.22)";
       c2d.fillRect(0, 0, width, height);
     }
 
@@ -191,17 +184,17 @@ export default function ParticleLifeCanvas() {
       trail();
       physics(width, height);
       drawParticles();
-      drawSubtleGrid(c2d, width, height, 44, gridRgba);
+      drawSubtleGrid(c2d, width, height, 44, "rgba(232,223,200,0.08)");
       raf = requestAnimationFrame(frame);
     }
 
     if (reduce) {
       resize();
-      c2d.fillStyle = `rgb(${palette.bg.join(",")})`;
+      c2d.fillStyle = "rgb(8,10,18)";
       c2d.fillRect(0, 0, width, height);
       for (let s = 0; s < 500; s++) physics(width, height);
       drawParticles();
-      drawSubtleGrid(c2d, width, height, 44, gridRgba);
+      drawSubtleGrid(c2d, width, height, 44, "rgba(232,223,200,0.08)");
     } else {
       raf = requestAnimationFrame(frame);
     }
@@ -216,7 +209,7 @@ export default function ParticleLifeCanvas() {
       cancelAnimationFrame(raf);
       clearInterval(matrixTimer);
     };
-  }, [runId, reduce, resolved, palette]);
+  }, [runId, reduce]);
 
   return (
     <div className="relative h-full w-full">

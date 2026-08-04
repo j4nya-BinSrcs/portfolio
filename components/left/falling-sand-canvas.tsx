@@ -2,17 +2,47 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
-import { canvasColors } from "@/lib/theme-colors";
-import { useTheme } from "@/components/theme-provider";
 
 const CELL = 3;
 const MAX_GRAINS = 80000;
 const CENTER_RATE = 4;
 const DRAG_RATE = 10;
+const BG: [number, number, number] = [8, 10, 18];
 
+const SAND_STOPS: [number, number, number][] = [
+  [232, 223, 200],
+  [224, 208, 178],
+  [214, 190, 150],
+  [206, 178, 138],
+  [232, 196, 148],
+  [240, 214, 168],
+  [196, 162, 120],
+  [226, 208, 158],
+];
+
+const WATER_STOPS: [number, number, number][] = [
+  [64, 164, 223],
+  [52, 148, 210],
+  [88, 190, 235],
+  [40, 128, 196],
+  [104, 200, 240],
+  [58, 156, 220],
+];
+
+const ACID_STOPS: [number, number, number][] = [
+  [148, 225, 80],
+  [130, 208, 60],
+  [168, 235, 110],
+  [116, 196, 50],
+  [182, 240, 130],
+  [106, 190, 44],
+];
+
+const WALL_COLOR: [number, number, number] = [35, 40, 55];
 const WALL = 255;
 const LS_KEY = "falling_sand_v2";
 const GRID_EVERY = CELL * 5;
+const GRID: [number, number, number] = [32, 38, 60];
 const SOURCES = [0.25, 0.5, 0.75];
 const SWITCH_THRESHOLD = 0.4;
 
@@ -33,19 +63,11 @@ interface Sim {
 
 let sim: Sim | null = null;
 
-function cellColor(
-  c: number,
-  palette: {
-    wall: [number, number, number];
-    sand: [number, number, number][];
-    water: [number, number, number][];
-    acid: [number, number, number][];
-  },
-): [number, number, number] {
-  if (c === WALL) return palette.wall;
-  if (c >= ACID_MIN) return palette.acid[c - ACID_MIN];
-  if (c >= WATER_MIN) return palette.water[c - WATER_MIN];
-  return palette.sand[c - SAND_MIN];
+function cellColor(c: number): [number, number, number] {
+  if (c === WALL) return WALL_COLOR;
+  if (c >= ACID_MIN) return ACID_STOPS[c - ACID_MIN];
+  if (c >= WATER_MIN) return WATER_STOPS[c - WATER_MIN];
+  return SAND_STOPS[c - SAND_MIN];
 }
 
 function generateObstacles(grid: Uint8Array, gw: number, gh: number) {
@@ -118,8 +140,6 @@ export default function FallingSandCanvas() {
   const readoutRef = useRef<HTMLSpanElement>(null);
   const pointerRef = useRef({ active: false, x: 0, y: 0 });
   const reduce = useReducedMotion();
-  const { resolved } = useTheme();
-  const palette = canvasColors[resolved];
 
   function clearSand() {
     sim = null;
@@ -180,10 +200,10 @@ export default function FallingSandCanvas() {
         sim.mode === 1 ? WATER_MIN : sim.mode === 2 ? ACID_MIN : SAND_MIN;
       const shades =
         sim.mode === 1
-          ? palette.water.length
+          ? WATER_STOPS.length
           : sim.mode === 2
-            ? palette.acid.length
-            : palette.sand.length;
+            ? ACID_STOPS.length
+            : SAND_STOPS.length;
       for (let i = 0; i < count; i++) {
         if (sim.grains >= MAX_GRAINS) return;
         const x = gx + Math.floor(Math.random() * 5) - 2;
@@ -312,13 +332,13 @@ export default function FallingSandCanvas() {
         const px = p % width;
         const py = (p / width) | 0;
         if (px % GRID_EVERY === 0 || py % GRID_EVERY === 0) {
-          d[i] = palette.grid[0];
-          d[i + 1] = palette.grid[1];
-          d[i + 2] = palette.grid[2];
+          d[i] = GRID[0];
+          d[i + 1] = GRID[1];
+          d[i + 2] = GRID[2];
         } else {
-          d[i] = palette.bg[0];
-          d[i + 1] = palette.bg[1];
-          d[i + 2] = palette.bg[2];
+          d[i] = BG[0];
+          d[i + 1] = BG[1];
+          d[i + 2] = BG[2];
         }
         d[i + 3] = 255;
       }
@@ -329,7 +349,7 @@ export default function FallingSandCanvas() {
         for (let gx = 0; gx < gw; gx++) {
           const c = grid[row + gx];
           if (c === 0) continue;
-          const col = cellColor(c, palette);
+          const col = cellColor(c);
           const px0 = gx * CELL;
           const px1 = Math.min(width, px0 + CELL);
           for (let py = py0; py < py1; py++) {
@@ -388,7 +408,7 @@ export default function FallingSandCanvas() {
     return () => {
       cancelAnimationFrame(raf);
     };
-  }, [reduce, resolved, palette]);
+  }, [reduce]);
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLCanvasElement>) => {
