@@ -1,7 +1,12 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { revealContainer, revealItem } from "@/lib/motion";
+import {
+  revealContainer,
+  revealItem,
+  slideInLeft,
+  slideInRight,
+} from "@/lib/motion";
 import { SectionProvider } from "./section-provider";
 import { useBoot } from "./boot-provider";
 import NavRail from "./nav-rail";
@@ -28,7 +33,7 @@ export default function Dashboard() {
           className="my-auto grid w-full grid-cols-1 gap-3 lg:flex lg:h-[71.5vh] lg:w-[70vw] lg:max-w-[1600px] lg:items-stretch lg:gap-3"
         >
           <motion.div
-            variants={reduce ? undefined : revealItem}
+            variants={reduce ? undefined : slideInLeft}
             className="flex w-full min-w-0 flex-col gap-3 lg:w-[495px] lg:shrink-0"
           >
             <div className="flex flex-col gap-3 lg:flex-row">
@@ -84,7 +89,7 @@ export default function Dashboard() {
           </motion.div>
 
           <motion.div
-            variants={reduce ? undefined : revealItem}
+            variants={reduce ? undefined : slideInRight}
             className="min-w-0 lg:flex-1"
           >
             <ContentPanel />

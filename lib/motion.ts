@@ -11,7 +11,7 @@ export const panelTransition = { duration: 0.3, ease: EASE };
 export const revealContainer = {
   hidden: {},
   show: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+    transition: { staggerChildren: 0.22, delayChildren: 0.1 },
   },
 };
 
@@ -22,6 +22,26 @@ export const revealItem = {
     y: 0,
     filter: "blur(0px)",
     transition: { duration: 0.55, ease: EASE },
+  },
+};
+
+export const slideInLeft = {
+  hidden: { opacity: 0, x: -16, filter: "blur(4px)" },
+  show: {
+    opacity: 1,
+    x: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.5, ease: EASE },
+  },
+};
+
+export const slideInRight = {
+  hidden: { opacity: 0, x: 16, filter: "blur(4px)" },
+  show: {
+    opacity: 1,
+    x: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.5, ease: EASE },
   },
 };
 
