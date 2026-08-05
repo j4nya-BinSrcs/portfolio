@@ -25,7 +25,7 @@ export const THEME_KEY = "theme";
 
 export const THEMES: Record<ThemeName, ThemeTokens> = {
   carbon: {
-    name: "Carbon",
+    name: "carbon",
     bg: "#0a0a0b",
     bgElevated: "#131314",
     panel: "#131314",
@@ -38,7 +38,7 @@ export const THEMES: Record<ThemeName, ThemeTokens> = {
     accentSoft: "rgba(238, 217, 160, 0.16)",
   },
   nord: {
-    name: "Nord",
+    name: "nord",
     bg: "#2e3440",
     bgElevated: "#3b4252",
     panel: "#3b4252",
@@ -51,7 +51,7 @@ export const THEMES: Record<ThemeName, ThemeTokens> = {
     accentSoft: "rgba(136, 192, 208, 0.16)",
   },
   gruvbox: {
-    name: "Gruvbox",
+    name: "gruvbox",
     bg: "#282828",
     bgElevated: "#32302f",
     panel: "#32302f",
@@ -64,7 +64,7 @@ export const THEMES: Record<ThemeName, ThemeTokens> = {
     accentSoft: "rgba(250, 189, 46, 0.16)",
   },
   everforest: {
-    name: "Everforest",
+    name: "everforest",
     bg: "#2d353b",
     bgElevated: "#343f44",
     panel: "#343f44",
@@ -77,7 +77,7 @@ export const THEMES: Record<ThemeName, ThemeTokens> = {
     accentSoft: "rgba(167, 192, 128, 0.16)",
   },
   oled: {
-    name: "OLED Black",
+    name: "oled",
     bg: "#000000",
     bgElevated: "#0d0d0d",
     panel: "#0d0d0d",

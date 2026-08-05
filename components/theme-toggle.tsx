@@ -6,19 +6,26 @@ import { THEMES, THEME_ORDER, type ThemeName } from "@/lib/theme";
 import { useTheme } from "./theme-provider";
 
 export default function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, commitTheme } = useTheme();
   const reduce = useReducedMotion();
-   const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState<ThemeName | null>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<number | null>(null);
   const active = THEMES[theme];
 
+  const preview = hovered ? THEMES[hovered] : active;
+
   const startClose = useCallback(() => {
-    if (reduce) return setOpen(false);
+    if (reduce) {
+      setHovered(null);
+      return setOpen(false);
+    }
     if (closeTimer.current !== null) clearTimeout(closeTimer.current);
     closeTimer.current = window.setTimeout(() => {
       closeTimer.current = null;
+      setHovered(null);
       setOpen(false);
     }, 220);
   }, [reduce]);
@@ -36,6 +43,7 @@ export default function ThemeToggle() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         cancelClose();
+        setHovered(null);
         setOpen(false);
       }
     };
@@ -49,6 +57,7 @@ export default function ThemeToggle() {
         !stripRef.current.contains(t)
       ) {
         cancelClose();
+        setHovered(null);
         setOpen(false);
       }
     };
@@ -62,11 +71,19 @@ export default function ThemeToggle() {
 
   const pick = useCallback(
     (name: ThemeName) => {
-      cancelClose();
-      setTheme(name);
+      setHovered(null);
+      commitTheme(name);
       setOpen(false);
     },
-    [setTheme, cancelClose],
+    [commitTheme],
+  );
+
+  const previewTheme = useCallback(
+    (name: ThemeName) => {
+      setHovered(name);
+      setTheme(name);
+    },
+    [setTheme],
   );
 
   const stripVariants: Variants = {
@@ -104,16 +121,21 @@ export default function ThemeToggle() {
           cancelClose();
           if (!reduce) setOpen(true);
         }}
-        onClick={() => (!reduce ? (cancelClose(), setOpen((o) => !o)) : pick("carbon"))}
+        onClick={() => (!reduce ? (cancelClose(), setOpen((o) => !o)) : pick(theme))}
         className="relative flex h-10 w-full min-w-[170px] cursor-pointer items-center justify-between rounded-xl border border-line bg-panel/80 px-3 text-[11px] font-medium text-soft outline-none delay-150 hover:border-line-strong hover:text-tx hover:ring-2 hover:ring-accent-soft"
         whileTap={{ scale: 0.97 }}>
         <span className="flex min-w-0 items-center gap-2">
           <span
             aria-hidden="true"
             className="relative flex h-2.5 w-2.5 shrink-0 rounded-full"
-            style={{ backgroundColor: active.accent }}
+            style={{ backgroundColor: preview.accent }}
           />
-          <span className="truncate">{active.name}</span>
+          <span
+            className="truncate"
+            style={{ color: preview.accent }}
+          >
+            {preview.name}
+          </span>
         </span>
         <svg
           aria-hidden="true"
@@ -158,42 +180,44 @@ export default function ThemeToggle() {
           animate={open ? "visible" : "hidden"}
           exit={reduce ? undefined : "hidden"}
           onMouseEnter={cancelClose}
-          className="pointer-events-none absolute bottom-[120%] left-1/2 mb-2 flex -translate-x-1/2 items-center justify-center gap-1.5 rounded-lg border border-line bg-panel/90 px-1.5 py-1.5 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)] sm:pointer-events-auto sm:max-w-max"
-          style={{ transformOrigin: "bottom center" }}
+          className="pointer-events-none absolute bottom-[120%] left-1/2 mb-2 flex -translate-x-1/2 items-center justify-center gap-1.5 rounded-lg border border-line bg-panel/90 px-1.5 py-1.5 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)] max-w-max transition-[pointer-events]"
+          style={{
+            transformOrigin: "bottom center",
+            pointerEvents: open ? "auto" : "none",
+          }}
         >
           {THEME_ORDER.map((name) => {
             const t = THEMES[name];
             const selected = theme === name;
+            const live = hovered === name;
             return (
               <button
                 key={name}
                 type="button"
                 role="menuitemradio"
                 aria-checked={selected}
+                aria-label={`Preview ${t.name}`}
+                aria-hidden={!open}
+                onMouseEnter={() => open && !reduce && previewTheme(name)}
+                onMouseLeave={() => {
+                  setHovered(null);
+                  setTheme(theme);
+                }}
                 onClick={() => pick(name)}
-                className="relative flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-medium transition-colors duration-150 focus:ring-1 focus:ring-offset-1 focus:outline-none"
+                className="relative flex h-8 shrink-0 cursor-pointer items-center justify-center rounded-md border px-3 text-[11px] font-medium capitalize transition-colors duration-150 focus:ring-1 focus:ring-offset-1 focus:outline-none"
                 style={{
                   backgroundColor: t.bg,
-                  borderColor: t.border,
-                  color: t.text,
-                  maxWidth: "110px",
+                  borderColor: live ? t.accent : t.border,
+                  pointerEvents: open ? "auto" : "none",
                 }}
                 title={t.name}
               >
                 <span
-                  aria-hidden="true"
-                  className="flex h-2.5 w-2.5 shrink-0 items-center justify-center rounded-full"
-                  style={{ backgroundColor: t.accent }}
+                  className="truncate"
+                  style={{ color: t.accent }}
                 >
-                  <span
-                    className="block h-1.25 w-1.25 rounded-full"
-                    style={{
-                      backgroundColor: t.bg,
-                      opacity: selected ? 0.6 : 0.3,
-                    }}
-                  />
+                  {name}
                 </span>
-                <span className="truncate">{t.name}</span>
               </button>
             );
           })}
