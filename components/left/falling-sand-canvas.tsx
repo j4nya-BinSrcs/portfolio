@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 
+import { drawSubtleGrid } from "@/lib/canvas-grid";
+
 const CELL = 3;
 const MAX_GRAINS = 80000;
 const CENTER_RATE = 4;
@@ -41,8 +43,6 @@ const ACID_STOPS: [number, number, number][] = [
 const WALL_COLOR: [number, number, number] = [35, 40, 55];
 const WALL = 255;
 const LS_KEY = "falling_sand_v2";
-const GRID_EVERY = CELL * 5;
-const GRID: [number, number, number] = [32, 38, 60];
 const SOURCES = [0.25, 0.5, 0.75];
 const SWITCH_THRESHOLD = 0.4;
 
@@ -251,6 +251,18 @@ export default function FallingSandCanvas() {
             grid[below] = 0;
           }
 
+          if (isAcid) {
+            if (x + 1 < gw && grid[idx + 1] === WALL && Math.random() < ACID_EAT_RATE) {
+              grid[idx + 1] = 0;
+            }
+            if (x - 1 >= 0 && grid[idx - 1] === WALL && Math.random() < ACID_EAT_RATE) {
+              grid[idx - 1] = 0;
+            }
+            if (y - 1 >= 0 && grid[idx - gw] === WALL && Math.random() < ACID_EAT_RATE) {
+              grid[idx - gw] = 0;
+            }
+          }
+
           if (grid[below] === 0) {
             grid[below] = c;
             grid[idx] = 0;
@@ -328,18 +340,9 @@ export default function FallingSandCanvas() {
       const d = rgba;
       const len = width * height * 4;
       for (let i = 0; i < len; i += 4) {
-        const p = i / 4;
-        const px = p % width;
-        const py = (p / width) | 0;
-        if (px % GRID_EVERY === 0 || py % GRID_EVERY === 0) {
-          d[i] = GRID[0];
-          d[i + 1] = GRID[1];
-          d[i + 2] = GRID[2];
-        } else {
-          d[i] = BG[0];
-          d[i + 1] = BG[1];
-          d[i + 2] = BG[2];
-        }
+        d[i] = BG[0];
+        d[i + 1] = BG[1];
+        d[i + 2] = BG[2];
         d[i + 3] = 255;
       }
       for (let gy = 0; gy < gh; gy++) {
@@ -365,6 +368,7 @@ export default function FallingSandCanvas() {
         }
       }
       c2d.putImageData(img, 0, 0);
+      drawSubtleGrid(c2d, width, height, 36, "rgba(215,214,214,0.1)");
     }
 
     function physics() {

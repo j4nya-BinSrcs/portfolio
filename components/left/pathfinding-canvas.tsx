@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { mulberry32, shuffle } from "@/lib/rand";
+import { drawSubtleGrid } from "@/lib/canvas-grid";
 
-const COLS = 110;
-const ROWS = 86;
+const COLS = 88;
+const ROWS = 56;
 const TILE_W = 2 * COLS + 1;
 const TILE_H = 2 * ROWS + 1;
 const SIZE = TILE_W * TILE_H;
@@ -18,13 +19,6 @@ const OPEN: [number, number, number] = [13, 15, 26];
 const ACCENT: [number, number, number] = [232, 223, 200];
 const START_C: [number, number, number] = [126, 201, 143];
 const GOAL_C: [number, number, number] = [217, 138, 128];
-
-const SEARCH_STOPS: [number, number, number][] = [
-  [255, 130, 40],
-  [255, 200, 70],
-  [190, 225, 90],
-  [70, 220, 130],
-];
 
 const LUT_N = 48;
 
@@ -46,7 +40,33 @@ function buildLut(stops: [number, number, number][]): [number, number, number][]
   return arr;
 }
 
-const SEARCH_LUT = buildLut(SEARCH_STOPS);
+const GRADIENT_SWATCHES: [number, number, number][] = [
+  [255, 130, 40],
+  [255, 200, 70],
+  [190, 225, 90],
+  [70, 220, 130],
+  [40, 190, 220],
+  [130, 110, 255],
+  [220, 80, 170],
+  [255, 90, 130],
+  [160, 220, 90],
+  [90, 220, 200],
+  [255, 170, 60],
+  [190, 120, 230],
+];
+
+function buildRandomLut(
+  rand: ReturnType<typeof mulberry32>,
+): [number, number, number][] {
+  const count = 3 + ((rand() * 3) | 0);
+  const swatch = [...GRADIENT_SWATCHES].sort(() => rand() - 0.5).slice(0, count);
+  const stops: [number, number, number][] = swatch.map((base) => [
+    Math.max(0, Math.min(255, base[0] + ((rand() * 30) | 0) - 15)),
+    Math.max(0, Math.min(255, base[1] + ((rand() * 30) | 0) - 15)),
+    Math.max(0, Math.min(255, base[2] + ((rand() * 30) | 0) - 15)),
+  ]);
+  return buildLut(stops);
+}
 
 function manhattan(n: number): number {
   const x = n % TILE_W;
@@ -201,6 +221,7 @@ interface Sim {
   grid: Uint8Array;
   result: SearchResult;
   expLutIdx: Uint8Array;
+  searchLut: [number, number, number][];
   step: number;
 }
 
@@ -224,6 +245,8 @@ export default function PathfindingCanvas() {
     let s: Sim;
     if (!sim || regenCounter !== sim.createdRegen) {
       const seed = (Math.random() * 0x7fffffff) | 0;
+      const gradRand = mulberry32((seed ^ 0x9e3779b9) >>> 0);
+      const searchLut = buildRandomLut(gradRand);
       const grid = generateMaze(seed);
       const result = runAStar(grid);
       const lastIdx = result.expOrder.length - 1;
@@ -237,6 +260,7 @@ export default function PathfindingCanvas() {
         grid,
         result,
         expLutIdx,
+        searchLut,
         step: reduce ? result.expOrder.length : 0,
       };
     } else {
@@ -292,7 +316,7 @@ export default function PathfindingCanvas() {
           const o = i * 4;
           const ei = expIndex[i];
           if (ei >= 0 && ei < step) {
-            const c = SEARCH_LUT[expLutIdx[i]];
+            const c = s.searchLut[expLutIdx[i]];
             buf[o] = c[0];
             buf[o + 1] = c[1];
             buf[o + 2] = c[2];
@@ -321,6 +345,7 @@ export default function PathfindingCanvas() {
 
       c2d.fillStyle = "rgb(8,10,18)";
       c2d.fillRect(0, 0, width, height);
+      drawSubtleGrid(c2d, width, height, 36, "rgba(215,214,214,0.1)");
       const cell = Math.max(
         1,
         Math.floor(Math.min(width / TILE_W, height / TILE_H)),
