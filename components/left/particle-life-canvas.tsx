@@ -184,7 +184,7 @@ export default function ParticleLifeCanvas() {
       trail();
       physics(width, height);
       drawParticles();
-      drawSubtleGrid(c2d, width, height, 44, "rgba(232,223,200,0.08)");
+      drawSubtleGrid(c2d, width, height, 44, "rgba(215,214,214,0.1)");
       raf = requestAnimationFrame(frame);
     }
 
@@ -194,7 +194,7 @@ export default function ParticleLifeCanvas() {
       c2d.fillRect(0, 0, width, height);
       for (let s = 0; s < 500; s++) physics(width, height);
       drawParticles();
-      drawSubtleGrid(c2d, width, height, 44, "rgba(232,223,200,0.08)");
+      drawSubtleGrid(c2d, width, height, 44, "rgba(215,214,214,0.1)");
     } else {
       raf = requestAnimationFrame(frame);
     }

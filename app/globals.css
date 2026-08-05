@@ -3,16 +3,16 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --bg: #0a0a0b;
-  --bg-elevated: #101011;
-  --panel: #151516;
-  --border: rgba(246, 242, 232, 0.08);
-  --border-strong: rgba(246, 242, 232, 0.16);
-  --tx: #f6f2e8;
-  --tx-soft: rgba(246, 242, 232, 0.72);
-  --tx-mute: rgba(246, 242, 232, 0.44);
-  --accent: #e8dfc8;
-  --accent-soft: rgba(232, 223, 200, 0.14);
+  --bg: #36413e;
+  --bg-elevated: #2d3533;
+  --panel: #303836;
+  --border: rgba(190, 178, 200, 0.14);
+  --border-strong: rgba(190, 178, 200, 0.26);
+  --tx: #beb2c8;
+  --tx-soft: rgba(190, 178, 200, 0.78);
+  --tx-mute: rgba(190, 178, 200, 0.52);
+  --accent: #d4c7dc;
+  --accent-soft: rgba(190, 178, 200, 0.16);
   --ok: #7ec98f;
   --err: #d98a80;
 }
@@ -20,16 +20,16 @@
 /* Light theme overrides (applied when <html class="light">). */
 .light {
   color-scheme: light;
-  --bg: #f6f2e8;
-  --bg-elevated: #ebe7de;
-  --panel: #e9e5dc;
-  --border: rgba(20, 20, 21, 0.08);
-  --border-strong: rgba(20, 20, 21, 0.16);
-  --tx: #141415;
-  --tx-soft: rgba(20, 20, 21, 0.72);
-  --tx-mute: rgba(20, 20, 21, 0.44);
-  --accent: #b8860b;
-  --accent-soft: rgba(184, 134, 11, 0.16);
+  --bg: #e7e9e8;
+  --bg-elevated: #d4d6d7;
+  --panel: #d0d1d1;
+  --border: rgba(42, 45, 44, 0.12);
+  --border-strong: rgba(42, 45, 44, 0.24);
+  --tx: #191d1c;
+  --tx-soft: rgba(25, 29, 28, 0.76);
+  --tx-mute: rgba(25, 29, 28, 0.5);
+  --accent: #7b8884;
+  --accent-soft: rgba(42, 45, 44, 0.14);
 }
 
 @theme inline {

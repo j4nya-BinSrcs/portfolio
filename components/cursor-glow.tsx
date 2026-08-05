@@ -42,17 +42,12 @@ export default function CursorGlow() {
         return;
       }
 
-      const accent = getComputedStyle(document.documentElement)
-        .getPropertyValue("--accent")
-        .trim();
-      const lineColor = accent
-        ? accent
-        : "rgb(217, 211, 198)";
+      const lineColor = "215,214,214";
 
       ctx.clearRect(0, 0, width, height);
 
       ctx.lineWidth = 1;
-      ctx.strokeStyle = `rgba(${hexToRgb(lineColor)},0.06)`;
+      ctx.strokeStyle = `rgba(${lineColor},0.28)`;
       ctx.beginPath();
       ctx.moveTo(tx, 0);
       ctx.lineTo(tx, height);
@@ -62,7 +57,7 @@ export default function CursorGlow() {
 
       ctx.beginPath();
       ctx.arc(tx, ty, 6, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${hexToRgb(lineColor)},0.14)`;
+      ctx.fillStyle = `rgba(${lineColor},0.16)`;
       ctx.fill();
 
       raf = requestAnimationFrame(draw);
@@ -98,11 +93,4 @@ export default function CursorGlow() {
       className="pointer-events-none fixed inset-0 -z-10 hidden h-full w-full md:block"
     />
   );
-}
-
-function hexToRgb(hex: string): string {
-  let h = hex.replace("#", "");
-  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-  const n = parseInt(h, 16);
-  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
 }

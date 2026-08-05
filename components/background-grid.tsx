@@ -20,7 +20,7 @@ type Node = {
 
 const SPACING = 84;
 const RADIUS = 340;
-const MAX_DISPLACE = 9;
+const MAX_DISPLACE = 28;
 const SPRING = 0.055;
 const DAMPING = 0.84;
 
@@ -88,7 +88,7 @@ export default function BackgroundGrid() {
         let ty = p.by;
         if (pointer.active && dist < RADIUS && dist > 0.001) {
           const t = 1 - dist / RADIUS;
-          const strength = t * t * MAX_DISPLACE;
+          const strength = t * MAX_DISPLACE;
           tx = p.bx + (dx / dist) * strength;
           ty = p.by + (dy / dist) * strength;
         }
@@ -105,7 +105,7 @@ export default function BackgroundGrid() {
         ctx.clearRect(0, 0, width, height);
 
         ctx.lineWidth = 1;
-        ctx.strokeStyle = "rgba(246, 242, 232, 0.12)";
+        ctx.strokeStyle = "rgba(215, 214, 214, 0.22)";
         ctx.beginPath();
         for (let i = 0; i < points.length; i++) {
           const p = points[i];
@@ -134,7 +134,7 @@ export default function BackgroundGrid() {
             node.y,
             r,
           );
-          grad.addColorStop(0, `rgba(232, 223, 200, ${0.1 * alpha})`);
+          grad.addColorStop(0, `rgba(215, 214, 214, ${0.14 * alpha})`);
           grad.addColorStop(1, "rgba(232, 223, 200, 0)");
           ctx.fillStyle = grad;
           ctx.beginPath();

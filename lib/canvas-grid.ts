@@ -7,7 +7,7 @@ export function drawSubtleGrid(
   w: number,
   h: number,
   spacing = 48,
-  color = "rgba(232,223,200,0.05)",
+  color = "rgba(215,214,214,0.08)",
 ) {
   ctx.save();
   ctx.strokeStyle = color;
