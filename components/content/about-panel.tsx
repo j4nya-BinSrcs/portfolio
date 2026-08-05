@@ -144,107 +144,107 @@ export default function AboutPanel() {
         </div>
       </motion.section>
 
-      <motion.section
-        variants={item}
-        className="grid items-start gap-5 lg:grid-cols-[1.5fr_1fr]"
-      >
-        <div className="space-y-3">
-          <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
-            <Settings className="h-3.5 w-3.5" aria-hidden="true" />
-            {about.principlesLabel}
-          </h3>
-          <div className="grid gap-2.5 sm:grid-cols-2">
-            {about.principles.map((p) => {
-              const Icon = principleIcons[p.key] ?? Heart;
-              return (
-                <ReflectCard
-                  key={p.key}
-                  className="rounded-xl border border-line bg-panel/70 transition-colors duration-300"
-                >
-                  <div className="flex items-start gap-3 p-3.5">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line bg-bg-elevated">
-                      <Icon className="h-4 w-4 text-accent" aria-hidden="true" />
-                    </span>
-                    <div>
-                      <p className="text-sm font-semibold text-tx">{p.label}</p>
-                      <p className="mt-0.5 text-xs leading-relaxed text-mute whitespace-pre-line">
-                        {p.text}
-                      </p>
+       <motion.section
+         variants={item}
+         className="grid items-start gap-5 lg:grid-cols-[1.5fr_1fr]"
+       >
+         <div className="space-y-3 lg:border-l lg:border-line lg:pl-5">
+           <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+             <Wrench className="h-3.5 w-3.5" aria-hidden="true" />
+             {about.workbenchLabel}
+           </h3>
+           <div className="grid gap-2.5 sm:grid-cols-2">
+             {about.workbench.map((w) => {
+               return (
+                 <ReflectCard
+                   key={w.value}
+                   className="rounded-xl border border-line bg-panel/70 transition-colors duration-300"
+                 >
+                   <div className="flex items-start gap-3 p-3.5">
+                     <TechLogo name={w.value} size="lg" />
+                     <div>
+                       <p className="text-[11px] font-semibold uppercase tracking-wider text-soft">
+                         {w.category}
+                       </p>
+                       <p className="mt-0.5 text-sm font-medium text-tx">{w.value}</p>
+                     </div>
+                   </div>
+                 </ReflectCard>
+               );
+             })}
+           </div>
+         </div>
+
+         <div className="space-y-3">
+           <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+             <Compass className="h-3.5 w-3.5" aria-hidden="true" />
+             {about.engineeringInterestsLabel}
+           </h3>
+           <div className="flex flex-wrap gap-2">
+             {about.engineeringInterests.map((interest) => (
+               <span
+                 key={interest}
+                 className="rounded-full border border-line bg-panel/70 px-3 py-1 text-xs text-soft transition-colors duration-300 hover:border-line-strong"
+               >
+                 {interest}
+               </span>
+             ))}
+           </div>
+         </div>
+       </motion.section>
+
+       <motion.section
+         variants={item}
+         className="grid items-start gap-5 lg:grid-cols-[1fr_1.5fr]"
+       >
+         <div className="space-y-3 lg:border-l lg:border-line lg:pl-4">
+           <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+             <ListOrdered className="h-3.5 w-3.5" aria-hidden="true" />
+             {about.engineeringRulesLabel}
+           </h3>
+           <div className="space-y-3">
+             {about.engineeringRules.map((rule) => (
+               <div
+                 key={rule.number}
+                 className="flex items-baseline gap-2"
+               >
+                 <span className="font-mono text-xs text-accent">{rule.number}</span>
+                 <span className="text-sm text-soft">{rule.text}</span>
+               </div>
+             ))}
+           </div>
+         </div>
+
+          <div className="space-y-2">
+            <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+              <Settings className="h-3.5 w-3.5" aria-hidden="true" />
+              {about.principlesLabel}
+            </h3>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {about.principles.map((p) => {
+                const Icon = principleIcons[p.key] ?? Heart;
+                return (
+                  <ReflectCard
+                    key={p.key}
+                    className="rounded-xl border border-line bg-panel/70 transition-colors duration-300"
+                  >
+                    <div className="flex items-start gap-2 p-2.5">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-line bg-bg-elevated">
+                        <Icon className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
+                      </span>
+                      <div>
+                        <p className="text-xs font-semibold text-tx">{p.label}</p>
+                        <p className="mt-0 text-[11px] leading-snug text-mute whitespace-pre-line">
+                          {p.text}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </ReflectCard>
-              );
-            })}
+                  </ReflectCard>
+                );
+              })}
+            </div>
           </div>
-        </div>
-
-        <div className="space-y-3 lg:border-l lg:border-line lg:pl-4">
-          <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
-            <ListOrdered className="h-3.5 w-3.5" aria-hidden="true" />
-            {about.engineeringRulesLabel}
-          </h3>
-          <div className="space-y-3">
-            {about.engineeringRules.map((rule) => (
-              <div
-                key={rule.number}
-                className="flex items-baseline gap-2"
-              >
-                <span className="font-mono text-xs text-accent">{rule.number}</span>
-                <span className="text-sm text-soft">{rule.text}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
-      <motion.section
-        variants={item}
-        className="grid items-start gap-5 lg:grid-cols-[1fr_1.5fr]"
-      >
-        <div className="space-y-3">
-          <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
-            <Compass className="h-3.5 w-3.5" aria-hidden="true" />
-            {about.engineeringInterestsLabel}
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {about.engineeringInterests.map((interest) => (
-              <span
-                key={interest}
-                className="rounded-full border border-line bg-panel/70 px-3 py-1 text-xs text-soft transition-colors duration-300 hover:border-line-strong"
-              >
-                {interest}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-3 lg:border-l lg:border-line lg:pl-5">
-          <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
-            <Wrench className="h-3.5 w-3.5" aria-hidden="true" />
-            {about.workbenchLabel}
-          </h3>
-          <div className="grid gap-2.5 sm:grid-cols-2">
-            {about.workbench.map((w) => {
-              return (
-                <ReflectCard
-                  key={w.value}
-                  className="rounded-xl border border-line bg-panel/70 transition-colors duration-300"
-                >
-                  <div className="flex items-start gap-3 p-3.5">
-                    <TechLogo name={w.value} size="lg" />
-                    <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-wider text-soft">
-                        {w.category}
-                      </p>
-                      <p className="mt-0.5 text-sm font-medium text-tx">{w.value}</p>
-                    </div>
-                  </div>
-                </ReflectCard>
-              );
-            })}
-          </div>
-        </div>
-      </motion.section>
+       </motion.section>
 
       <motion.section variants={item} className="space-y-3">
         <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
