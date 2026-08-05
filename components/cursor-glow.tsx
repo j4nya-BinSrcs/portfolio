@@ -46,15 +46,6 @@ export default function CursorGlow() {
 
       ctx.clearRect(0, 0, width, height);
 
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = `rgba(${lineColor},0.28)`;
-      ctx.beginPath();
-      ctx.moveTo(tx, 0);
-      ctx.lineTo(tx, height);
-      ctx.moveTo(0, ty);
-      ctx.lineTo(width, ty);
-      ctx.stroke();
-
       ctx.beginPath();
       ctx.arc(tx, ty, 6, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(${lineColor},0.16)`;
