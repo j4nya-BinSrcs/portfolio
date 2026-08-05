@@ -157,6 +157,7 @@ export default function ThemeToggle() {
           initial={reduce ? undefined : "hidden"}
           animate={open ? "visible" : "hidden"}
           exit={reduce ? undefined : "hidden"}
+          onMouseEnter={cancelClose}
           className="pointer-events-none absolute bottom-[120%] left-1/2 mb-2 flex -translate-x-1/2 items-center justify-center gap-1.5 rounded-lg border border-line bg-panel/90 px-1.5 py-1.5 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)] sm:pointer-events-auto sm:max-w-max"
           style={{ transformOrigin: "bottom center" }}
         >
