@@ -110,7 +110,7 @@ export default function AboutPanel() {
         </motion.ul>
       </motion.section>
 
-      <motion.section variants={item} className="space-y-3">
+      <motion.section variants={item} className="space-y-3 border-t border-line pt-5">
         <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
           <Target className="h-3.5 w-3.5" aria-hidden="true" />
           {about.currentlyLabel}
@@ -144,15 +144,15 @@ export default function AboutPanel() {
         </div>
       </motion.section>
 
-       <motion.section
-         variants={item}
-         className="grid items-start gap-5 lg:grid-cols-[1.5fr_1fr]"
-       >
-         <div className="space-y-3 lg:border-l lg:border-line lg:pl-5">
-           <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
-             <Wrench className="h-3.5 w-3.5" aria-hidden="true" />
-             {about.workbenchLabel}
-           </h3>
+        <motion.section
+          variants={item}
+          className="grid items-start gap-5 lg:grid-cols-[1.5fr_1fr] border-t border-line pt-5"
+        >
+          <div className="space-y-3">
+            <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+              <Wrench className="h-3.5 w-3.5" aria-hidden="true" />
+              {about.workbenchLabel}
+            </h3>
            <div className="grid gap-2.5 sm:grid-cols-2">
              {about.workbench.map((w) => {
                return (
@@ -193,15 +193,15 @@ export default function AboutPanel() {
          </div>
        </motion.section>
 
-       <motion.section
-         variants={item}
-         className="grid items-start gap-5 lg:grid-cols-[1fr_1.5fr]"
-       >
-         <div className="space-y-3 lg:border-l lg:border-line lg:pl-4">
-           <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
-             <ListOrdered className="h-3.5 w-3.5" aria-hidden="true" />
-             {about.engineeringRulesLabel}
-           </h3>
+        <motion.section
+          variants={item}
+          className="grid items-start gap-5 lg:grid-cols-[1fr_1.5fr] border-t border-line pt-5"
+        >
+          <div className="space-y-3">
+            <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
+              <ListOrdered className="h-3.5 w-3.5" aria-hidden="true" />
+              {about.engineeringRulesLabel}
+            </h3>
            <div className="space-y-3">
              {about.engineeringRules.map((rule) => (
                <div
@@ -246,7 +246,7 @@ export default function AboutPanel() {
           </div>
        </motion.section>
 
-      <motion.section variants={item} className="space-y-3">
+      <motion.section variants={item} className="space-y-3 border-t border-line pt-5">
         <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-mute">
           <GitCommit className="h-3.5 w-3.5" aria-hidden="true" />
           {about.activityLabel}
