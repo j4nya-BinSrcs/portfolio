@@ -3,33 +3,18 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --bg: #0b0b0c;
-  --bg-elevated: #131313;
-  --panel: #131313;
-  --border: #262626;
+  --bg: #0a0a0b;
+  --bg-elevated: #131314;
+  --panel: #131314;
+  --border: #252628;
   --border-strong: #3a3a3a;
   --tx: #f5f2ea;
   --tx-soft: rgba(245, 242, 234, 0.75);
   --tx-mute: rgba(245, 242, 234, 0.45);
-  --accent: #f3e2a2;
-  --accent-soft: rgba(243, 226, 162, 0.14);
+  --accent: #eed9a0;
+  --accent-soft: rgba(238, 217, 160, 0.16);
   --ok: #7ec98f;
   --err: #d98a80;
-}
-
-/* Light theme overrides (applied when <html class="light">). */
-.light {
-  color-scheme: light;
-  --bg: #f5f2ea;
-  --bg-elevated: #fff5d6;
-  --panel: #fff5d6;
-  --border: #262626;
-  --border-strong: #3a3a3a;
-  --tx: #0b0b0c;
-  --tx-soft: rgba(11, 11, 12, 0.75);
-  --tx-mute: rgba(11, 11, 12, 0.45);
-  --accent: #f3e2a2;
-  --accent-soft: rgba(243, 226, 162, 0.22);
 }
 
 @theme inline {

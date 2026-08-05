@@ -8,26 +8,26 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Theme } from "@/lib/theme";
-import { applyThemeClass, getStoredTheme, THEME_KEY } from "@/lib/theme";
+import type { ThemeName } from "@/lib/theme";
+import { applyTheme, getStoredTheme, THEME_KEY } from "@/lib/theme";
 
 type ThemeContextValue = {
-  theme: Theme;
-  resolved: Theme;
-  toggle: () => void;
+  theme: ThemeName;
+  resolved: ThemeName;
+  setTheme: (theme: ThemeName) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "dark",
-  resolved: "dark",
-  toggle: () => {},
+  theme: "carbon",
+  resolved: "carbon",
+  setTheme: () => {},
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => getStoredTheme());
+  const [theme, setTheme] = useState<ThemeName>(getStoredTheme);
 
   useEffect(() => {
-    applyThemeClass(theme);
+    applyTheme(theme);
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
@@ -35,7 +35,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     () => ({
       theme,
       resolved: theme,
-      toggle: () => setTheme((t) => (t === "dark" ? "light" : "dark")),
+      setTheme,
     }),
     [theme],
   );
