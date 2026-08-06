@@ -5,7 +5,7 @@ export type ThemeName =
   | "nord"
   | "gruvbox"
   | "everforest"
-  | "oled";
+  | "mono";
 
 export type ThemeTokens = {
   name: string;
@@ -26,16 +26,16 @@ export const THEME_KEY = "theme";
 export const THEMES: Record<ThemeName, ThemeTokens> = {
   carbon: {
     name: "carbon",
-    bg: "#0a0a0b",
-    bgElevated: "#131314",
-    panel: "#131314",
-    border: "#252628",
+    bg: "#000000",
+    bgElevated: "#0d0d0d",
+    panel: "#0d0d0d",
+    border: "#232323",
     borderStrong: "#3a3a3a",
-    text: "#f5f2ea",
-    textSoft: "rgba(245, 242, 234, 0.75)",
-    textMute: "rgba(245, 242, 234, 0.45)",
-    accent: "#eed9a0",
-    accentSoft: "rgba(238, 217, 160, 0.16)",
+    text: "#f7f7f7",
+    textSoft: "rgba(247, 247, 247, 0.75)",
+    textMute: "rgba(247, 247, 247, 0.45)",
+    accent: "#f3e2a2",
+    accentSoft: "rgba(243, 226, 162, 0.16)",
   },
   nord: {
     name: "nord",
@@ -76,18 +76,18 @@ export const THEMES: Record<ThemeName, ThemeTokens> = {
     accent: "#a7c080",
     accentSoft: "rgba(167, 192, 128, 0.16)",
   },
-  oled: {
-    name: "oled",
+  mono: {
+    name: "mono",
     bg: "#000000",
-    bgElevated: "#0d0d0d",
-    panel: "#0d0d0d",
-    border: "#232323",
-    borderStrong: "#3a3a3a",
-    text: "#f7f7f7",
-    textSoft: "rgba(247, 247, 247, 0.75)",
-    textMute: "rgba(247, 247, 247, 0.45)",
-    accent: "#f3e2a2",
-    accentSoft: "rgba(243, 226, 162, 0.16)",
+    bgElevated: "#1a1a1a",
+    panel: "#1a1a1a",
+    border: "#333333",
+    borderStrong: "#555555",
+    text: "#ffffff",
+    textSoft: "rgba(255, 255, 255, 0.75)",
+    textMute: "rgba(255, 255, 255, 0.45)",
+    accent: "#cccccc",
+    accentSoft: "rgba(204, 204, 204, 0.16)",
   },
 };
 
@@ -96,7 +96,7 @@ export const THEME_ORDER: ThemeName[] = [
   "nord",
   "gruvbox",
   "everforest",
-  "oled",
+  "mono",
 ];
 
 export function getStoredTheme(): ThemeName {
