@@ -2,18 +2,16 @@
 
 import { motion } from "framer-motion";
 import {
-  BookOpen,
   Code2,
   ExternalLink,
   FileText,
   Images,
-  Play,
 } from "lucide-react";
 import { siteConfig } from "@/lib/site.config";
 import { EASE } from "@/lib/motion";
 import ReflectCard from "../reflect-card";
 
-export type ProjectMode = "readme" | "case" | "gallery";
+export type ProjectMode = "case" | "gallery";
 
 const container = {
   hidden: {},
@@ -89,8 +87,10 @@ function ProjectCard({
   return (
     <ReflectCard className="group rounded-xl border border-line bg-panel/70 transition-transform duration-300 hover:-translate-y-1">
       <div className="flex flex-col p-3.5">
-        <div
-          aria-hidden="true"
+        <button
+          type="button"
+          aria-label={`Open gallery for ${project.title}`}
+          onClick={() => onOpen(project.title, "gallery")}
           className={`relative block w-full overflow-hidden rounded-lg border border-line bg-bg-elevated text-left transition-transform duration-300 group-hover:scale-[1.05] ${project.ratio}`}
         >
           {project.video ? (
@@ -113,13 +113,15 @@ function ProjectCard({
               <span className="font-mono text-4xl font-bold tracking-tight text-accent/25">
                 {project.title.charAt(0)}
               </span>
-              <span className="flex items-center gap-1.5 rounded-full border border-accent/30 bg-bg/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <Play className="h-3 w-3" aria-hidden="true" />
-                Preview
-              </span>
             </span>
           )}
-        </div>
+          <span className="absolute inset-0 z-10 flex items-center justify-center bg-bg/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <span className="flex items-center gap-1.5 rounded-full border border-accent/30 bg-bg/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent">
+              <Images className="h-3 w-3" aria-hidden="true" />
+              Gallery
+            </span>
+          </span>
+        </button>
 
         <div className="flex flex-1 flex-col px-1 pb-1 pt-3.5">
           <div className="flex items-center justify-between gap-2">
@@ -148,40 +150,26 @@ function ProjectCard({
               <FileText className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
               Case study
             </button>
-            <button
-              type="button"
-              onClick={() => onOpen(project.title, "gallery")}
-              className="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-full border border-line px-3 py-2 text-xs font-semibold text-soft transition-all hover:-translate-y-0.5 hover:border-line-strong hover:text-tx active:scale-[0.98]"
-            >
-              <Images className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
-              Gallery
-            </button>
-            <a
-              href={project.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-line px-3 py-2 text-xs font-semibold text-soft transition-all hover:-translate-y-0.5 hover:border-line-strong hover:text-tx active:scale-[0.98]"
-            >
-              <ExternalLink className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
-              Visit live
-            </a>
+            {project.href !== project.code && (
+              <a
+                href={project.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-line px-3 py-2 text-xs font-semibold text-soft transition-all hover:-translate-y-0.5 hover:border-line-strong hover:text-tx active:scale-[0.98]"
+              >
+                <ExternalLink className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
+                Visit live
+              </a>
+            )}
             <a
               href={project.code}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-line px-3 py-2 text-xs font-semibold text-soft transition-all hover:-translate-y-0.5 hover:border-line-strong hover:text-tx active:scale-[0.98]"
+              className={`inline-flex items-center justify-center gap-1.5 rounded-full border border-line px-3 py-2 text-xs font-semibold text-soft transition-all hover:-translate-y-0.5 hover:border-line-strong hover:text-tx active:scale-[0.98] ${project.href !== project.code ? "" : "col-span-2"}`}
             >
               <Code2 className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
               Source code
             </a>
-            <button
-              type="button"
-              onClick={() => onOpen(project.title, "readme")}
-              className="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-full border border-line px-3 py-2 text-xs font-semibold text-soft transition-all hover:-translate-y-0.5 hover:border-line-strong hover:text-tx active:scale-[0.98]"
-            >
-              <BookOpen className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
-              Readme
-            </button>
           </div>
         </div>
       </div>

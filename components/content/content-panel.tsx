@@ -13,7 +13,6 @@ import EducationPanel from "./education-panel";
 import ProjectsPanel from "./projects-panel";
 import type { ProjectMode } from "./projects-panel";
 import ContactPanel from "./contact-panel";
-import ProjectReadme from "./project-readme";
 import ProjectCaseStudy from "./project-case-study";
 import ProjectGallery from "./project-gallery";
 import PathTypewriter from "./path-typewriter";
@@ -155,11 +154,9 @@ export default function ContentPanel() {
   }
 
   const modePath =
-    showView?.mode === "readme"
-      ? "readme"
-      : showView?.mode === "case"
-        ? "casestudy"
-        : "gallery";
+    showView?.mode === "case"
+      ? "casestudy"
+      : "gallery";
   const path = showView ? `~/projects/${showView.title}/${modePath}` : section.path;
 
   return (
@@ -186,15 +183,6 @@ export default function ContentPanel() {
           >
             {showView ? (
               <>
-                {showView.mode === "readme" && (
-                  <ProjectReadme
-                    title={showView.title}
-                    onBack={() => {
-                      scrollToTop();
-                      setView(null);
-                    }}
-                  />
-                )}
                 {showView.mode === "case" && (
                   <ProjectCaseStudy
                     title={showView.title}
