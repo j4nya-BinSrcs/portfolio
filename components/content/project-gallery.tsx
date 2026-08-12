@@ -46,7 +46,7 @@ export default function ProjectGallery({
       transition={{ duration: 0.45, ease: EASE }}
       className="space-y-4"
     >
-      <div className="sticky top-0 z-10 -mx-6 flex flex-wrap items-center justify-between gap-3 border-b border-line bg-panel/95 px-6 pb-3 pt-3 backdrop-blur-sm sm:-mx-8 sm:px-8">
+      <div className="sticky top-0 z-10 -mx-6 -mt-6 flex flex-wrap items-center justify-between gap-3 border-b border-line bg-panel/95 px-6 pb-3 pt-6 backdrop-blur-sm sm:-mx-8 sm:-mt-8 sm:px-8 sm:pt-8">
         <button
           type="button"
           onClick={onBack}
