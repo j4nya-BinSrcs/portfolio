@@ -11,14 +11,6 @@ export function mulberry32(seed: number): Rand {
   };
 }
 
-export function randInt(rand: Rand, min: number, max: number): number {
-  return min + Math.floor(rand() * (max - min + 1));
-}
-
-export function pick<T>(rand: Rand, items: readonly T[]): T {
-  return items[Math.floor(rand() * items.length)];
-}
-
 export function shuffle<T>(rand: Rand, items: readonly T[]): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {

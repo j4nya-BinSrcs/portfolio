@@ -302,8 +302,7 @@ export default function FallingSandCanvas() {
           }
 
           if (isFluid) {
-            if (isAcid && Math.random() >= ACID_SPREAD_RATE) {
-            } else {
+            if (!isAcid || Math.random() < ACID_SPREAD_RATE) {
               const dirs = Math.random() < 0.5 ? [1, -1] : [-1, 1];
               for (const dd of dirs) {
                 const nx1 = x + dd;

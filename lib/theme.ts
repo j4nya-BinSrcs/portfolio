@@ -7,7 +7,7 @@ export type ThemeName =
   | "everforest"
   | "mono";
 
-export type ThemeTokens = {
+type ThemeTokens = {
   name: string;
   bg: string;
   bgElevated: string;

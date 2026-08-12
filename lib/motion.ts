@@ -2,31 +2,6 @@ import type { Variant } from "framer-motion";
 
 export const EASE = [0.22, 1, 0.36, 1] as const;
 
-export const panelVariants = {
-  initial: { opacity: 0, y: 16, filter: "blur(6px)" },
-  animate: { opacity: 1, y: 0, filter: "blur(0px)" },
-  exit: { opacity: 0, y: -10, filter: "blur(6px)" },
-};
-
-export const panelTransition = { duration: 0.3, ease: EASE };
-
-export const revealContainer = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0, delayChildren: 0.12 },
-  },
-};
-
-export const revealItem = {
-  hidden: { opacity: 0, y: 22, filter: "blur(6px)" },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.55, ease: EASE },
-  },
-};
-
 function dashVariant(
   initial: Variant,
   target: Variant,
@@ -84,26 +59,6 @@ export const enterContent = dashVariant(
   { opacity: 1, x: 0, filter: "blur(0px)" },
   0.86,
 );
-
-export const slideInLeft = {
-  hidden: { opacity: 0, x: -16, filter: "blur(4px)" },
-  show: {
-    opacity: 1,
-    x: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.5, ease: EASE },
-  },
-};
-
-export const slideInRight = {
-  hidden: { opacity: 0, x: 16, filter: "blur(4px)" },
-  show: {
-    opacity: 1,
-    x: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.5, ease: EASE },
-  },
-};
 
 type Dir = 1 | -1;
 

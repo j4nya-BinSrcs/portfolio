@@ -10,7 +10,7 @@ async function fetchJson<T>(url: string): Promise<T> {
   return res.json();
 }
 
-export interface GitHubUser {
+interface GitHubUser {
   login: string;
   public_repos: number;
   public_gists: number;
@@ -21,7 +21,7 @@ export interface GitHubUser {
   html_url: string;
 }
 
-export interface GitHubRepo {
+interface GitHubRepo {
   name: string;
   full_name: string;
   stargazers_count: number;
@@ -38,11 +38,11 @@ export interface GitHubCommit {
   repo: string;
 }
 
-export async function fetchGitHubUser(): Promise<GitHubUser> {
+async function fetchGitHubUser(): Promise<GitHubUser> {
   return fetchJson<GitHubUser>(`${GITHUB_API}/users/${USERNAME}`);
 }
 
-export async function fetchGitHubRepos(): Promise<GitHubRepo[]> {
+async function fetchGitHubRepos(): Promise<GitHubRepo[]> {
   return fetchJson<GitHubRepo[]>(
     `${GITHUB_API}/users/${USERNAME}/repos?per_page=100&sort=stargazers_count`
   );

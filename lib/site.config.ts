@@ -50,7 +50,6 @@ export const siteConfig = {
 
   /* Sandbox — iOS-style widget stack shown on the left column */
   sandbox: {
-    path: "~/sandbox",
     widgets: [
       {
         id: "algorithms",
@@ -157,8 +156,6 @@ currentlyLabel: "Currently",
       activityLabel: "Activity",
       github: {
         username: "j4nya-BinSrcs",
-        profileUrl: "https://github.com/j4nya-BinSrcs",
-        graphSeed: 7,
         repos: 42,
         stars: 128,
         commits: [
