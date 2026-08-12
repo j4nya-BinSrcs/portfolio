@@ -21,7 +21,9 @@ export default function ProjectReadme({
 
   if (!project) return null;
 
-  const content = markdown ?? project.readme;
+  const content = markdown ?? "";
+
+  if (!content) return null;
 
   return (
     <motion.div

@@ -37,7 +37,7 @@ export default function ProjectGallery({
   onBack: () => void;
 }) {
   const project = siteConfig.projects.find((p) => p.title === title);
-  if (!project) return null;
+  if (!project || !project.gallery) return null;
 
   return (
     <motion.div

@@ -5,6 +5,26 @@
  * ─────────────────────────────────────────────────────────────────
  */
 
+export type GalleryItem = {
+  type: "image" | "video" | "gif";
+  src: string;
+  caption: string;
+  ratio: string;
+};
+
+export type Project = {
+  title: string;
+  description: string;
+  stack: string[];
+  href: string;
+  code: string;
+  video: string;
+  ratio: string;
+  caseStudy?: string;
+  gallery?: GalleryItem[];
+  noViews?: boolean;
+};
+
 export const siteConfig = {
   /* Identity */
   name: "Janya Kansara",
@@ -272,375 +292,191 @@ currentlyLabel: "Currently",
   /* Projects panel */
   projects: [
     {
-      title: "Quillspace",
+      title: "Qwry",
       description:
-        "A real-time collaboration workspace with multiplayer cursors, presence, and version history for structured documents.",
-      stack: ["Next.js", "TypeScript", "WebSockets", "PostgreSQL"],
-      href: "https://quillspace.dev",
-      code: "https://github.com/jordanreyes/quillspace",
+        "QWRY is a research-focused search engine built around the idea that search should be more than finding links. It combines web search, source discovery, AI-assisted research, and persistent workspaces into a single environment for collecting, understanding, and connecting information.",
+      stack: ["TypeScript", "Next.js", "Vector Search", "AI"],
+      href: "https://github.com/j4nya-BinSrcs/qwry.git",
+      code: "https://github.com/j4nya-BinSrcs/qwry.git",
       video: "",
       ratio: "aspect-[16/10]",
-      readme: `# Quillspace
+      caseStudy: `# Qwry — Case study
 
-A real-time collaboration workspace for structured documents.
-
-## Features
-
-- Multiplayer cursors with presence
-- Version history
-- Offline-first sync (CRDT-backed)
-
-## Stack
-
-- **Next.js** + **TypeScript**
-- **WebSockets** for presence
-- **PostgreSQL** for persistence
+## Overview
+Coming soon. A deep dive into the research assistant, source discovery, and persistent workspaces is being written.
 
 ## Getting started
-
 \`\`\`bash
+git clone https://github.com/j4nya-BinSrcs/qwry.git
+cd qwry
 npm install
 npm run dev
 \`\`\``,
-      caseStudy: `# Quillspace — Case study
-
-## The problem
-Distributed teams struggle to keep structured documents in sync. Existing tools either sacrifice offline support for real-time collaboration or lose version history entirely.
-
-## Goals and vision
-- Real-time multiplayer editing with presence
-- Offline-first sync backed by CRDTs
-- Granular, searchable version history
-
-## Constraints
-- Must work over flaky mobile networks
-- No central "source of truth" lockstep — any node may be offline
-- Under 150ms perceived latency for keystrokes
-
-## Research
-I studied Operational Transform vs CRDT approaches, read Yjs internals, and benchmarked WebSocket presence against WebRTC for cursor sharing.
-
-## Architecture
-- **Yjs** CRDT for document state
-- **WebSocket** gateway for presence and ephemeral events
-- **PostgreSQL** for durable history snapshots
-- Cache-first client reads with server reconciliation
-
-## Challenges
-Tombstones and undo across concurrent edits were the hardest part — merge semantics needed careful design and an extensive property-based test suite.
-
-## Metrics
-- 40ms median keystroke latency
-- 30k+ concurrent rooms in a single region
-- 99.98% sync success rate in the field
-
-## Lessons learned
-- CRDTs shift complexity to the client; invest in test suites early
-- Presence is a UX feature, not an afterthought
-- Build the offline path before the online path`,
       gallery: [
         {
           type: "image",
           src: "",
-          caption: "Editor overview",
+          caption: "Search workspace",
           ratio: "aspect-[4/3]",
-        },
-        {
-          type: "video",
-          src: "",
-          caption: "Multiplayer cursors",
-          ratio: "aspect-video",
         },
         {
           type: "gif",
           src: "",
-          caption: "Presence demo",
+          caption: "Research assistant",
+          ratio: "aspect-video",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Source discovery",
           ratio: "aspect-square",
         },
         {
           type: "image",
           src: "",
-          caption: "Version history panel",
+          caption: "Workspace overview",
           ratio: "aspect-[3/4]",
-        },
-        {
-          type: "image",
-          src: "",
-          caption: "Offline mode",
-          ratio: "aspect-video",
-        },
-        {
-          type: "gif",
-          src: "",
-          caption: "Undo across sessions",
-          ratio: "aspect-[4/3]",
-        },
-      ],
-    },
-    {
-      title: "Scaffold",
-      description:
-        "An opinionated CLI that generates production-ready services with batteries-included observability, testing, and CI.",
-      stack: ["Go", "Cobra", "Docker", "OpenTelemetry"],
-      href: "https://github.com/jordanreyes/scaffold",
-      code: "https://github.com/jordanreyes/scaffold",
-      video: "",
-      ratio: "aspect-square",
-      readme: `# Scaffold
-
-An opinionated service generator.
-
-\`\`\`bash
-scaffold new api --lang=go
-\`\`\`
-
-Ships with observability, tests, and CI out of the box.`,
-      caseStudy: `# Scaffold — Case study
-
-## The problem
-Bootstrapping a new service meant copy-pasting configs, wiring telemetry by hand, and drifting from the platform baseline within weeks.
-
-## Goals and vision
-- Generate production-ready services from a single command
-- Batteries-included observability, testing, and CI
-- One canonical template, enforced by codegen rather than docs
-
-## Constraints
-- Support Go and TypeScript targets from day one
-- Generated projects must be understandable, not magic
-- Work offline with no service dependencies
-
-## Research
-I compared codegen approaches (text/template vs struct-based AST generation), audited the team's existing services, and distilled them into a single source of truth.
-
-## Architecture
-- **Cobra** CLI with subcommands
-- Go templates for files; HCL for Terraform wiring
-- OpenTelemetry SDK wired into every generated service
-- CI templates for GitHub Actions and ArgoCD
-
-## Challenges
-Keeping generated code stable across Go module versions while supporting additive customization (flag \`--features\`) without bloating the output.
-
-## Metrics
-- 6x faster service bootstrap
-- 100% of new services ship with tracing on day one
-- 90% fewer config drift incidents after adoption
-
-## Lessons learned
-- Codegen beats documentation for enforcing conventions
-- The template is a product — version it like one
-- Defaults matter more than options`,
-      gallery: [
-        {
-          type: "gif",
-          src: "",
-          caption: "scaffold new api --lang=go",
-          ratio: "aspect-video",
-        },
-        {
-          type: "image",
-          src: "",
-          caption: "Generated project tree",
-          ratio: "aspect-[4/3]",
         },
         {
           type: "video",
           src: "",
-          caption: "Telemetry out of the box",
-          ratio: "aspect-square",
-        },
-        {
-          type: "image",
-          src: "",
-          caption: "CI pipeline on first push",
+          caption: "Connecting information",
           ratio: "aspect-video",
         },
         {
           type: "image",
           src: "",
-          caption: "Subcommand reference",
-          ratio: "aspect-[3/4]",
+          caption: "Search results",
+          ratio: "aspect-[4/3]",
         },
       ],
     },
     {
-      title: "Drift",
+      title: "DirStudio",
       description:
-        "A privacy-first analytics dashboard aggregating events in real time with edge computing and streaming queries.",
-      stack: ["React", "ClickHouse", "Kafka", "Kubernetes"],
-      href: "https://github.com/jordanreyes/drift",
-      code: "https://github.com/jordanreyes/drift",
+        "DirStudio is a directory intelligence, deduplication, and digital asset analysis tool designed to deeply scan folders, find exact and near duplicate files and documents, organize content intelligently, and provide cleanup and conversion features. Built for personal, professional, and enterprise level directory analysis.",
+      stack: ["TypeScript", "Node.js", "CLI", "File System"],
+      href: "https://github.com/j4nya-BinSrcs/dirstudio.git",
+      code: "https://github.com/j4nya-BinSrcs/dirstudio.git",
       video: "",
       ratio: "aspect-[4/3]",
-      readme: `# Drift
+      caseStudy: `# DirStudio — Case study
 
-Privacy-first, real-time analytics.
+## Overview
+Coming soon. A deep dive into duplicate detection, intelligent organization, and cleanup/conversion features is being written.
 
-- Edge aggregation
-- Streaming queries over WebSocket
-- ClickHouse storage`,
-      caseStudy: `# Drift — Case study
-
-## The problem
-Privacy-first analytics is a contradiction for most tools — they either drop events to the client or ship raw data to third parties.
-
-## Goals and vision
-- Real-time aggregation with no raw-event retention
-- Edge computing for event normalization and filtering
-- Streaming queries without batch warehouses
-
-## Constraints
-- GDPR-first: raw events must never persist
-- Sub-second dashboard freshness
-- Survive regional edge outages
-
-## Research
-I evaluated ClickHouse vs Druid, studied Kafka Streams vs in-flight edge reduction, and interviewed product teams about the events they actually needed.
-
-## Architecture
-- **React** dashboard with streaming WebSocket feeds
-- **Kafka** for the event bus
-- **ClickHouse** for aggregated materialized views
-- Edge workers reduce and filter events before they hit the bus
-
-## Challenges
-Exactly-once semantics across edge retries and keeping query latency flat as cardinality grew by 10x.
-
-## Metrics
-- 800ms median dashboard freshness
-- 70% less data shipped to storage
-- Zero raw events retained at rest
-
-## Lessons learned
-- Delete-by-default changes how you design schemas
-- Edge filtering is a privacy feature with a perf bonus
-- Streaming queries beat batch refreshes for dashboards`,
+## Getting started
+\`\`\`bash
+git clone https://github.com/j4nya-BinSrcs/dirstudio.git
+cd dirstudio
+npm install
+npm run dev
+\`\`\``,
       gallery: [
         {
           type: "image",
           src: "",
-          caption: "Real-time dashboard",
+          caption: "Folder scan",
           ratio: "aspect-[4/3]",
-        },
-        {
-          type: "video",
-          src: "",
-          caption: "Live query streaming",
-          ratio: "aspect-video",
         },
         {
           type: "gif",
           src: "",
-          caption: "Edge reduction demo",
+          caption: "Duplicate detection",
+          ratio: "aspect-video",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Asset analysis",
           ratio: "aspect-square",
         },
         {
           type: "image",
           src: "",
-          caption: "Privacy controls",
+          caption: "Smart organization",
+          ratio: "aspect-[3/4]",
+        },
+        {
+          type: "video",
+          src: "",
+          caption: "Cleanup demo",
+          ratio: "aspect-video",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Conversion tools",
+          ratio: "aspect-[4/3]",
+        },
+      ],
+    },
+    {
+      title: "GlyphStream",
+      description:
+        "GlyphStream is an image to ascii conversion terminal tool that prints images, videos as well as live webcam captures as ascii with colors in the terminal.",
+      stack: ["TypeScript", "Node.js", "CLI", "Terminal"],
+      href: "https://github.com/j4nya-BinSrcs/glyphstream.git",
+      code: "https://github.com/j4nya-BinSrcs/glyphstream.git",
+      video: "",
+      ratio: "aspect-square",
+      caseStudy: `# GlyphStream — Case study
+
+## Overview
+Coming soon. A deep dive into image-to-ascii rendering, video support, and live webcam captures is being written.
+
+## Getting started
+\`\`\`bash
+git clone https://github.com/j4nya-BinSrcs/glyphstream.git
+cd glyphstream
+npm install
+npm run dev
+\`\`\``,
+      gallery: [
+        {
+          type: "image",
+          src: "",
+          caption: "Image to ASCII",
+          ratio: "aspect-square",
+        },
+        {
+          type: "video",
+          src: "",
+          caption: "Video rendering",
+          ratio: "aspect-video",
+        },
+        {
+          type: "gif",
+          src: "",
+          caption: "Live webcam capture",
+          ratio: "aspect-[4/3]",
+        },
+        {
+          type: "image",
+          src: "",
+          caption: "Colored ASCII output",
           ratio: "aspect-[3/4]",
         },
         {
           type: "image",
           src: "",
-          caption: "Cardinality drilldown",
+          caption: "Terminal preview",
           ratio: "aspect-video",
         },
       ],
     },
     {
-      title: "Prism UI",
+      title: "Portfolio",
       description:
-        "An accessible design-system monorepo powering several products with tokens, theming, and 60+ components.",
-      stack: ["TypeScript", "React", "Storybook", "Turborepo"],
-      href: "https://github.com/jordanreyes/prism-ui",
-      code: "https://github.com/jordanreyes/prism-ui",
+        "A modern, interactive developer portfolio inspired by desktop applications, terminal workspaces, and bento dashboards. Built with React, TypeScript, Tailwind CSS, and Framer Motion.",
+      stack: ["React", "TypeScript", "Tailwind CSS", "Framer Motion"],
+      href: "https://github.com/j4nya-BinSrcs/portfolio.git",
+      code: "https://github.com/j4nya-BinSrcs/portfolio.git",
       video: "",
       ratio: "aspect-[16/10]",
-      readme: `# Prism UI
-
-An accessible design system.
-
-- Token-driven theming
-- 60+ components
-- Storybook documentation`,
-      caseStudy: `# Prism UI — Case study
-
-## The problem
-Four products maintained four bespoke component kits. Every design change multiplied across codebases, and accessibility was an afterthought.
-
-## Goals and vision
-- One accessible, token-driven design system
-- Monorepo architecture that scales to 60+ components
-- Docs that double as living, testable specs
-
-## Constraints
-- Support React 18 and Next.js App Router
-- Tree-shakeable, minimal runtime cost
-- AA contrast as a non-negotiable
-
-## Research
-I audited the four existing kits, studied theming approaches (CSS vars vs runtime), and benchmarked bundle impact of each primitive.
-
-## Architecture
-- **Turborepo** monorepo with packages per layer
-- Token pipeline → CSS custom properties
-- **Storybook** as the contract surface
-- Visual regression tests on every component
-
-## Challenges
-Design-token naming across three themes, and keeping SSR-safe theming that doesn't flash on first paint.
-
-## Metrics
-- 3x faster component handoff
-- 41% smaller average bundle for consumer apps
-- 0 accessibility regressions shipped in two years
-
-## Lessons learned
-- Tokens are a language — name them like one
-- Docs are a product surface, not a chore
-- Standardize the primitives, keep the escapes rare`,
-      gallery: [
-        {
-          type: "image",
-          src: "",
-          caption: "Component gallery",
-          ratio: "aspect-[4/3]",
-        },
-        {
-          type: "gif",
-          src: "",
-          caption: "Theme switching",
-          ratio: "aspect-square",
-        },
-        {
-          type: "image",
-          src: "",
-          caption: "Token playground",
-          ratio: "aspect-video",
-        },
-        {
-          type: "video",
-          src: "",
-          caption: "Focus ring audit",
-          ratio: "aspect-[3/4]",
-        },
-        {
-          type: "image",
-          src: "",
-          caption: "Storybook stories",
-          ratio: "aspect-video",
-        },
-        {
-          type: "gif",
-          src: "",
-          caption: "SSR-safe theming",
-          ratio: "aspect-[4/3]",
-        },
-      ],
+      noViews: true,
     },
-  ],
+  ] satisfies Project[],
 
   /* Experience panel */
   experience: [
