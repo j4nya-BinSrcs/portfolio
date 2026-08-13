@@ -53,6 +53,9 @@ const ACID_EAT_RATE = 0.02;
 const ACID_SLIDE_RATE = 0.6;
 const ACID_SPREAD_RATE = 0.55;
 
+const LEVEL_EVERY = 3;
+const LEVEL_BUDGET = 50;
+
 interface Sim {
   gw: number;
   gh: number;
@@ -164,6 +167,9 @@ export default function FallingSandCanvas() {
     let img: ImageData | null = null;
     let rgba: Uint8ClampedArray | null = null;
     let frameCount = 0;
+    let levelTick = 0;
+    let visitedBuf: Uint8Array | null = null;
+    let stackBuf: Int32Array | null = null;
 
     function ensureSim() {
       const rect = canvasEl.getBoundingClientRect();
@@ -333,6 +339,90 @@ export default function FallingSandCanvas() {
       }
     }
 
+    function equalizeWater() {
+      if (!sim) return;
+      const { grid, gw, gh } = sim;
+      const total = gw * gh;
+      if (!visitedBuf || visitedBuf.length < total) visitedBuf = new Uint8Array(total);
+      if (!stackBuf || stackBuf.length < total) stackBuf = new Int32Array(total);
+      const visited = visitedBuf;
+      const stack = stackBuf;
+      const colTop = new Int32Array(gw).fill(gh);
+      const colSeen = new Uint8Array(gw);
+      const colList = new Int32Array(gw);
+      let budget = LEVEL_BUDGET;
+
+      for (let start = 0; start < total && budget > 0; start++) {
+        const sc = grid[start];
+        if (sc < WATER_MIN || sc >= ACID_MIN || visited[start]) continue;
+        let sp = 0;
+        let nc = 0;
+        let sumTops = 0;
+        stack[sp++] = start;
+        visited[start] = 1;
+        while (sp > 0) {
+          const idx = stack[--sp];
+          const cx = idx % gw;
+          const cy = (idx / gw) | 0;
+          if (!colSeen[cx]) {
+            colSeen[cx] = 1;
+            colList[nc++] = cx;
+            colTop[cx] = cy;
+          } else if (cy < colTop[cx]) {
+            colTop[cx] = cy;
+          }
+          if (cx > 0 && !visited[idx - 1] && grid[idx - 1] >= WATER_MIN && grid[idx - 1] < ACID_MIN) {
+            visited[idx - 1] = 1;
+            stack[sp++] = idx - 1;
+          }
+          if (cx + 1 < gw && !visited[idx + 1] && grid[idx + 1] >= WATER_MIN && grid[idx + 1] < ACID_MIN) {
+            visited[idx + 1] = 1;
+            stack[sp++] = idx + 1;
+          }
+          if (cy > 0 && !visited[idx - gw] && grid[idx - gw] >= WATER_MIN && grid[idx - gw] < ACID_MIN) {
+            visited[idx - gw] = 1;
+            stack[sp++] = idx - gw;
+          }
+          if (cy + 1 < gh && !visited[idx + gw] && grid[idx + gw] >= WATER_MIN && grid[idx + gw] < ACID_MIN) {
+            visited[idx + gw] = 1;
+            stack[sp++] = idx + gw;
+          }
+        }
+        if (nc < 2) continue;
+        for (let i = 0; i < nc; i++) sumTops += colTop[colList[i]];
+        const avg = sumTops / nc;
+        let guard = 0;
+        while (budget > 0 && guard < nc) {
+          guard++;
+          let donor = -1;
+          let recv = -1;
+          for (let i = 0; i < nc; i++) {
+            const c = colList[i];
+            if (colTop[c] < avg) {
+              if (donor === -1 || colTop[c] < colTop[donor]) donor = c;
+            } else if (colTop[c] > avg) {
+              if (recv === -1 || colTop[c] > colTop[recv]) recv = c;
+            }
+          }
+          if (donor === -1 || recv === -1) break;
+          const dTop = colTop[donor];
+          const rTop = colTop[recv];
+          if (dTop >= rTop - 1) break;
+          const rY = rTop - 1;
+          if (rY < 0) break;
+          const rIdx = recv + rY * gw;
+          if (grid[rIdx] !== 0) break;
+          const dIdx = donor + dTop * gw;
+          grid[rIdx] = grid[dIdx];
+          grid[dIdx] = 0;
+          colTop[donor] = dTop + 1;
+          colTop[recv] = rTop - 1;
+          budget--;
+        }
+      }
+      if (total > 0) visited.fill(0, 0, total);
+    }
+
     function draw() {
       if (!sim || !img || !rgba) return;
       const { grid, gw, gh } = sim;
@@ -374,6 +464,7 @@ export default function FallingSandCanvas() {
       ensureSim();
       pour();
       update();
+      if (levelTick++ % LEVEL_EVERY === 0) equalizeWater();
       checkTransition();
     }
 
