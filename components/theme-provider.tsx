@@ -6,7 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import type { ThemeName } from "@/lib/theme";
@@ -18,6 +18,27 @@ type ThemeContextValue = {
   commitTheme: (theme: ThemeName) => void;
 };
 
+let current: ThemeName = "carbon";
+const listeners = new Set<() => void>();
+
+function subscribe(onStoreChange: () => void): () => void {
+  listeners.add(onStoreChange);
+  return () => listeners.delete(onStoreChange);
+}
+
+function getSnapshot(): ThemeName {
+  current = getStoredTheme();
+  return current;
+}
+
+function getServerSnapshot(): ThemeName {
+  return "carbon";
+}
+
+function emit() {
+  listeners.forEach((l) => l());
+}
+
 const ThemeContext = createContext<ThemeContextValue>({
   theme: "carbon",
   setTheme: () => {},
@@ -25,11 +46,10 @@ const ThemeContext = createContext<ThemeContextValue>({
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeName>(() => getStoredTheme());
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
     applyTheme(theme);
-    localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
   const setTheme = useCallback((name: ThemeName) => {
@@ -39,7 +59,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const commitTheme = useCallback((name: ThemeName) => {
     applyTheme(name);
     localStorage.setItem(THEME_KEY, name);
-    setThemeState(name);
+    current = name;
+    emit();
   }, []);
 
   const value = useMemo<ThemeContextValue>(
