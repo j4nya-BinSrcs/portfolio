@@ -586,6 +586,12 @@ npm run dev
         year: "2025",
         href: "https://coursera.org/verify/LHSW3WJ6N11E",
       },
+      {
+        name: "Exploratory Data Analysis for Machine Learning",
+        image: "/certificates/ibm2.png",
+        year: "2025",
+        href: "/certificates/ibm2.pdf",
+      },
     ],
   },
 
