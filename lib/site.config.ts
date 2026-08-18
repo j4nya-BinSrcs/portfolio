@@ -569,6 +569,13 @@ npm run dev
     certificatesLabel: "Certificates",
     certificates: [
       {
+        name: "Introduction to Java",
+        image: "/certificates/learnquest.png",
+        year: "2024",
+        preview: "/certificates/learnquest.png",
+        href: "https://coursera.org/verify/LHSW3WJ6N11E",
+      },
+      {
         name: "Introduction to HTML, CSS, & JavaScript",
         image: "/certificates/ibm.png",
         year: "2025",
@@ -583,16 +590,9 @@ npm run dev
         href: "https://coursera.org/verify/YGPXGU2NIRKG",
       },
       {
-        name: "Introduction to Java",
-        image: "/certificates/learnquest.png",
-        year: "2025",
-        preview: "/certificates/learnquest.png",
-        href: "https://coursera.org/verify/LHSW3WJ6N11E",
-      },
-      {
         name: "Exploratory Data Analysis for Machine Learning",
         image: "/certificates/ibm2.png",
-        year: "2025",
+        year: "2026",
         preview: "/certificates/ibm2.pdf",
         href: "/certificates/ibm2.pdf",
       },
