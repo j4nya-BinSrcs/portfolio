@@ -77,14 +77,14 @@ export default function EducationPanel() {
                 className="w-40 shrink-0"
               >
                 <ReflectCard className="group rounded-xl border border-line bg-panel/70 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_-8px_rgba(232,223,200,0.45)]">
-                  <a
-                    href={cert.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Open ${cert.name} credential`}
-                    className="flex h-full flex-col gap-2.5 p-3"
-                  >
-                    <div className="relative flex h-24 items-center justify-center overflow-hidden rounded-lg border border-line bg-bg-elevated">
+                  <div className="flex h-full flex-col gap-2.5 p-3">
+                    <a
+                      href={cert.preview}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Preview ${cert.name} certificate`}
+                      className="relative flex h-24 items-center justify-center overflow-hidden rounded-lg border border-line bg-bg-elevated"
+                    >
                       {cert.image.length > 0 ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -106,7 +106,7 @@ export default function EducationPanel() {
                           Preview
                         </span>
                       </span>
-                    </div>
+                    </a>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[11px] font-medium leading-tight text-soft">
                         {cert.name}
@@ -115,14 +115,20 @@ export default function EducationPanel() {
                         {cert.year}
                       </span>
                     </div>
-                    <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-accent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <a
+                      href={cert.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Open ${cert.name} credential`}
+                      className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-accent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    >
                       Open credential
                       <ExternalLink
                         className="h-3 w-3"
                         aria-hidden="true"
                       />
-                    </span>
-                  </a>
+                    </a>
+                  </div>
                 </ReflectCard>
               </motion.div>
             ))}
