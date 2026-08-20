@@ -1,6 +1,7 @@
 /**
  * Strokes a faint grid over a canvas backing store.
  * Slightly bolder so the grid reads as a texture, not hairline.
+ * Used as a subtle backdrop for the left-panel demo canvases.
  */
 export function drawSubtleGrid(
   ctx: CanvasRenderingContext2D,

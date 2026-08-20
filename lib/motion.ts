@@ -1,7 +1,10 @@
 import type { Variant } from "framer-motion";
 
+// Shared easing curve for all entrance animations across the dashboard.
 export const EASE = [0.22, 1, 0.36, 1] as const;
 
+// Build a hidden/show variant pair from generic start/end states, so each
+// element can define its own offset (e.g. slide up, slide in) with one helper.
 function dashVariant(
   initial: Variant,
   target: Variant,
@@ -17,6 +20,7 @@ function dashVariant(
   };
 }
 
+// The root dashboard stagger container; children reveal in sequence.
 export const dashboardReveal = {
   hidden: {},
   show: {
@@ -24,6 +28,8 @@ export const dashboardReveal = {
   },
 };
 
+// Staggered entrance variants for each dashboard region (hero, nav, info,
+// sandbox, content), each offset slightly later for a cascade effect.
 export const enterHero = dashVariant(
   { opacity: 0, y: -24, filter: "blur(6px)" },
   { opacity: 1, y: 0, filter: "blur(0px)" },

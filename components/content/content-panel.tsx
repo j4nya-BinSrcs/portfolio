@@ -22,8 +22,10 @@ type PanelProps = {
   onOpenProject?: (title: string, mode: ProjectMode) => void;
 };
 
+// A project detail view (case study or gallery) shown on top of the projects panel.
 type ProjectView = { title: string; mode: ProjectMode };
 
+// Map a section id to the panel component that renders it.
 const panels: Record<string, React.ComponentType<PanelProps>> = {
   about: AboutPanel,
   skills: SkillsPanel,
@@ -33,6 +35,7 @@ const panels: Record<string, React.ComponentType<PanelProps>> = {
   contact: ContactPanel,
 };
 
+// Geometry for the scroll HUD ring: radius and its full circumference.
 const RING_R = 15;
 const RING_C = 2 * Math.PI * RING_R;
 
@@ -40,8 +43,12 @@ export default function ContentPanel() {
   const { active, direction, next, prev } = useSection();
   const reduce = useReducedMotion();
   const scrollRef = useRef<HTMLDivElement>(null);
+  // `view` is the project detail currently open (if any); it only applies
+  // while the active section is "projects".
   const [view, setView] = useState<ProjectView | null>(null);
   const viewRef = useRef<ProjectView | null>(null);
+  // Scroll-to-switch uses refs instead of state so wheel events never trigger
+  // re-renders on every tick. lockRef throttles rapid section changes.
   const lockRef = useRef(0);
   const fillRef = useRef(0);
   const ringRef = useRef<SVGCircleElement>(null);
@@ -60,6 +67,8 @@ export default function ContentPanel() {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, []);
 
+  // Switch sections, but only once per 600ms to avoid chaining off a single
+  // scroll gesture. Leaving a project detail also resets to the list view.
   const jump = useCallback(
     (dir: 1 | -1) => {
       if (Date.now() - lockRef.current < 600) return;
@@ -71,6 +80,7 @@ export default function ContentPanel() {
     [next, prev],
   );
 
+  // Hide the scroll HUD and reset the fill ring to empty.
   const resetHud = useCallback(() => {
     if (hudTimerRef.current) {
       clearTimeout(hudTimerRef.current);
@@ -84,6 +94,7 @@ export default function ContentPanel() {
     }
   }, []);
 
+  // Reveal the HUD (only setting state once, to avoid re-renders on scroll).
   const showHud = useCallback((dir: 1 | -1) => {
     if (!hudRef.current.visible || hudRef.current.dir !== dir) {
       hudRef.current = { visible: true, dir };
@@ -91,34 +102,45 @@ export default function ContentPanel() {
     }
   }, []);
 
+  // After a small delay with no further scrolling, reset the HUD so the next
+  // gesture starts from an empty ring.
   const scheduleReset = useCallback(() => {
     if (hudTimerRef.current) clearTimeout(hudTimerRef.current);
     hudTimerRef.current = window.setTimeout(resetHud, 350);
   }, [resetHud]);
 
+  // Scroll the detail/list back to the top whenever the section or view changes.
   useEffect(() => {
     scrollToTop();
   }, [active, view, scrollToTop]);
 
+  // Clean up the pending HUD reset timer on unmount.
   useEffect(() => () => {
     if (hudTimerRef.current) clearTimeout(hudTimerRef.current);
   }, []);
 
+  // Keep a ref mirror of `view` so the active-section effect can read the
+  // latest value without re-subscribing.
   useEffect(() => {
     viewRef.current = view;
   }, [view]);
 
+  // When leaving "projects", drop any open project detail view.
   useEffect(() => {
     if (!viewRef.current) return;
     const id = setTimeout(() => setView(null), 0);
     return () => clearTimeout(id);
   }, [active]);
 
+  // Core interaction: scrolling at the very top/bottom edge of the panel
+  // accumulates "fill" on the HUD ring; reaching 100% switches to the next or
+  // previous section. Scrolling anywhere in the middle is normal panel scroll.
   function onWheel(e: React.WheelEvent<HTMLDivElement>) {
     if (showView) return;
     const el = scrollRef.current;
     if (!el) return;
     if (hudTimerRef.current) clearTimeout(hudTimerRef.current);
+    // Ignore horizontal scroll (trackpads can emit both axes).
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
       resetHud();
       return;
@@ -131,6 +153,7 @@ export default function ContentPanel() {
       resetHud();
       return;
     }
+    // At the first/last section, don't try to go further.
     if (
       (dir === 1 && activeIndex === sections.length - 1) ||
       (dir === -1 && activeIndex === 0)

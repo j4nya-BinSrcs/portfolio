@@ -18,6 +18,11 @@ type ThemeContextValue = {
   commitTheme: (theme: ThemeName) => void;
 };
 
+// The theme is held in module-level state and surfaced via useSyncExternalStore
+// rather than a plain useState inside the provider. This keeps the server and
+// client renders consistent (no hydration mismatch on first paint) while still
+// letting any component subscribe to theme changes. See lib/theme.ts for the
+// token definitions and localStorage persistence.
 let current: ThemeName = "carbon";
 const listeners = new Set<() => void>();
 
@@ -26,6 +31,8 @@ function subscribe(onStoreChange: () => void): () => void {
   return () => listeners.delete(onStoreChange);
 }
 
+// Always return the persisted theme on the client; the server snapshot is a
+// constant so the first HTML render never differs between client and server.
 function getSnapshot(): ThemeName {
   current = getStoredTheme();
   return current;
@@ -35,6 +42,7 @@ function getServerSnapshot(): ThemeName {
   return "carbon";
 }
 
+// Notify all subscribers after a theme change is committed to localStorage.
 function emit() {
   listeners.forEach((l) => l());
 }
@@ -48,10 +56,13 @@ const ThemeContext = createContext<ThemeContextValue>({
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
+  // Apply the resolved theme to the DOM as soon as it becomes known.
   useEffect(() => {
     applyTheme(theme);
   }, [theme]);
 
+  // setTheme previews a theme without persisting it; commitTheme persists to
+  // localStorage and notifies subscribers so the whole UI updates.
   const setTheme = useCallback((name: ThemeName) => {
     applyTheme(name);
   }, []);

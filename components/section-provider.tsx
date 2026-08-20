@@ -22,10 +22,15 @@ type SectionContextValue = {
 
 const SectionContext = createContext<SectionContextValue | null>(null);
 
+// Holds the currently active section and the direction of travel (needed to
+// pick the correct entrance/exit animation). Also keeps the URL hash in sync
+// with the active section so sections are shareable and back/forward work.
 export function SectionProvider({ children }: { children: ReactNode }) {
   const [active, setActiveState] = useState<SectionId>("about");
   const [direction, setDirection] = useState<Direction>(0);
 
+  // Set a specific section; `dir` controls the animation direction. Uses
+  // replaceState (not pushState) so navigating sections doesn't spam history.
   const setActive = useCallback((id: SectionId, dir: Direction = 0) => {
     setActiveState(id);
     setDirection(dir);
@@ -34,6 +39,8 @@ export function SectionProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Move to the section delta steps away. Clamping at the ends keeps the last
+  // first section in place while still recording the overshoot direction.
   const cycle = useCallback(
     (delta: 1 | -1) => {
       const index = sections.findIndex((s) => s.id === active);
@@ -55,12 +62,14 @@ export function SectionProvider({ children }: { children: ReactNode }) {
   const next = useCallback(() => cycle(1), [cycle]);
   const prev = useCallback(() => cycle(-1), [cycle]);
 
+  // On first load, always land on "about" regardless of any stale hash.
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash.slice(1) !== "about") {
       history.replaceState(null, "", "#about");
     }
   }, []);
 
+  // Support manual hash edits (browser back/forward) from the address bar.
   useEffect(() => {
     const onHashChange = () => {
       setActiveState(getSection(window.location.hash.slice(1)).id);

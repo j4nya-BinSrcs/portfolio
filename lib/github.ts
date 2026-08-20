@@ -1,6 +1,8 @@
 const GITHUB_API = "https://api.github.com";
 const USERNAME = "j4nya-BinSrcs";
 
+// Thin wrapper around fetch that revalidates every 5 minutes (ISR-friendly)
+// and throws on any non-2xx response so callers can fall back gracefully.
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url, {
     headers: { Accept: "application/vnd.github.v3+json" },
@@ -55,6 +57,9 @@ export async function fetchGitHubCommits(
     `${GITHUB_API}/users/${USERNAME}/repos?per_page=100&sort=updated`
   );
   const commits: GitHubCommit[] = [];
+  // Fetch recent commits from the first 30 repos in parallel, tagging each
+  // with its repo name. Individual repo failures are swallowed so one
+  // unreadable repo doesn't blank the whole contribution graph.
   await Promise.all(
     repos.slice(0, 30).map(async (repo) => {
       try {
@@ -73,6 +78,7 @@ export async function fetchGitHubCommits(
       }
     })
   );
+  // Merge all repos' commits and keep the newest `limit` overall.
   commits.sort(
     (a, b) =>
       new Date(b.commit.author.date).getTime() -
@@ -81,6 +87,7 @@ export async function fetchGitHubCommits(
   return commits.slice(0, limit);
 }
 
+// Aggregate repo/follower totals for the about panel's GitHub stats card.
 export async function fetchGitHubStats() {
   const [user, repos] = await Promise.all([
     fetchGitHubUser(),
@@ -95,6 +102,8 @@ export async function fetchGitHubStats() {
   };
 }
 
+// Contribution-graph color ramp, from the dimmest (zero activity) cell up to
+// the most-active level. The ramp mirrors GitHub's classic green scale.
 const CONTRIBUTION_COLORS = [
   "rgba(246,242,232,0.06)",
   "#c6e48b",
@@ -103,6 +112,9 @@ const CONTRIBUTION_COLORS = [
   "#196127",
 ];
 
+// Build a `days`-long activity grid (weeks × weekdays) from a list of commits,
+// bucketing each commit by which week and weekday it landed on. Values are
+// capped at 4 (the max color level).
 export function generateContributionGraph(
   commits: GitHubCommit[],
   days: number = 90

@@ -1,5 +1,8 @@
 export type Rand = () => number;
 
+// Deterministic PRNG (mulberry32) so seeded simulations reproduce the same
+// sequence every run — useful for demo canvases that shouldn't change shape
+// on every page load.
 export function mulberry32(seed: number): Rand {
   let a = seed >>> 0;
   return () => {
@@ -11,6 +14,7 @@ export function mulberry32(seed: number): Rand {
   };
 }
 
+// Fisher-Yates shuffle driven by the injected RNG.
 export function shuffle<T>(rand: Rand, items: readonly T[]): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {

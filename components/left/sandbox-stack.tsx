@@ -16,8 +16,11 @@ const widgets = siteConfig.sandbox.widgets;
 
 export default function SandboxStack() {
   const reduce = useReducedMotion();
+  // Which demo widget is currently visible in the stacked panel.
   const [index, setIndex] = useState(0);
   const [slideDir, setSlideDir] = useState(1);
+  // Accumulated wheel delta across events (a single gesture can fire many
+  // wheel events); once it crosses a threshold we advance a widget.
   const accumRef = useRef(0);
   const hoverRef = useRef(false);
   const wheelLockRef = useRef(0);
@@ -28,6 +31,7 @@ export default function SandboxStack() {
     setIndex((i) => (i + delta + widgets.length) % widgets.length);
   }, []);
 
+  // Auto-rotate to the next widget every 15s, unless the user is hovering.
   const startAutoCycle = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = window.setInterval(() => {

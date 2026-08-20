@@ -8,6 +8,8 @@ import { BootProvider } from "@/components/boot-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
+// The typeface used across the whole site. Exposing it as a CSS variable
+// (--font-montserrat) lets Tailwind's theme and our base styles share it.
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
@@ -45,6 +47,9 @@ export default function RootLayout({
       className={`${montserrat.variable} h-full antialiased`}
     >
       <body className="relative flex min-h-full flex-col bg-bg text-tx">
+        {/* BootProvider gates the entrance animation; ThemeProvider manages the
+            accent palette. The decorative layers (grid, cursor glow, welcome
+            screen) sit above the page content. */}
         <BootProvider>
           <ThemeProvider>
             <BackgroundGrid />

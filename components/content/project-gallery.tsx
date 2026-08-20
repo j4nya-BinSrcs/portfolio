@@ -21,6 +21,8 @@ type GalleryItem = {
   ratio: string;
 };
 
+// Deterministic-ish gradient palette picker: hashes the project title (plus a
+// per-item offset) so each tile gets a stable but varied fallback background.
 function gradientFor(title: string, i: number) {
   const h = [...title].reduce((a, c) => a + c.charCodeAt(0), 0) + i * 7;
   const palettes = [
@@ -32,6 +34,8 @@ function gradientFor(title: string, i: number) {
   return palettes[h % palettes.length];
 }
 
+// Fisher-Yates shuffle. Used to randomize the initial gallery order so the
+// preview thumbnails don't always start on the first image.
 function shuffle<T>(arr: T[]): T[] {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -40,6 +44,7 @@ function shuffle<T>(arr: T[]): T[] {
   return arr;
 }
 
+// Badge/icon metadata shown per media type in the gallery tiles and lightbox.
 const typeMeta = {
   video: { icon: Film, label: "Video" },
   gif: { icon: ImagePlay, label: "GIF" },
@@ -55,10 +60,13 @@ export default function ProjectGallery({
 }) {
   const project = siteConfig.projects.find((p) => p.title === title);
   const base = project?.gallery ?? [];
+  // Shuffle once on mount so the order is randomized but stable across the
+  // session (avoids re-ordering every render).
   const [items] = useState(() => shuffle([...base]));
   const [active, setActive] = useState<number | null>(null);
 
   const close = useCallback(() => setActive(null), []);
+  // Move the lightbox index forward/back, wrapping around both ends.
   const step = useCallback(
     (dir: 1 | -1) =>
       setActive((cur) =>
@@ -67,6 +75,8 @@ export default function ProjectGallery({
     [items.length],
   );
 
+  // Global keyboard navigation while the lightbox is open: Esc to close,
+  // arrow keys to cycle.
   useEffect(() => {
     if (active === null) return;
     const onKey = (e: KeyboardEvent) => {
