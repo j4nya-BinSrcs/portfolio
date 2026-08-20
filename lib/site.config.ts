@@ -5,6 +5,8 @@
  * ─────────────────────────────────────────────────────────────────
  */
 
+import { dirstudioCaseStudy } from "@/lib/case-study-content";
+
 export type GalleryItem = {
   type: "image" | "video" | "gif";
   src: string;
@@ -390,54 +392,43 @@ npm run dev
       code: "https://github.com/j4nya-BinSrcs/dirstudio.git",
       video: "",
       ratio: "aspect-[4/3]",
-      caseStudy: `# DirStudio — Case study
-
-## Overview
-Coming soon. A deep dive into duplicate detection, intelligent organization, and cleanup/conversion features is being written.
-
-## Getting started
-\`\`\`bash
-git clone https://github.com/j4nya-BinSrcs/dirstudio.git
-cd dirstudio
-npm install
-npm run dev
-\`\`\``,
+      caseStudy: dirstudioCaseStudy,
       gallery: [
         {
           type: "image",
-          src: "",
-          caption: "Folder scan",
-          ratio: "aspect-[4/3]",
-        },
-        {
-          type: "gif",
-          src: "",
-          caption: "Duplicate detection",
-          ratio: "aspect-video",
+          src: "/projects/dirstudio/dirstudio_home.png",
+          caption: "Home screen",
+          ratio: "aspect-[15/8]",
         },
         {
           type: "image",
-          src: "",
-          caption: "Asset analysis",
-          ratio: "aspect-square",
+          src: "/projects/dirstudio/dirstudio_overview.png",
+          caption: "Overview",
+          ratio: "aspect-[15/8]",
         },
         {
           type: "image",
-          src: "",
+          src: "/projects/dirstudio/dirstudio_tree.png",
+          caption: "Folder tree scan",
+          ratio: "aspect-[15/8]",
+        },
+        {
+          type: "image",
+          src: "/projects/dirstudio/dirstudio_organize.png",
           caption: "Smart organization",
-          ratio: "aspect-[3/4]",
-        },
-        {
-          type: "video",
-          src: "",
-          caption: "Cleanup demo",
-          ratio: "aspect-video",
+          ratio: "aspect-[16/10]",
         },
         {
           type: "image",
-          src: "",
+          src: "/projects/dirstudio/dirstudio_compress.png",
+          caption: "File compression",
+          ratio: "aspect-[16/10]",
+        },
+        {
+          type: "image",
+          src: "/projects/dirstudio/dirstudio_transform.png",
           caption: "Conversion tools",
-          ratio: "aspect-[4/3]",
+          ratio: "aspect-[16/4]",
         },
       ],
     },

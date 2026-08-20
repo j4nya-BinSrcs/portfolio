@@ -114,6 +114,26 @@ export default function ProjectReadme({
               blockquote: (props) => (
                 <blockquote className="mb-3 border-l-2 border-accent/40 pl-4 text-sm italic text-mute" {...props} />
               ),
+              hr: (props) => (
+                <hr className="my-6 border-line" {...props} />
+              ),
+              table: (props) => (
+                <div className="mb-4 overflow-x-auto">
+                  <table className="w-full border-collapse text-sm text-soft" {...props} />
+                </div>
+              ),
+              thead: (props) => (
+                <thead className="border-b border-line" {...props} />
+              ),
+              th: (props) => (
+                <th className="border-b border-line px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-mute" {...props} />
+              ),
+              td: (props) => (
+                <td className="border-b border-line/70 px-3 py-2 text-sm leading-relaxed" {...props} />
+              ),
+              input: (props) => (
+                <input className="accent-accent" disabled {...props} />
+              ),
             }}
           >
             {content}
