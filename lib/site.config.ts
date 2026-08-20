@@ -5,7 +5,7 @@
  * ─────────────────────────────────────────────────────────────────
  */
 
-import { dirstudioCaseStudy } from "@/lib/case-study-content";
+import { dirstudioCaseStudy, qwryCaseStudy } from "@/lib/case-study-content";
 
 export type GalleryItem = {
   type: "image" | "video" | "gif";
@@ -302,18 +302,7 @@ currentlyLabel: "Currently",
       code: "https://github.com/j4nya-BinSrcs/qwry.git",
       video: "",
       ratio: "aspect-[16/10]",
-      caseStudy: `# Qwry — Case study
-
-## Overview
-Coming soon. A deep dive into the research assistant, source discovery, and persistent workspaces is being written.
-
-## Getting started
-\`\`\`bash
-git clone https://github.com/j4nya-BinSrcs/qwry.git
-cd qwry
-npm install
-npm run dev
-\`\`\``,
+      caseStudy: qwryCaseStudy,
       gallery: [
         {
           type: "image",

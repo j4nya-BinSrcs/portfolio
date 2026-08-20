@@ -302,3 +302,366 @@ Measured on the live local instance (sample directories; 8 completed scans):
 ---
 
 *Case study generated from the DirStudio codebase — frontend, backend, database schema, tests, and live API behavior.*`;
+export const qwryCaseStudy = `# QWRY — Self-Hosted Search & Research Engine
+
+A portfolio case study of building a private, AI-assisted web research platform.
+
+---
+
+## 01 · Overview
+
+QWRY is a self-hosted search and research engine that gives a single user a complete
+"search → collect → read → synthesize → organize" pipeline — without relying on a third-party
+search API or sending queries to a cloud provider.
+
+Search the open web, pull results into persistent **workspaces**, annotate them in a
+**Station** (reads, highlights, notes, pins, tags, comparisons), lay them out as a visual mind-map
+on a **Canvas**, and ask an LLM to summarize, answer, or chat about the collected material. Every
+layer runs locally: a React frontend, a FastAPI orchestrator, a Rust crawler + Tantivy indexer,
+SearXNG metasearch, Postgres, Valkey, and Ollama.
+
+**Scale of the build (as of v0.1.0)**
+
+| Metric | Value |
+|---|---|
+| Total code | ~25,000 lines across 3 languages |
+| Client (React) | ~12,300 lines |
+| Server (Python/FastAPI) | ~6,500 lines |
+| Engine (Rust) | ~6,200 lines |
+| REST endpoints | 83 |
+| Database tables | 25 |
+| Commits | 175 |
+
+**Stack**
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, Vite, Zustand, Tailwind 4, dnd-kit, react-resizable-panels |
+| Backend | Python 3.13, FastAPI, SQLAlchemy (async), Alembic |
+| Search engine | Rust, Tantivy (BM25), BGE-small embeddings, RRF fusion, cross-encoder rerank |
+| Data stores | PostgreSQL, Valkey (Redis-compatible cache), Tantivy on-disk index |
+| AI | Ollama (\`gemma3:1b\`) — overviews, summaries, grounded chat |
+| Metasearch | SearXNG (Docker) — web, images, videos, news, suggestions |
+
+---
+
+## 02 · The Problem
+
+Mainstream search has three pain points that compound for anyone doing deep research:
+
+1. **You don't own your results.** Results come and go as indexes change; pages get de-indexed,
+   paywalled, or redesigned, and the references you collected break over time.
+2. **Discovery and synthesis are disconnected.** You search in one tool, clip snippets into notes
+   in another, summarize in a third, and never form a coherent research trail.
+3. **No private middle ground.** Consumer AI products route your queries and reading history
+   through a third-party cloud. Running a *truly* private search stack that combines live web
+   results, a personal index, and LLM assistance normally means stitching together several
+   unmaintained open-source tools.
+
+The core challenge this project set out to solve: **build a single, self-contained system where a
+researcher can search the open web, build a personal, lasting index of what they've read, and use a
+local LLM to make sense of it — all without any third-party API keys or cloud dependencies.**
+
+---
+
+## 03 · Goals
+
+1. **Truly self-hosted search.** Live web results (SearXNG) *and* a local, persistent crawl-and-index
+   engine (Rust + Tantivy) — with no API keys required.
+2. **A research workflow, not just a results page.** Capture results into named workspaces, then
+   read, annotate, summarize, compare, and connect sources.
+3. **Local, private AI.** LLM overviews, summaries, and chat all served by Ollama on-device.
+4. **Unified search UX.** One query should return web results, images, videos, news, suggestions,
+   an infobox, and an AI overview in a single coherent interface.
+5. **Polite, production-minded crawling.** robots.txt compliance, per-host rate limiting, retries,
+   and crash-safe batch indexing.
+6. **Good performance where it matters.** Cached search, concurrent provider fan-out, and a fast
+   native indexer.
+7. **A pleasant interface.** A polished, themeable UI (Catppuccin themes, animated home screen,
+   skeleton loading) — this had to feel like a product, not a demo.
+
+---
+
+## 04 · Architecture
+
+QWRY is a four-tier system. The React client talks only to the FastAPI server; the server
+orchestrates search across two backends, persists state, and drives the LLM; the Rust engine does
+the heavy native work of crawling and indexing.
+
+\`\`\`
+flowchart LR
+    C[React client :5173] -->|HTTP /api| S[FastAPI server :8000]
+    S -->|search / status| E[Rust engine :8001]
+    S -->|search| X[SearXNG :8080]
+    S --> C1[(Valkey cache :6379)]
+    S --> P[(Postgres :5432)]
+    S -->|generate / summarize| O[Ollama :11434]
+    E --> P
+    E --> I[(Tantivy index)]
+\`\`\`
+
+### Tiers
+
+- **Client (\`client/\`)** — a React 19 + Vite SPA. No router library: navigation is a single
+  \`contextMode\` string in the Zustand \`uiStore\` that swaps between Home, SearchAssist, Workspace,
+  Reader, and Summarizer views. A three-pane resizable layout hosts Sources / Context / Discovery
+  panels; the Workspace view is itself a Station↔Canvas tab switcher.
+- **Server (\`server/\`)** — FastAPI is the orchestrator. It fans search out to SearXNG and/or the
+  engine, merges and dedupes results, caches to Valkey, persists to Postgres, and calls Ollama for
+  overviews, summaries, and workspace chat. Identity is a client-supplied \`X-Session-Id\` header
+  that scopes all history, profiles, and workspace data.
+- **Engine (\`engine/\`)** — a Rust workspace of three crates:
+  - \`shared\` — Postgres access, batch upserts, brute-force vector search over stored embeddings.
+  - \`crawler\` — polite web crawler: robots.txt, per-host \`Crawl-delay\`, retries, batched DB writes,
+    optional distributed mode via a Postgres job queue.
+  - \`indexer\` — Tantivy indexing, BGE-small embeddings, hybrid search (BM25 + vector with RRF
+    fusion), optional cross-encoder reranking, and an Axum HTTP API on :8001.
+- **Infra (\`infra/\`)** — Docker Compose for SearXNG + Valkey, plus launch/teardown scripts
+  (\`launch.sh\`, \`launch.bat\`, \`shutdown.sh\`) that bootstrap all services in order.
+
+### Lifecycle of a query
+
+\`\`\`
+Client → GET /api/search?q=...        FastAPI checks Valkey cache
+  (miss) → SearXNG (concurrent) + Engine (concurrent)
+          → merge + dedupe by URL → cache for 300s → return
+Client → POST /api/llm/generate       Ollama produces a short/elaborate/study overview
+Server → log search + save overview   Postgres
+\`\`\`
+
+### Crawl → index → search pipeline
+
+\`\`\`
+Seeds → Crawler workers (robots.txt, politeness, retries)
+      → Postgres crawled_pages (indexed=false)
+      → Indexer pulls batches of 500 → shard by URL hash → parallel Tantivy writers
+      → commit + mark indexed → embed (BGE-small, 384-dim) → page_embeddings
+      → HTTP search API: BM25 | vector | hybrid (RRF fusion) | rerank
+\`\`\`
+
+---
+
+## 05 · Engineering Decisions
+
+### Rust for the crawl + index engine
+
+The engine is performance-critical: crawling thousands of pages, parsing HTML, writing to an
+inverted index. Rust with \`tokio\` + \`rayon\` gives a native, memory-safe implementation with
+predictable performance, and **Tantivy** (a Lucene-style library) provides the BM25 inverted index.
+Result: BM25 search with field boosts (title 2.5 / description 1.5 / content 1.0) and generated
+snippets.
+
+### Hybrid search with pluggable fusion
+
+Vector-only or keyword-only search both fail in different ways. The engine supports
+\`bm25 | vector | hybrid\` modes and two fusion strategies: **RRF** (Reciprocal Rank Fusion, \`k=60\`)
+by default, and weighted score fusion when custom \`alpha\`/\`beta\` weights are supplied:
+
+\`\`\`
+score(url) = alpha * bm25_norm(url) + beta * vec_norm(url)
+\`\`\`
+
+An optional cross-encoder (BGE-reranker-base) re-ranks the top-30 candidates for better precision.
+
+### Sharded index for parallel indexing
+
+The index is split into N shards (power of two), URL-hashed to a shard, so indexing batches can be
+written by multiple Tantivy writers in parallel (\`rayon\`). This turned single-threaded indexing
+into a scalable pipeline and isolates index write contention.
+
+### Crash-safe indexing
+
+The indexer marks pages \`indexed\` **immediately after the Tantivy commit**, before embeddings are
+generated — so a crash during embedding never leaves a page perpetually unindexed. A
+\`recover_missing_embeddings\` pass fills embedding gaps left by partial crashes.
+
+### Polite crawling as a first-class feature
+
+Rather than a throwaway scraper, the crawler implements a real web-crawl policy: robots.txt fetched
+once per host, per-host \`Crawl-delay\` overrides, connection/redirect/timeout limits, exponential
+backoff with error classification, and batched writes (100 rows or 5s) through an mpsc channel to
+avoid hammering Postgres.
+
+### Cache-first architecture
+
+Search results, LLM overviews, reader extractions, and summaries are all cached in Valkey with
+appropriate TTLs (300s search, 1800s overviews, 3600s reader/summary). The cache degrades
+gracefully — if Valkey is down, every operation no-ops and the system keeps working.
+
+### Concurrent hybrid provider merging
+
+The server runs SearXNG and engine queries **concurrently** (\`asyncio.gather\`), then merges and
+dedupes by URL. A provider can fail without taking the query down (exceptions are collected, the
+surviving provider's results are returned).
+
+### Session-scoped identity (no auth)
+
+For a single-user self-hosted tool, auth adds complexity without benefit. Identity is a client
+generated \`X-Session-Id\` stored in localStorage; profiles, history, and workspaces are scoped by it.
+This is documented as a deliberate trade-off with a hardening path (the schema keys off
+\`session_id\`, so real auth could slot in as middleware).
+
+### Zustand + no router for a fast, fluid SPA
+
+View routing is a single string in the UI store rather than a router library — trivially simple,
+keeps the whole app in one state graph, and makes cross-panel actions (e.g. dragging a result
+straight into a workspace) trivial to wire up.
+
+---
+
+## 06 · Implementation
+
+### Engine (\`engine/\` — Rust)
+
+- **Crawler** (\`crawler/\`): seed-URL discovery loop with per-domain politeness maps, prefetched
+  robots rules, a retry classifier, HTML parsing on a blocking pool, and a \`BatchWriter\` fed by an
+  mpsc channel. A \`--distributed\` flag swaps the in-memory queue for a Postgres-backed \`crawl_jobs\`
+  table claimed with \`FOR UPDATE SKIP LOCKED\` — so multiple crawler nodes can split the work.
+- **Indexer** (\`indexer/\`): \`ShardedIndex\` opens N Tantivy indexes, pulls 500 unindexed pages per
+  batch, indexes them in parallel, marks them, then embeds content in batches of 64 with
+  BGE-small-en-v1.5 (384-dim). Search (\`GET /search\`) supports \`mode=bm25|vector|hybrid\`,
+  \`offset\`/\`limit\`, and \`rerank\`. A \`/status\` endpoint reports index/embedding counts and model
+  names for the frontend stats view.
+
+### Server (\`server/\` — Python/FastAPI)
+
+- **83 endpoints** across health, search, stats, LLM, reader, summarizer, workspaces, station
+  (reads/highlights/notes/pins/images/videos/tags/comparisons/timeline), canvas, AI responses,
+  tasks, profiles, and history.
+- **Search orchestration** (\`search_orch.py\`): provider dispatch (\`searxng | engine | hybrid\`),
+  cache read/write, and concurrent merge logic.
+- **SearXNG client** (\`searxng.py\`): primary engines (Google, DuckDuckGo) with a fallback tier
+  (Bing, Wiby) when the primary tier returns nothing, plus retry with backoff and robust duration
+  parsing for videos.
+- **Content services**: \`ReaderService\` detects content type (article / image / YouTube), extracts
+  with \`trafilatura\`, and rejects JS-boilerplate pages; \`Summarizer\` builds content-aware prompts
+  for the LLM; \`Chat\` implements stateless RAG over up to 5 workspace items with numbered source
+  citations.
+
+### Client (\`client/\` — React)
+
+- **State**: seven Zustand stores (session, ui, search, content, workspace, station, canvas);
+  session id and reads/summaries persist to localStorage.
+- **Search**: one query fires **5 parallel requests** — results, images, videos, news, and
+  suggestions — gated by a monotonically increasing \`searchSeq\` token so stale responses are
+  dropped. Results stream into a three-pane layout with category filters and infinite pagination.
+- **Capture**: results move into workspaces by drag-and-drop (dnd-kit), a per-card \`+\`, or a
+  bulk "transfer all" that dedupes across result sets by URL.
+- **Canvas**: a self-contained SVG/HTML mind-map with drag-pan, scroll-zoom toward cursor, node
+  connections, multi-select, an inspector, minimap, and fit-to-screen — station objects render as
+  rich cards, and notes/comparisons created on the canvas sync back through the station API.
+- **Polish**: themeable Catppuccin palettes, animated home background (WebGL/particle), skeleton
+  loaders, and a consistent popup/dropdown component system.
+
+---
+
+## 07 · Challenges & Solutions
+
+**Challenge: merging two unrelated search result sets into one coherent list.**
+SearXNG and the local engine return different shapes, scores, and qualities.
+*Solution:* normalize both into a single \`SearchResultItem\` schema on the server, run them
+concurrently, then interleave a two-pointer merge with URL dedup (\`search_orch.py\`) — live results
+stay prominent while local index hits fill in what the web misses.
+
+**Challenge: crawling without being abusive or getting blocked.**
+*Solution:* made politeness a core requirement, not an afterthought — robots.txt rules cached per
+host, per-host \`Crawl-delay\` and last-request tracking, timeouts and redirect limits, exponential
+backoff, and a hard \`max_pages\` counter. Commits show successive \`perf\` improvements from early
+crawler versions to the final parallel worker pool.
+
+**Challenge: slow indexing and embedding.**
+*Solution:* three compounding optimizations — sharded Tantivy writers running in parallel via
+\`rayon\`, batching DB reads (500 pages) and embedding (64 chunks), and batch-writing crawled pages
+(100 rows or 5s) to stop Postgres from becoming the bottleneck.
+
+**Challenge: crash safety across a long pipeline (crawl → DB → index → embed).**
+A crash between indexing and embedding could wedge pages in an unindexed state.
+*Solution:* mark pages \`indexed\` immediately after the Tantivy commit, then generate embeddings;
+add a recovery pass that re-embeds any indexed-but-embedding-less pages on startup.
+
+**Challenge: JS-heavy pages that yield garbage when scraped.**
+*Solution:* the reader detects boilerplate patterns ("enable JavaScript", browser-required pages)
+and rejects them; article extraction uses \`trafilatura\`, YouTube falls back to the meta
+description, and all reader/summary output is cached to avoid repeat fetches.
+
+**Challenge: distributed crawling without double-visiting pages across nodes.**
+The in-memory visited set doesn't share across processes.
+*Solution:* a Postgres-backed job queue using \`FOR UPDATE SKIP LOCKED\` claim semantics so workers
+don't grab the same row, with \`ON CONFLICT\` handling for re-pushes. (Documented as a known gap:
+cross-node dedup is still best-effort.)
+
+**Challenge: LLM latency and cost during interactive search.**
+*Solution:* overviews are cached per query (sha256 of query+mode) for 30 minutes; a study-mode
+overview reads the top pages before generating, so the heavy work is done once, not per keystroke.
+
+**Challenge: making a search *tool* feel like a *product*.**
+*Solution:* invested in the UI layer — theme system, animated backgrounds, skeleton loading,
+masonry discovery grid, resizable panes — because a research tool you use daily has to be pleasant,
+not just functional.
+
+---
+
+## 08 · Performance / Results
+
+While QWRY is a personal tool rather than a benchmarked service, the architecture produced
+measurable wins:
+
+- **Crawl throughput** improved twice during development (a 10% speedup commit followed by a
+  parallel worker-pool rewrite), and batched DB writes prevent write-contention stalls.
+- **Search latency** is dominated by cache: repeat queries hit Valkey and return instantly;
+  first-time hybrid queries fan out concurrently rather than sequentially (two providers in
+  parallel, LLM overviews in a separate request).
+- **Indexing throughput** scales with shard count — parallel Tantivy writers turn a
+  single-threaded bottleneck into an N-way pipeline.
+- **Resilience:** a failed provider never fails a query (the other provider's results are
+  returned); a dead cache never fails a request; a crash mid-embedding never corrupts the index.
+- **Coverage:** one query yields web + local results + images + videos + news + suggestions +
+  infobox + an AI overview — eight distinct content streams in a single interface.
+
+**Codebase health indicators:** 83 documented endpoints, 25 relational tables, a 15-document
+technical wiki (\`docs/\`) covering architecture, API reference, deployment, security, and
+troubleshooting, plus server pytest suites and engine integration tests.
+
+---
+
+## 09 · What I Learned
+
+1. **Polyglot systems are worth the coordination cost.** Rust where speed and safety matter,
+   Python where iteration speed matters, React where UX matters — the seams were the hard part
+   (typed HTTP contracts at every boundary), but each language ended up doing what it does best.
+2. **Ranking is a layered problem.** BM25 nails keyword matches, embeddings capture semantics,
+   RRF fusion combines them robustly, and a cross-encoder buys precision on top. Knowing *which*
+   technique fits *when* is the actual skill.
+3. **Search infrastructure is mostly plumbing.** The interesting work was in orchestration:
+   caching, concurrency, dedup, failure isolation — not the scoring formulas.
+4. **Crawling ethically is an engineering discipline.** robots.txt, rate limits, and retries
+   aren't nice-to-haves; they're what keep a crawler working instead of getting blocked.
+5. **Caching is a resilience feature, not just a performance one.** A cache layer that degrades
+   gracefully (and isolates TTLs per content type) made the whole system robust to infrastructure
+   hiccups.
+6. **Documentation forced better design.** Writing \`architecture.md\`, \`known-issues.md\`, and the
+   security model made implicit decisions explicit — and surfaced real bugs (missing migrations,
+   bypassed ownership checks) that code review alone had missed.
+7. **Scope discipline.** Shipping a genuinely complete vertical slice (search → workspace → station
+   → canvas) was more valuable than a broader but shallower feature set.
+
+---
+
+## 10 · What's Next
+
+**Short term (correctness):**
+- Alembic migrations for the ~14 tables currently created only at runtime.
+- Enforce session ownership on all update/delete endpoints (station, canvas, AI, tasks).
+- Fix the crawler's 5xx retry classification and distributed re-push handling.
+
+**Medium term (capability):**
+- Full-content embeddings (index all chunks, not just chunk 0) for genuinely semantic long-document
+  search.
+- Replace brute-force vector search with an ANN index (HNSW) so the index scales past demo size.
+- Add real authentication (the \`session_id\`-scoped schema is already auth-ready).
+
+**Longer term (product):**
+- An LLM-powered "research agent" that walks the crawl → read → summarize loop autonomously.
+- Scheduled re-crawling and freshness tracking for saved sources.
+- Multi-user support with per-user indexes and workspace sharing.
+- A PWA/desktop shell so QWRY feels like an installed app rather than a dev server.`;
