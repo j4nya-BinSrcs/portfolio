@@ -9,6 +9,7 @@ import {
   dirstudioCaseStudy,
   qwryCaseStudy,
   quantumlifeCaseStudy,
+  glyphstreamCaseStudy,
 } from "@/lib/case-study-content";
 
 export type GalleryItem = {
@@ -429,53 +430,84 @@ currentlyLabel: "Currently",
       title: "GlyphStream",
       description:
         "GlyphStream is an image to ascii conversion terminal tool that prints images, videos as well as live webcam captures as ascii with colors in the terminal.",
-      stack: ["TypeScript", "Node.js", "CLI", "Terminal"],
+      stack: ["Rust", "OpenCV", "crossterm", "Unicode"],
       href: "https://github.com/j4nya-BinSrcs/glyphstream.git",
       code: "https://github.com/j4nya-BinSrcs/glyphstream.git",
       video: "",
-      ratio: "aspect-square",
-      caseStudy: `# GlyphStream — Case study
-
-## Overview
-Coming soon. A deep dive into image-to-ascii rendering, video support, and live webcam captures is being written.
-
-## Getting started
-\`\`\`bash
-git clone https://github.com/j4nya-BinSrcs/glyphstream.git
-cd glyphstream
-npm install
-npm run dev
-\`\`\``,
+      ratio: "aspect-video",
+      caseStudy: glyphstreamCaseStudy,
       gallery: [
         {
           type: "image",
-          src: "",
-          caption: "Image to ASCII",
-          ratio: "aspect-square",
-        },
-        {
-          type: "video",
-          src: "",
-          caption: "Video rendering",
+          src: "/projects/glyphstream/glyphstream_image_pixel.png",
+          caption: "Pixel mode on a still image",
           ratio: "aspect-video",
         },
         {
-          type: "gif",
-          src: "",
+          type: "video",
+          src: "/projects/glyphstream/glyphstream_video_pixel.webm",
+          caption: "Video playback, pixel mode",
+          ratio: "aspect-video",
+        },
+        {
+          type: "video",
+          src: "/projects/glyphstream/glyphstream_video_ascii.webm",
+          caption: "Video playback, ASCII mode",
+          ratio: "aspect-video",
+        },
+        {
+          type: "image",
+          src: "/projects/glyphstream/glyphstream_image_ascii.png",
+          caption: "ASCII mode on a still image",
+          ratio: "aspect-video",
+        },
+        {
+          type: "video",
+          src: "/projects/glyphstream/glyphstream_webcam_feed_pixel.webm",
+          caption: "Live webcam feed, pixel mode",
+          ratio: "aspect-[4/3]",
+        },
+        {
+          type: "image",
+          src: "/projects/glyphstream/glyphstream_live_cam_feed_image.png",
           caption: "Live webcam capture",
           ratio: "aspect-[4/3]",
         },
         {
           type: "image",
-          src: "",
-          caption: "Colored ASCII output",
-          ratio: "aspect-[3/4]",
+          src: "/projects/glyphstream/glyphstream_image_pixel_2.png",
+          caption: "Pixel mode, second sample",
+          ratio: "aspect-video",
         },
         {
           type: "image",
-          src: "",
-          caption: "Terminal preview",
-          ratio: "aspect-video",
+          src: "/projects/glyphstream/one.jpg",
+          caption: "Test image",
+          ratio: "aspect-square",
+        },
+        {
+          type: "image",
+          src: "/projects/glyphstream/two.jpg",
+          caption: "Test image",
+          ratio: "aspect-square",
+        },
+        {
+          type: "image",
+          src: "/projects/glyphstream/three.jpg",
+          caption: "Test image",
+          ratio: "aspect-square",
+        },
+        {
+          type: "image",
+          src: "/projects/glyphstream/four.jpg",
+          caption: "Test image",
+          ratio: "aspect-square",
+        },
+        {
+          type: "image",
+          src: "/projects/glyphstream/five.jpg",
+          caption: "Test image",
+          ratio: "aspect-square",
         },
       ],
     },

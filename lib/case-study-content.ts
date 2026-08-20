@@ -1076,3 +1076,225 @@ integrator, where wrapping happens) kept the convention in exactly one place.
   non-cubic minimum-image space, building on the strategy seam.
 - **Session diffing** — store config deltas rather than full snapshots to keep
   per-run persistence sub-kilobyte as features grow.`;
+
+
+export const glyphstreamCaseStudy = `# GlyphStream — Case Study
+
+*A real-time terminal video/image renderer written in Rust + OpenCV.*
+
+**Stack:** Rust (edition 2021) · OpenCV (\`opencv\` crate) · \`clap\` · \`crossterm\` · \`anyhow\`
+
+---
+
+## 01 · Overview
+
+**GlyphStream** turns video (and still images) into live, full-truecolor art rendered
+directly inside a terminal. Instead of showing pixels on a screen, it re-maps every
+frame onto the terminal's character grid, producing either:
+
+- **Pixel mode** — two square virtual pixels per cell using the Unicode
+  \`▀\` (UPPER HALF BLOCK) glyph with 24-bit RGB foreground/background, or
+- **ASCII mode** — a 92-character luminance ramp, with or without truecolor.
+
+It runs in real time (targeting 60 FPS), streams a webcam, plays back video files,
+and now renders still images. All rendering is done via escape sequences written to a
+raw-mode alternate screen, so it works on any terminal without extra dependencies.
+
+---
+
+## 02 · The Problem
+
+Terminals were never designed to display video. They are character-addressed text
+grids with fixed-width cells, a handful of control codes, and no concept of pixels.
+Rendering video in one is a collision of two incompatible abstractions:
+
+1. **Spatial mismatch.** A 1920×1080 frame has over two million pixels; a terminal has
+   ~100-200 columns. Content must be aggressively downscaled *without* distortion,
+   which requires knowing the font's character-cell aspect ratio.
+2. **Bandwidth bottleneck.** A single full-truecolor cell needs ~40 bytes of escape
+   codes. A 160-column frame is roughly 8 KB of text per render — pushing 60 of those
+   per second means sustaining tens of MB/s of terminal output while also decoding
+   video in real time.
+3. **Input plumbing.** Video arrives from divergent sources (webcam, file, and now
+   images) through different OpenCV backends (V4L2, GStreamer, FFmpeg), each with its
+   own quirks and failure modes.
+
+The goal was to build one tool that treats the terminal as a first-class output
+device for moving pictures — not a toy, but something genuinely usable and fast.
+
+---
+
+## 03 · Goals
+
+- **Correctness first:** square, undistorted pixels with the correct aspect ratio on
+  any common monospace font.
+- **Real-time performance:** sustain ~60 FPS on typical hardware without draining
+  battery or spiking CPU.
+- **Three renderers:** half-block truecolor pixels, coloured ASCII, and monochrome
+  ASCII, all sharing one processing pipeline.
+- **Multiple sources:** webcam, video files, and still images through a single
+  CLI.
+- **Zero-dependency output:** work in any ANSI-capable terminal; no GUI, no GPU.
+- **Tunable image quality:** contrast, brightness, gamma, saturation, and sharpening
+  exposed as flags.
+
+---
+
+## 04 · Architecture
+
+The program is a linear pipeline, executed per frame:
+
+\`\`\`
+            ┌────────────┐   ┌────────────┐   ┌───────────────┐   ┌──────────┐
+  Source ──▶│  Capture   │──▶│   Layout   │──▶│  Processing   │──▶│ Rendering│──▶ Terminal
+ (webcam/   │  OpenCV    │   │  geometry  │   │  (resize +    │   │ (pixel / │   (escape
+  file/img) │  VideoCapture│  │ (grid, LUT)│   │  grade + sharp)│   │  ascii)  │    codes)
+            └────────────┘   └────────────┘   └───────────────┘   └──────────┘
+\`\`\`
+
+Key components (in \`src/main.rs\`):
+
+- **CLI (\`Args\`)** — \`clap\` derive; defines source, renderer, backend, output size,
+  and all grading knobs.
+- **\`TerminalGuard\`** — RAII guard that enters raw mode + alternate screen on start
+  and *guarantees* restoration on any exit path (via \`Drop\`).
+- **Layout engine** — \`compute_grid\` and \`compute_layout\` translate video pixel
+  dimensions into a terminal column/row grid, computing exact letterbox offsets.
+- **\`process_frame\`** — downscales with anti-aliasing, applies unsharp mask, then
+  per-pixel saturation + a pre-built 256-entry lookup table (LUT) for grading.
+- **Renderers** — \`render_pixel\`, \`render_ascii\`, and the shared \`render_mat\`
+  dispatcher turn a processed \`Mat\` into a byte buffer of ANSI escapes.
+- **\`poll_exit\`** — non-blocking event loop watching for \`q\`/\`Esc\`/\`Ctrl+C\`.
+
+---
+
+## 05 · Engineering Decisions
+
+### 5.1 The \`▀\` upper-half-block trick
+Rather than fighting the aspect ratio, this leans into it. A standard 8×16 px
+monospace cell is ~2:1 tall. \`▀\` fills only the top half with the **foreground**
+colour and leaves the bottom as the **background** colour — two pixels per cell,
+stacked. Because the cell is twice as tall as it is wide, these virtual pixels are
+*exactly square*. Result: **2× the vertical resolution** of ASCII art with no aspect
+correction, for free.
+
+### 5.2 LUT-based colour grading
+Contrast, brightness, and gamma are all per-pixel functions of a single channel
+value. Computing \`powf\` 256 times and caching beats doing it for every pixel of every
+frame: the expensive math runs **once** up front, and each pixel becomes two table
+lookups.
+
+### 5.3 Single \`BufWriter\`, byte-vector rendering
+The terminal is buffered into a 1 MB \`BufWriter\`, and each frame is assembled into a
+\`Vec<u8>\` before flushing. Raw \`push_u8\`/byte-append helpers avoid format overhead,
+so a full frame lands in one or two OS \`write()\` calls. This keeps per-frame overhead
+tiny at high column counts.
+
+### 5.4 RAII terminal guard
+Raw mode and the alternate screen must be torn down even on error/panic. Wrapping
+both in a struct that restores the terminal in \`Drop\` makes cleanup impossible to
+forget and removes a whole class of "my terminal is broken after quit" bugs.
+
+### 5.5 Backend abstraction with graceful fallback
+OpenCV has multiple capture backends. GlyphStream tries a prioritized list (V4L2 →
+ANY → GStreamer for webcam, ANY/FFmpeg for files) and reports *every* failure, rather
+than a single opaque error. Images bypass capture entirely via \`imgcodecs::imread\`.
+
+### 5.6 \`\\r\\n\` in raw mode
+In raw mode a bare \`\\n\` moves the cursor *down* but not to column 0. Every row is
+terminated with \`\\r\\n\` (CR + LF). Missing this produces an infamous black-stripe
+artefact where each row starts from the wrong column.
+
+---
+
+## 06 · Implementation
+
+- **Grid math.** \`compute_grid\` derives \`rows = cols × vid_h / (vid_w × cell_aspect)\`
+  from the video dimensions and the font's cell aspect ratio (default 2.0),
+  clamped to the real terminal height.
+- **Letterboxing.** \`compute_layout\` scale-to-fits the frame inside the pixel grid,
+  computing \`x_off\`/\`y_off\` so the renderers can skip padding regions efficiently.
+- **Processing.** \`INTER_AREA\` downscaling (best for shrinking), an unsharp mask via
+  \`GaussianBlur\` + \`addWeighted\`, then per-pixel saturation blended toward luminance
+  followed by LUT grading.
+- **Rendering.** \`push_half_cell\` emits \`ESC[38;2;R;G;B\` (foreground = top pixel) +
+  \`ESC[48;2;R;G;B\` (background = bottom pixel) + the \`▀\` glyph — the tightest possible
+  ANSI sequence for a 2-pixel cell.
+- **Flow control.** \`frame_skip\` drains the capture buffer without decoding to keep
+  latency low, and the loop sleeps to match the target FPS instead of spinning.
+- **Image mode.** A still image is loaded, run through the identical layout +
+  processing + rendering path, drawn once, and idled until quit — reusing 100% of the
+  video pipeline.
+
+---
+
+## 07 · Challenges & Solutions
+
+| Challenge | Solution |
+|-----------|----------|
+| **Distorted output** — content looked stretched | Model the cell aspect ratio; derive grid from \`vid_h/(vid_w×aspect)\`; verify with the 2:1 \`▀\` trick |
+| **Black stripe artefact** — rows misaligned in raw mode | Bare \`\\n\` doesn't return to column 0; use \`\\r\\n\` (CR+LF) per row |
+| **Slow grading** — per-pixel \`powf\` kills FPS | Pre-compute a 256-entry LUT once; per-pixel cost becomes two lookups |
+| **Huge output bandwidth** at high resolution | 1 MB \`BufWriter\` + byte-vector assembly → 1-2 OS writes per frame; offer \`--width\`/\`--height\` |
+| **Broken terminal after quit** on panic/error | RAII \`TerminalGuard\` restores raw mode + alternate screen in \`Drop\` |
+| **Multiple capture backends, opaque failures** | Prioritized backend candidates; aggregate and report every failure |
+| **Terminal not a TTY** (piped output) | Fail cleanly at raw-mode entry instead of corrupting output |
+| **Async interrupt handling** | \`ctrlc\` sets an \`AtomicBool\`; main loop polls it alongside keys |
+
+---
+
+## 08 · Performance / Results
+
+- **Effective resolution:** Pixel mode renders 2 square pixels per cell — a 160×45
+  terminal becomes a 160×90 truecolor display.
+- **Frame throughput:** The pipeline comfortably sustains the 60 FPS target on typical
+  hardware; \`--frame-skip\` and \`--width\` trade resolution for throughput on slower
+  terminals.
+- **Low-cost grading:** The LUT replaces millions of \`powf\` calls per second with a
+  fixed 256-iteration setup + indexed lookups.
+- **Single-flush output:** Full frames are written in 1-2 \`write()\` syscalls,
+  keeping CPU and latency low even at high column counts.
+- **Input breadth:** One binary handles webcam, video file, and still image sources
+  with a consistent pipeline and CLI.
+
+> Terminal-output code is not GPU-bound, so these numbers scale with OpenCV decode
+> speed and terminal throughput rather than graphics hardware — the bottleneck moves
+> to the terminal emulator, not the program.
+
+---
+
+## 09 · What I Learned
+
+- **Terminals are a real graphics API.** Escape sequences, raw mode, alternate
+  screens, and the exact semantics of \`\\r\` vs \`\\n\` are subtle, and getting them right
+  is what separates "works" from "works without corrupting the user's shell."
+- **The \`▀\` glyph is a hidden pixel trick.** Leaning on the 2:1 cell ratio converts a
+  limitation (non-square cells) into an advantage (square virtual pixels) and doubles
+  resolution.
+- **Precomputation beats micro-optimization.** One 256-entry LUT replaced a
+  would-be hot \`powf\` loop; the same idea applies broadly to per-pixel/per-element
+  work.
+- **RAII is underrated in CLI tools.** Putting terminal state in a \`Drop\` guard makes
+  cleanup impossible to forget and eliminates a whole bug class.
+- **Design one pipeline, feed it many sources.** Webcam, file, and image all funnel
+  through the same layout→process→render stages; adding image mode required almost no
+  new rendering code.
+
+---
+
+## 10 · What's Next
+
+- **Adaptive FPS**: self-tune \`frame_skip\`/resolution to the terminal's measured
+  throughput instead of fixed flags.
+- **Video playback controls**: seek, pause, and speed controls via key bindings.
+- **Multiple concurrent sources**: picture-in-picture or side-by-side streams.
+- **GPU-accelerated decode**: hook up hardware video decoding (VA-API/NVDEC) to move
+  the bottleneck further toward the terminal.
+- **Effects**: dithering, palette quantization, edge detection, and user-supplied
+  colour ramps.
+- **Portability**: package a cross-platform build; the escape-sequence core is
+  already terminal-agnostic.
+
+---
+
+*GitHub: \`github.com/j4nya-BinSrcs/glyphstream\`*`;
