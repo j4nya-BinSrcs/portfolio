@@ -5,7 +5,11 @@
  * ─────────────────────────────────────────────────────────────────
  */
 
-import { dirstudioCaseStudy, qwryCaseStudy } from "@/lib/case-study-content";
+import {
+  dirstudioCaseStudy,
+  qwryCaseStudy,
+  quantumlifeCaseStudy,
+} from "@/lib/case-study-content";
 
 export type GalleryItem = {
   type: "image" | "video" | "gif";
@@ -476,15 +480,23 @@ npm run dev
       ],
     },
     {
-      title: "Portfolio",
+      title: "QuantumLife",
       description:
-        "A modern, interactive developer portfolio inspired by desktop applications, terminal workspaces, and bento dashboards. Built with React, TypeScript, Tailwind CSS, and Framer Motion.",
-      stack: ["React", "TypeScript", "Tailwind CSS", "Framer Motion"],
-      href: "https://github.com/j4nya-BinSrcs/portfolio.git",
-      code: "https://github.com/j4nya-BinSrcs/portfolio.git",
+        "QuantumLife — a real-time particle life simulation in JavaFX with an interactive 3D viewport, pluggable physics (periodic, bouncing, and open boundaries), species attraction presets, and an opt-in GPU compute force pass.",
+      stack: ["Java 21", "JavaFX 3D", "LWJGL 3.3.4 / OpenGL", "SQLite", "Gson"],
+      href: "https://github.com/j4nya-BinSrcs/quantumlife.git",
+      code: "https://github.com/j4nya-BinSrcs/quantumlife.git",
       video: "",
       ratio: "aspect-[16/10]",
-      noViews: true,
+      caseStudy: quantumlifeCaseStudy,
+      gallery: [
+        {
+          type: "image",
+          src: "",
+          caption: "Placeholder",
+          ratio: "aspect-[4/3]",
+        },
+      ],
     },
   ] satisfies Project[],
 

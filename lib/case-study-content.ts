@@ -665,3 +665,414 @@ troubleshooting, plus server pytest suites and engine integration tests.
 - Scheduled re-crawling and freshness tracking for saved sources.
 - Multi-user support with per-user indexes and workspace sharing.
 - A PWA/desktop shell so QWRY feels like an installed app rather than a dev server.`;
+export const quantumlifeCaseStudy = `# Particle Life 3D — Case Study
+
+A real-time 3D emergent-behavior simulation for the desktop.
+
+**Stack:** Java 21 · JavaFX 3D · LWJGL/OpenGL compute · SQLite · Gson · Gradle
+**Scale:** ~82 production classes, 194 unit tests, ~8,500 lines of code
+**Role:** sole engineer — design, implementation, GPU/rendering, performance work
+
+---
+
+## 01 — Overview
+
+Particle Life is a cellular-automaton-style simulation in which thousands of
+particles of different *species* attract and repel one another according to an
+asymmetric species×species attraction matrix. Despite having no rules for
+motion beyond pairwise forces, the system self-organizes into striking emergent
+behavior: orbiting vortices, chasing predator–prey streams, flocking lanes, and
+membrane-like "cell" clusters that quiver and divide.
+
+Particle Life 3D brings this to an interactive 3D desktop application. Users
+orbit a live, cubic world of up to 50,000 particles while tweaking every
+parameter — the force curve, interaction radius, boundary conditions, species
+count, spawn seed, speed of time — all without pausing. The app persists
+everything: window geometry, theme, camera pose, saved presets in SQLite, and a
+full session snapshot so the world you close is the world you reopen.
+
+The most distinctive engineering effort is a **GPU compute force pass**: the
+pairwise force accumulation — normally the O(N²)-dominated physics core — was
+ported to OpenGL compute shaders with a parallel counting-sort spatial grid,
+running headless through EGL on the discrete GPU. This project is as much a
+study in concurrency, data layout, and honest performance measurement as it is
+in graphics.
+
+---
+
+## 02 — The Problem
+
+The "obvious" implementation of Particle Life fails on three fronts:
+
+1. **O(N²) force computation.** Every particle feels a force from every other
+   particle within a finite interaction radius. At 2,000 particles that is 4
+   million pair evaluations *per frame*; at the app's ceiling of 50,000 it is
+   2.5 billion. A naive double loop cannot hold 60 fps for even a few thousand
+   particles.
+
+2. **Rendering thousands of particles in JavaFX.** The intuitive approach —
+   one \`Sphere\` node per particle in the scene graph — is a well-known JavaFX
+   performance trap. A few thousand scene-graph nodes with per-frame transforms
+   chokes the pulse loop; 10,000+ is hopeless.
+
+3. **Three threads sharing one mutable world.** The physics engine needs its
+   own compute thread (a fixed 60 Hz step can never be held hostage by a
+   dropped render frame), while the UI thread mutates settings live and the
+   renderer reads state every frame. Without a deliberate design, this is a
+   data race minefield.
+
+A secondary, self-imposed problem: the physics core is an embarrassingly
+parallel compute workload, and the project ran on a laptop with a discrete
+NVIDIA GPU going unused. Could the force pass be genuinely accelerated with
+compute shaders — and would that ever actually win on real hardware?
+
+---
+
+## 03 — Goals
+
+- **Realtime at scale:** sustain interactive rates (60 fps target) at the
+  default 2,000 particles and degrade gracefully toward the 50,000 ceiling,
+  on an ordinary laptop.
+- **Live-tunable everything:** every parameter editable *while the simulation
+  runs*, with immediate effect and no restarts.
+- **Deterministic and reproducible:** the same seed produces the same world
+  and the same trajectory — on any platform, and regardless of thread count.
+- **Thread-safe by construction:** one physics thread, safe UI mutation, a
+  renderer that never touches live physics state.
+- **Persistence without corruption:** presets in SQLite, settings/session in
+  crash-safe JSON, old configs load cleanly after upgrades.
+- **An honest GPU path:** a real OpenGL compute-shader force pass with the
+  same semantics as the CPU grid — plus measurement honest enough to say when
+  it *shouldn't* be used.
+
+---
+
+## 04 — Architecture
+
+The application is a plain dependency-injected JavaFX app (no framework), split
+into ~20 packages. The three pillars:
+
+\`\`\`
+┌────────────────────────────────────────────────────────────┐
+│  Physics thread ("simulation-loop")                        │
+│  ForceCalculator (SpatialGrid) ──> Integrator ──> Snapshot │
+│        ▲                                                  │
+│        └──── engine.submit() FIFO queue (UI commands)      │
+├────────────────────────────────────────────────────────────┤
+│  JavaFX thread                                            │
+│  Sidebar ──> volatile settings  ·  EventBus ──> UI        │
+│  AnimationTimer ──> FrameSnapshot.readInto ──> renderer    │
+├────────────────────────────────────────────────────────────┤
+│  GPU path (optional): GpuForceEngine (EGL/GL compute)      │
+└────────────────────────────────────────────────────────────┘
+\`\`\`
+
+**Physics core** (\`core/physics\`, \`forces\`, \`particle\`):
+
+- \`ParticleStore\` — structure-of-arrays storage: interleaved \`double[]\`
+  positions/velocities/forces with no object graph, no pointer chasing, no
+  per-particle allocation. \`kill()\` is a swap-remove so hot loops never branch
+  on life state.
+- \`SpatialGrid\` — uniform grid chosen *deliberately over an octree*: Particle
+  Life has a single global interaction radius and near-uniform density, the
+  ideal case for a grid. Binning is a three-pass counting sort (histogram →
+  exclusive prefix sum → scatter) into reused flat arrays, O(N), zero
+  allocation per frame.
+- \`ForceCalculator\` — per particle, walks its cell plus the 26 adjacent cells,
+  skipping particles beyond \`r_max\`. O(N·k) where k ≈ mean neighbors in 27
+  cells. Parallelized over the common ForkJoinPool with a **deterministic**
+  per-particle accumulation order.
+- \`Integrator\` — semi-implicit (symplectic) Euler: velocity first, then
+  position, then boundary strategy.
+- \`AttractionMatrix\` — deliberately asymmetric, row-major \`double[]\`, values
+  clamped to \`[-1, 1]\`, published as a single volatile immutable view so
+  concurrent readers never see a torn resize.
+
+**Rendering** (\`render\`):
+
+- \`BillboardParticleRenderer\` — the 10k+ path. All particles of a species are
+  drawn as **one \`TriangleMesh\` of camera-facing quads**: one scene-graph node
+  per species regardless of population. Per frame, quad corners are computed
+  on the CPU from the camera's view-plane basis and pushed with a single
+  bulk \`setAll\`. Faces rebuild only when population changes.
+- \`SphereParticleRenderer\` — pooled low-poly \`Sphere\` nodes for the quality
+  path (≤ a few thousand), sharing per-species materials.
+- \`RenderMode.AUTO\` swaps between them at a 2,500-particle threshold.
+- \`FrameSnapshot\` — a plain mutex-guarded bulk copy hand-off: physics writes
+  float-narrowed positions into it after every step; the renderer copies out
+  on its own schedule. The javadoc defends the mutex over lock-free triple
+  buffering: both transfers are microseconds, and a mutex is "trivially
+  correct."
+
+**Application** (\`ui\`, \`config\`, \`database\`, \`core/commands\`):
+
+- \`CommandManager\` + undoable matrix commands with a 100-entry history.
+- \`EventBus\` — type-keyed pub/sub; engine events hop to the FX thread via a
+  small \`FxThreads.onFx\` helper.
+- SQLite preset storage (\`presets.db\`) with \`PRAGMA user_version\` schema
+  migrations and WAL mode.
+- Crash-safe config: JSON written to a temp file and atomically renamed;
+  corrupt configs degrade to defaults so a config problem can never block
+  startup.
+
+---
+
+## 05 — Engineering Decisions
+
+The most consequential choices, and the reasoning behind them:
+
+**Structure-of-arrays over an object graph.** The physics loop walks linear
+\`double[]\` memory. Beyond the obvious cache wins, SoA makes the workload
+trivially partitionable across worker threads — each thread owns a disjoint
+index range of the force array, so the parallel force pass needs **no locks and
+no atomics**.
+
+**Uniform grid over an octree.** An octree adapts to sparse scenes; Particle
+Life is the opposite — dense and uniform. The grid's assumptions hold
+exactly, its neighbor search is a fixed 27-cell loop with no tree descent, and
+binning is a flat counting sort. The codebase *documents this reasoning in the
+class javadoc* rather than silently picking a default.
+
+**Deterministic parallel force.** Each particle's force is accumulated by
+exactly one worker over a fixed cell-loop order, so results are
+bit-identical to the sequential brute-force reference regardless of thread
+count. There is a unit test asserting grid == brute force to 1e-6 on an
+identical random scene. Determinism is a feature, not an accident.
+
+**Friction as a half-life, not a rate.** \`friction = 0.5^(dt/t½)\` makes
+damping *step-size independent* — the same \`t½\` produces the same trajectory
+at any \`dt\`. Verified by a test that integrates one half-life in both one big
+step and fifty small steps and asserts equality to 1e-9.
+
+**A mutex, not lock-free triple buffering.** The snapshot hand-off is a
+\`volatile\`-free synchronized double copy. It is faster in practice than the
+exotic alternative for a microsecond transfer, and it is provably correct.
+This is a deliberate "use the boring tool that fits" decision.
+
+**Volatile settings, not locks, for live UI edits.** \`PhysicsSettings\` and
+\`SimulationSettings\` are all-volatile with clamping setters and *no
+multi-field invariants*, so single-field edits are safe mid-simulation with
+zero locking. Structural changes (species count, matrix edits, respawns) go
+through the engine's FIFO command queue — the *only* legal way to mutate world
+structure.
+
+**GPU via EGL device enumeration, not a window.** The GPU engine creates a
+surfaceless OpenGL context through \`EGL_EXT_platform_device\` over the DRM
+render node — reaching the discrete GPU even with no display attached — with a
+hidden GLFW window only as fallback. This is the unglamorous but correct way
+to do headless compute on a laptop.
+
+---
+
+## 06 — Implementation
+
+### The force law
+
+A kernel maps normalized distance \`x = r/r_max ∈ [0,1]\` and matrix entry \`a\`
+to a force magnitude. The canonical law (piecewise-linear):
+
+\`\`\`
+f(x,a) = x/β − 1                            for x < β    (universal repulsion)
+       = a·(1 − |2x−1−β| / (1−β))           for β ≤ x < 1 (matrix bump)
+       = 0                                  for x ≥ 1    (hard cutoff)
+\`\`\`
+
+The repulsion zone below \`β\` is *independent of the matrix* — even a
+maximally-attracted pair is pushed apart at contact, so overlap is prevented
+with no collision detection. The hard zero beyond \`x=1\` makes the spatial
+grid's cutoff exact, not approximate. A \`SmoothForce\` variant replaces the
+triangle with a raised cosine for C¹ continuity. The direction normalization
+divides by \`max(r, minDistance)\` with \`minDistance = r_max·0.01\`, guarding
+against division blow-up for coincident particles (which are also skipped by
+an explicit \`d² == 0\` check).
+
+### The CPU spatial grid
+
+\`m = max(1, floor(L/r_max))\` cells per axis (default 200/24 → 8), cell edge
+\`≥ r_max\` so all interaction partners live in the particle's cell plus 26
+neighbors. Binning is a counting sort into four reused flat arrays. Below 3
+cells per axis the grid can't guarantee a clean 27-cell search, so the engine
+switches to the honest O(N²) brute-force loop — same on CPU and GPU.
+
+### The GPU compute pass
+
+Ported the force kernel to GL 4.3 compute shaders (\`#version 430\`, 8 SSBOs,
+workgroup 256), faithfully mirroring the CPU semantics:
+
+1. **BIN_COUNT** — each particle computes its cell id and \`atomicAdd\`s a cell
+   counter.
+2. CPU reads the counts off a **persistent-coherent mapped buffer**, computes
+   the exclusive prefix sum, and writes it back.
+3. **SCATTER** — particles re-binned with \`atomicAdd\` as the cursor, grouped by
+   cell into a sorted index buffer.
+4. **FORCE_GRID** — the 27-cell neighbor kernel with identical minimum-image
+   and \`scale/max(r, minDistance)\` math.
+
+Two implementation battles are worth noting. First, the grid buffer was
+initially sized \`cellCount·4\` bytes but read as \`cellCount+1\` entries —
+producing silent all-zero forces that looked like a clean "24× speedup" (the
+broken kernel was doing zero work). Fixing the sizing exposed the honest
+number: the GPU *loses* at realistic populations. Second, per-frame
+\`glMapBufferRange\` calls were stalling 85–480 µs each (two per frame) — the
+main reason the GPU path was slow. These were replaced with **persistent
+coherent mappings** (\`glBufferStorage\` + \`MAP_PERSISTENT|MAP_COHERENT\`) plus
+\`glFenceSync\`/\`glClientWaitSync\` crossings, cutting the per-frame sync cost to
+~100–200 µs.
+
+### Rendering pipeline
+
+Billboard quads are written as four corners \`±right·size ± up·size\` from the
+camera's view-plane basis — zero per-node transforms, one draw call per
+species. Motion trails stretch each quad along \`(current − previous)\`, a
+one-line cheap motion-blur. A depth-anchoring bug surfaced here: when a
+particle wrapped through a wall, its trail vector became a full world-length
+line spanning the environment. The fix re-mirrors the stored previous position
+to the same periodic copy after wrapping (minimum-image convention), keeping
+trails short through the seam.
+
+The world decor uses thin \`Box\`es as lines (JavaFX has no line primitive) for
+a 3-face grid (floor plus the two back walls that frame the default camera
+view), axes, and a bounding box — ~80 static nodes total.
+
+---
+
+## 07 — Challenges & Solutions
+
+**The GPU benchmark that lied.** The first GPU "result" claimed a 24× speedup
+— later traced to a grid-sizing bug that made the kernel compute nothing.
+The fix was as much *process* as code: re-verify every claimed measurement
+against the double-precision reference, and distrust numbers that look too
+good. The honest benchmark reversed the conclusion (GPU is *slower* at
+realistic populations), and the design changed accordingly — \`AUTO\` never
+selects the GPU.
+
+**Per-frame GPU stalls.** \`glMapBufferRange\` (allocate + map + unmap each
+frame) cost 85–480 µs per call, twice per frame. Solved with persistent
+coherent buffer mappings — mapped once at setup, kept live across frames,
+synchronized by fences. This removed the dominant fixed cost and made the
+remaining ~100–200 µs the irreducible transfer+sync floor.
+
+**A driver crash with no catchable cause.** Sustained GPU compute at ~30k+
+particles reliably SIGSEGVs the NVIDIA driver inside \`libEGL_nvidia\` (a native
+null dereference on the render/compute thread — not a Java exception, not
+catchable). Mitigation is honest documentation and conservative defaults:
+AUTO stays on CPU, GPU is opt-in and flagged experimental. It is a real
+reminder that a portable engine must tolerate hardware failures it cannot
+handle gracefully.
+
+**A three-thread world with live mutation.** Solved by making the concurrency
+rules *structural* rather than advisory: one physics thread, a FIFO command
+queue as the only mutation channel, volatile single-field settings for cheap
+edits, and a snapshot hand-off for rendering. Each channel has an owner, and
+each is testable in isolation.
+
+**JavaFX scene-graph performance.** One \`Sphere\` per particle dies at a few
+thousand nodes. The billboard renderer collapses an entire species to a single
+\`TriangleMesh\`, trading scene-graph elegance for bulk CPU-vector writes — the
+only realistic way to hold 10k+ particles at interactive rates in JavaFX.
+
+**Trails across the world.** The wrap-seam trail bug (Section 06) was a
+cross-layer issue: physics stored the raw previous position, rendering assumed
+it was spatially local. The fix belongs to the integrator (where the wrap
+happens), not the renderer — keeping the minimum-image convention in one place.
+
+**Persistence that must never break startup.** Config writes are atomic
+(temp-file + \`ATOMIC_MOVE\`), corrupt reads degrade to defaults, and
+\`withDefaultsFilled()\` back-fills missing sections so configs from older
+versions load cleanly. Presets survive species-count changes by fitting the
+matrix's overlapping upper-left block and falling back gracefully on unknown
+enum names.
+
+---
+
+## 08 — Performance / Results
+
+**CPU physics** (default: 2,000 particles, r_max 24, world 200):
+
+| Population | Algorithm | Cost |
+| --- | --- | --- |
+| 2,000 (default) | spatial grid, 27-cell | ~4M pair evals → ~0.1–0.2 ms/step |
+| 10,000 | spatial grid | interactive (>60 physics steps/s) |
+| 50,000 (ceiling) | spatial grid | degrades to slow-motion, never a death spiral |
+
+The fixed-timestep accumulator caps at \`MAX_STEPS_PER_FRAME = 4\`, so a stall
+drops to slow-motion rather than spiraling — the chosen degradation path.
+Parallelism kicks in above 256 particles (force) / 1,024 (integrate).
+
+**GPU force pass** (measured on an NVIDIA T1200 laptop GPU vs the CPU grid):
+
+| Population | GPU/CPU throughput | Verdict |
+| --- | --- | --- |
+| 2,000 | 0.19× | GPU dominated by fixed sync cost |
+| 8,000 | 0.35× | still sync-bound |
+| 32,000 | 0.77× | approaching parity, still slower |
+
+The GPU never wins on this hardware below tens of thousands of particles; the
+~100–200 µs/frame sync floor is the culprit. Conclusion, made into policy:
+**AUTO always routes to the CPU; GPU is opt-in.** Accuracy on the GPU path is
+FP32 — physically equivalent but not bit-identical to the double CPU reference,
+validated to <0.7% relative error.
+
+**Correctness & determinism.** 194 unit tests, all passing: grid == brute-force
+to 1e-6, analytic force magnitudes, step-size-independent friction, minimum
+image, deterministic reseeding, round-trip serialization, undo/redo, and the
+periodic trail fix. Results are bit-identical across thread counts by design.
+
+---
+
+## 09 — What I Learned
+
+**Measure the right thing, then re-measure.** The single most valuable lesson:
+my headline GPU benchmark was *wrong in my favor*, and the correction
+upended the design. A port of a computation to another backend must be
+validated against a reference — I now treat any speedup that arrives with a
+functional bug as a speedup that isn't real.
+
+**Fixed costs are the enemy at the edge.** The GPU path lost not because the
+kernels were slow but because a 100–200 µs synchronization floor dominated
+below tens of thousands of particles. Knowing *when a technology is
+economically wrong* is as important as knowing how to build it. This is why
+the routing policy is a measured decision, not a default.
+
+**Structure-of-arrays is a superpower for hot loops.** Every performance win
+in the physics core traces back to linear memory and disjoint thread-owned
+slices. The Java folklore about "objects are slow" is mostly *pointer-chasing
+is slow*; SoA removes the chasing.
+
+**Boring concurrency is better concurrency.** The mutex-guarded snapshot and
+the FIFO command queue beat clever lock-free schemes here — they are
+microseconds-fast, obviously correct, and easy to test. Concurrency design
+should minimize the surface a bug can live on.
+
+**A single feature can force honest hardware conversations.** The GPU engine
+collided with a real NVIDIA driver crash at scale. Shipping it taught me to
+document known hardware limitations explicitly and to make the safe path the
+default, rather than silently hoping the failure never shows up.
+
+**Cross-layer bugs need cross-layer fixes.** The wrap-seam trail bug existed
+because two layers had different implicit assumptions about what a "previous
+position" means. Fixing it in the layer that owns the invariant (the
+integrator, where wrapping happens) kept the convention in exactly one place.
+
+---
+
+## 10 — What's Next
+
+- **GPU revival at the right scale.** The sync floor dominates below ~30k
+  particles. Next: a persistent double-buffered transfer so uploads overlap
+  compute, and a benchmark gate that engages GPU only when it genuinely beats
+  CPU at the *current* population. The engine already supports the switch.
+- **Multi-GPU / batched work dispatch** — amortize the fixed sync cost across
+  several steps or multiple worlds (e.g., many seeds in parallel).
+- **Deterministic multithreaded force with atomics** — currently one thread
+  owns each particle's accumulation; a future path could shard the pair loop
+  with per-thread partial accumulators to scale beyond fork/join.
+- **Scene-graph-free rendering** — the billboard mesh is already one node per
+  species; pushing particle transforms to a GPU-side vertex buffer (VBO)
+  would remove the remaining CPU write each frame.
+- **World editing in the viewport** — click to add/remove particles, box-select
+  to apply forces; the command layer already provides undoable structure.
+- **More boundary topologies** — cylindrical/annular worlds and a true
+  non-cubic minimum-image space, building on the strategy seam.
+- **Session diffing** — store config deltas rather than full snapshots to keep
+  per-run persistence sub-kilobyte as features grow.`;
