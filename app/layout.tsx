@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { siteConfig } from "@/lib/site.config";
 import BackgroundGrid from "@/components/background-grid";
 import CursorGlow from "@/components/cursor-glow";
@@ -58,6 +60,12 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </BootProvider>
+
+        {/* Vercel analytics + Core Web Vitals (speed insights). These render
+            invisible scripts and only report once the site is deployed on
+            Vercel; locally they're inert. */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
