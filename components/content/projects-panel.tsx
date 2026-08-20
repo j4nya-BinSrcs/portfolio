@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Code2,
   ExternalLink,
@@ -83,9 +84,13 @@ function ProjectCard({
   onOpen: (title: string, mode: ProjectMode) => void;
 }) {
   const project = siteConfig.projects.find((p) => p.title === title)!;
-  const hasViews = !project.noViews;
+  const hasViews = !("noViews" in project && project.noViews);
 
-  const thumbnail = project.video ? (
+  const media = project.gallery?.filter((g) => g.src) ?? [];
+
+  const thumbnail = media.length > 0 ? (
+    <GalleryThumbnail project={project} />
+  ) : project.video ? (
     <video
       className="h-full w-full object-cover"
       src={project.video}
@@ -188,5 +193,64 @@ function ProjectCard({
         </div>
       </div>
     </ReflectCard>
+  );
+}
+
+function GalleryThumbnail({
+  project,
+}: {
+  project: (typeof siteConfig.projects)[number];
+}) {
+  const media = project.gallery?.filter((g) => g.src) ?? [];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (media.length < 2) return;
+    const id = setInterval(() => {
+      setIndex((i) => {
+        let next = i;
+        while (next === i) {
+          next = Math.floor(Math.random() * media.length);
+        }
+        return next;
+      });
+    }, 2400);
+    return () => clearInterval(id);
+  }, [media.length]);
+
+  if (media.length === 0) return null;
+
+  const item = media[index];
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <AnimatePresence>
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6, ease: EASE }}
+          className="absolute inset-0"
+        >
+          {item.type === "image" ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={item.src}
+              alt={item.caption}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <video
+              className="h-full w-full object-cover"
+              src={item.src}
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 }
