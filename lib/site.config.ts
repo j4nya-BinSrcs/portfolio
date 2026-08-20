@@ -62,7 +62,7 @@ export const siteConfig = {
     {
       id: "LinkedIn",
       label: "LinkedIn",
-      href: "https://www.linkedin.com/in/janya-kansara-6b718a3a0/",
+      href: "https://www.linkedin.com/in/janya-kansara/",
     },
   ],
 
